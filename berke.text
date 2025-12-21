@@ -1,0 +1,4 @@
+Cmd + Shift + P
+LaTeX Workshop: Clean up auxiliary files
+Enter
+makeglossaries main

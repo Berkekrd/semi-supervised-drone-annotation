@@ -1,0 +1,81 @@
+% Nicht anfassen, so ist der Dokumentenaufbau
+\documentclass[a4paper,12pt]{article}
+
+\PassOptionsToPackage{nopatch=footnote}{microtype}
+\usepackage{tocloft}
+
+\input{settings/packages}
+\input{settings/page}
+
+\begin{document}
+
+% =========================
+% Frontmatter (NO page numbers)
+% =========================
+\input{frontmatter/titlepage}
+\input{frontmatter/acknowledgements}
+\input{frontmatter/abstract}
+
+% =========================
+% TOC starts with roman i
+% =========================
+\clearpage
+\pagenumbering{roman}
+\setcounter{page}{1}
+
+\tableofcontents
+\clearpage
+\addcontentsline{toc}{section}{Abbildungsverzeichnis}
+\listoffigures
+\clearpage
+
+\addcontentsline{toc}{section}{Tabellenverzeichnis}
+\listoftables
+\clearpage
+\listoffigures
+\clearpage
+
+\listoftables
+\clearpage
+
+% ===== Acronyms & Glossary =====
+\pagestyle{plain} % <<< KRİTİK
+
+\input{frontmatter/acronyms}
+\input{frontmatter/glossary}
+
+\glsaddall
+\setglossarystyle{list}
+
+\printglossary[type=\acronymtype, title=Acronyms]
+\clearpage
+
+\printglossary[title=Glossary]
+\clearpage
+
+\pagestyle{fancy} % <<< GERİ AL
+
+% =========================
+% Main matter (arabic)
+% =========================
+\clearpage
+\pagenumbering{arabic}
+\setcounter{page}{1}
+
+\input{chapters/01_einleitung}
+\input{chapters/02_hauptteil}
+
+% =========================
+% Literature
+% =========================
+\clearpage
+\nocite{*}
+\printbibliography
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%% Ende des Dokuments %%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\newpage
+\input{settings/endofdocument}
+
+\end{document}
