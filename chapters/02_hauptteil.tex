@@ -77,3 +77,199 @@ Arbeit eingesetzten Detektionsmodelle basieren auf CNN-Architekturen, die eine
 robuste Repräsentation visueller Merkmale über verschiedene Maßstäbe und
 Umgebungsbedingungen hinweg ermöglichen. Im folgenden Abschnitt wird erläutert,
 wie diese Grundprinzipien im Rahmen des Transfer Learning weitergenutzt werden.
+
+\subsubsection{Transfer Learning}
+
+Transfer Learning (TL) beschreibt einen Ansatz des maschinellen Lernens, bei dem ein
+vortrainiertes Modell als Ausgangspunkt für das Lernen einer neuen, jedoch verwandten
+Aufgabe verwendet wird. Ziel dieses Ansatzes ist es, bereits erlerntes Wissen aus einer
+Quellaufgabe (Source Task) auf eine Zielaufgabe (Target Task) zu übertragen und dadurch
+den Trainingsaufwand sowie den Bedarf an umfangreich annotierten Daten zu reduzieren
+\cite{Bozinovski1976,Pan2010}.
+
+Die grundlegende Idee des Transfer Learning wurde erstmals von Bozinovski und Fulgosi
+bereits im Jahr 1976 im Kontext neuronaler Netze vorgestellt \cite{Bozinovski1976}.
+Seitdem hat sich Transfer Learning als ein zentrales Werkzeug etabliert, insbesondere
+zur Bewältigung von Szenarien mit begrenzter Datenverfügbarkeit \cite{Tan2018}.
+Pan und Yang definieren Transfer Learning als den Versuch, die Lernleistung einer
+Zielprädiktionsfunktion in einer neuen Domäne durch die Nutzung von Wissen aus einer
+anderen, verwandten Domäne zu verbessern \cite{Pan2010}.
+
+Im Bereich der Bildverarbeitung und Objekterkennung wird Transfer Learning häufig in
+Kombination mit Convolutional Neural Networks eingesetzt. Dabei werden Modelle genutzt,
+die zuvor auf großen, allgemein gehaltenen Datensätzen wie ImageNet oder MS COCO
+trainiert wurden. Die früh erlernten Merkmale, wie Kanten, Texturen und einfache Formen,
+sind in vielen visuellen Aufgaben übertragbar und können als stabile Basis für neue
+Anwendungsfälle dienen.
+
+Ein gängiger Ansatz im Transfer Learning besteht darin, bestimmte Schichten des
+vortrainierten Modells während des Trainings einzufrieren. Diese sogenannten
+\textit{frozen layers} behalten ihre Gewichtungen bei und werden nicht weiter angepasst.
+Insbesondere die frühen Faltungsschichten eines CNNs werden häufig eingefroren, da sie
+für die Extraktion grundlegender visueller Merkmale verantwortlich sind \cite{UltralyticsTL}.
+Die späteren Schichten hingegen werden gezielt an die spezifische Zielaufgabe angepasst.
+
+Im Kontext dieser Arbeit spielt Transfer Learning eine zentrale Rolle, da die verfügbaren
+Trainingsdaten für die Detektion potenzieller Brutstätten von \textit{Aedes aegypti} nur
+begrenzt und teilweise spärlich annotiert sind. Durch die Nutzung vortrainierter Modelle
+kann dennoch eine robuste Merkmalsrepräsentation erlernt werden, ohne ein Modell
+vollständig von Grund auf neu trainieren zu müssen. Dieser Ansatz bildet die Grundlage
+für den Einsatz moderner Detektionsarchitekturen wie YOLO, die im nächsten Abschnitt
+detailliert vorgestellt werden.
+
+
+\subsubsection{YOLOv8}
+
+Die YOLO-Architektur (You Only Look Once) zählt zu den bekanntesten
+einstufigen (one-stage) Ansätzen im Bereich der Objekterkennung.
+Ursprünglich wurde YOLO von Redmon et al. vorgestellt, um die
+Klassifikation und Lokalisierung von Objekten in einem einzigen
+Vorwärtsdurchlauf eines neuronalen Netzes zu vereinen und damit eine
+Echtzeit-Objekterkennung zu ermöglichen \cite{Redmon2016}. Dieser Ansatz
+bietet insbesondere im Hinblick auf die Verarbeitungsgeschwindigkeit
+deutliche Vorteile gegenüber zweistufigen Detektionsverfahren.
+
+Im Laufe der Zeit wurde die YOLO-Architektur kontinuierlich
+weiterentwickelt, wobei jede neue Version architektonische
+Verbesserungen sowie optimierte Trainings- und Verlustfunktionen
+einführte \cite{Redmon2018,Bochkovskiy2020}. In dieser Arbeit wird
+YOLOv8 verwendet, eine von Ultralytics entwickelte, moderne
+YOLO-Variante, die sich durch eine vereinfachte Architektur,
+hohe Flexibilität und verbesserte Leistungsfähigkeit auszeichnet
+\cite{Ultralytics2023}.
+
+Ein zentrales Merkmal von YOLOv8 ist der Einsatz eines anchor-freien
+Detektionsansatzes. Im Gegensatz zu früheren YOLO-Versionen entfällt
+die Verwendung vordefinierter Anchor-Boxen, wodurch das Modell besser
+auf unterschiedlich große Objekte reagieren kann und der
+Trainingsprozess vereinfacht wird. Darüber hinaus nutzt YOLOv8 eine
+sogenannte decoupled head-Struktur, bei der Klassifikation und
+Lokalisierung getrennt voneinander gelernt werden. Dies führt zu einer
+stabileren Optimierung und einer verbesserten Detektionsgenauigkeit.
+
+Architektonisch besteht YOLOv8 aus einer optimierten Backbone-Struktur
+zur Merkmalsextraktion, einem Neck-Modul zur mehrskaligen
+Merkmalsfusion sowie einem Head-Modul zur Ausgabe der finalen
+Detektionsergebnisse. Diese Struktur ist insbesondere für die Erkennung
+kleiner Objekte in komplexen Szenen geeignet, wie sie typischerweise in
+drohnenbasierten Bild- und Videodaten auftreten. Für die vorliegende
+Arbeit ist dies von besonderer Bedeutung, da potenzielle Brutstätten von
+\textit{Aedes aegypti} in Luftaufnahmen häufig nur in sehr kleinem Maßstab
+sichtbar sind.
+
+Zur Gewährleistung der Reproduzierbarkeit der Ergebnisse werden in
+dieser Arbeit vortrainierte YOLOv8-Modelle verwendet, die von
+Ultralytics bereitgestellt werden. Die Kombination aus hoher
+Inferenzgeschwindigkeit, moderner Trainingsinfrastruktur und robuster
+Leistungsfähigkeit macht YOLOv8 zu einer geeigneten Grundlage für die
+automatische Objekterkennung in drohnenbasierten Videoaufnahmen.
+
+\subsubsection{Bewertungsmetriken}
+
+Zur objektiven Bewertung der Leistungsfähigkeit von
+Objekterkennungsmodellen werden standardisierte Evaluationsmetriken
+verwendet. Diese Metriken ermöglichen einen quantitativen Vergleich
+zwischen verschiedenen Modellen und Trainingskonfigurationen und sind
+insbesondere für die Analyse der Detektionsgenauigkeit und der
+Lokalisierungsqualität von zentraler Bedeutung. In dieser Arbeit werden
+die Metriken Intersection over Union (IoU), Precision, Recall sowie Mean
+Average Precision (mAP) eingesetzt, da sie sich als etablierter Standard
+in der Objekterkennung bewährt haben \cite{Zou2023,Lin2015}.
+
+\paragraph{Intersection over Union (IoU)}
+Die Intersection over Union (IoU) misst den Überlappungsgrad zwischen
+einer vorhergesagten Bounding Box und der zugehörigen Ground-Truth-Box.
+Sie ist definiert als das Verhältnis der Fläche der Schnittmenge zur
+Fläche der Vereinigung beider Boxen. Eine hohe IoU weist auf eine präzise
+räumliche Lokalisierung des Objekts hin. In der Praxis wird eine
+Detektion häufig dann als korrekt gewertet, wenn die IoU einen
+vordefinierten Schwellenwert überschreitet, beispielsweise 0{,}5.
+
+\paragraph{Precision}
+Die Precision beschreibt den Anteil korrekt erkannter Objekte an allen
+vom Modell vorhergesagten Objekten. Sie gibt an, wie zuverlässig die vom
+Modell gemeldeten Detektionen sind und wie viele davon tatsächlich
+relevant sind. Eine hohe Precision deutet darauf hin, dass das Modell
+nur wenige Fehlalarme (False Positives) erzeugt.
+
+\paragraph{Recall}
+Der Recall misst den Anteil der korrekt erkannten Objekte an allen
+tatsächlich vorhandenen Objekten im Datensatz. Diese Metrik beschreibt,
+wie vollständig das Modell relevante Objekte detektiert. Ein hoher
+Recall ist insbesondere in sicherheits- oder gesundheitsrelevanten
+Anwendungen von Bedeutung, da möglichst wenige relevante Objekte
+übersehen werden sollen.
+
+\paragraph{Mean Average Precision (mAP)}
+Die Mean Average Precision (mAP) ist eine zusammenfassende
+Bewertungsmetrik zur Beurteilung der Gesamtleistung eines
+Objekterkennungsmodells. Sie kombiniert die Aspekte der
+Detektionsgenauigkeit (Precision) und der Vollständigkeit (Recall) und
+ermöglicht damit eine ganzheitliche Bewertung der Modellleistung.
+
+Zur Berechnung der mAP wird für jede Objektklasse die sogenannte
+Average Precision (AP) bestimmt. Diese ergibt sich aus der
+Precision-Recall-Relation und beschreibt, wie gut ein Modell relevante
+Objekte erkennt, ohne dabei eine hohe Anzahl an Fehlalarmen zu erzeugen.
+Die mAP ergibt sich anschließend als Mittelwert der AP-Werte über alle
+betrachteten Klassen.
+
+Durch die Zusammenfassung der Detektionsleistung über alle Klassen
+hinweg stellt die mAP eine robuste Kennzahl dar, die sowohl die
+Klassifikationsqualität als auch die räumliche Genauigkeit der
+Objekterkennung berücksichtigt. Aus diesem Grund wird die mAP in dieser
+Arbeit als zentrale Metrik zur Bewertung der eingesetzten YOLOv8-Modelle
+verwendet.
+
+In dieser Arbeit dienen die genannten Metriken zur systematischen
+Analyse der Leistungsfähigkeit der eingesetzten YOLOv8-Modelle bei der
+Detektion potenzieller Brutstätten von \textit{Aedes aegypti} in
+drohnenbasierten Bild- und Videodaten.
+
+\subsection{Machine Learning Workflow}
+
+Machine-Learning-Workflows dienen als strukturierter Ansatz zur
+Entwicklung, Evaluation und Analyse von Machine-Learning-Modellen.
+Sie gliedern den gesamten Lernprozess in klar definierte Phasen und
+ermöglichen eine systematische Bearbeitung komplexer
+Datenverarbeitungs- und Modellierungsaufgaben. In der Literatur werden
+Machine-Learning-Workflows häufig als datengetriebene Prozesse mit
+iterativen Rückkopplungsschleifen beschrieben, die eine kontinuierliche
+Optimierung der einzelnen Verarbeitungsschritte erlauben
+\cite{Amershi2019}.
+
+Die in dieser Arbeit verwendete Workflow-Struktur orientiert sich an
+etablierten Modellen aus Wissenschaft und Industrie, insbesondere am
+Machine-Learning-Workflow nach Amershi et al. \cite{Amershi2019}, dem von
+Google vorgeschlagenen ML-Workflow \cite{GoogleML2024} sowie am
+Cross-Industry Standard Process for Data Mining (CRISP-DM)
+\cite{Wirth2000}. Diese Modelle definieren den Machine-Learning-Prozess
+als eine Abfolge logisch zusammenhängender Phasen, die durch Feedback-
+Mechanismen miteinander verbunden sind.
+
+Wie in Abbildung~\ref{fig:ml_workflow} dargestellt, gliedert sich der
+Workflow in fünf zentrale Phasen: Datenerhebung, Datenvorverarbeitung,
+Modelltraining, Evaluation und Deployment. Die erste Phase umfasst die
+Sammlung der Rohdaten aus unterschiedlichen Quellen, wie beispielsweise
+drohnenbasierten Bild- und Videodaten. In der zweiten Phase werden die
+Daten für das Modelltraining aufbereitet, etwa durch die Extraktion von
+Videoframes, die Bereinigung fehlerhafter Annotationen oder die
+Anpassung von Bildauflösungen.
+
+Darauf aufbauend erfolgt das Modelltraining, bei dem ein
+tiefenlernungsbasiertes Objekterkennungsmodell auf den vorbereiteten
+Daten optimiert wird. Die anschließende Evaluationsphase dient der
+quantitativen Bewertung der Modellleistung anhand definierter
+Bewertungsmetriken. Zwischen der Vorverarbeitung, dem Training und der
+Evaluation bestehen iterative Rückkopplungsschleifen, die es erlauben,
+Datenaufbereitung und Trainingsstrategien schrittweise zu verbessern.
+
+Der in dieser Arbeit eingesetzte Workflow ist speziell auf die
+Verarbeitung videobasierter und spärlich annotierter Datensätze
+ausgerichtet. Insbesondere bei der automatischen Detektion potenzieller
+Brutstätten von \textit{Aedes aegypti} ist eine iterative Anpassung der
+Datenvorverarbeitung und der Trainingsparameter erforderlich, um
+robuste Modelle trotz begrenzter manueller Annotationen zu erzeugen.
+Die letzte Phase des Deployments ist nicht Bestandteil dieser Arbeit
+und wird daher nicht weiter betrachtet.
+
