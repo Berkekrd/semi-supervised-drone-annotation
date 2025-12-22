@@ -2,3 +2,12 @@ Cmd + Shift + P
 LaTeX Workshop: Clean up auxiliary files
 Enter
 makeglossaries main
+
+
+pdflatex main
+biber main
+pdflatex main
+pdflatex main
+
+
+opt + z

@@ -1,2 +1,79 @@
-\section{Einleitung}
-Text der Einleitung
+\section{Theoretischer Hintergrund}
+In diesem Abschnitt wird der theoretische Hintergrund der vorliegenden Arbeit dargelegt.
+Zunächst werden die bevorzugten Brutstätten der Aedes aegypti-Mücke in urbanen Räumen 
+sowie deren charakteristische visuelle Merkmale beschrieben. Anschließend werden die 
+grundlegenden Konzepte der Objekterkennung und die in diesem Bereich etablierten 
+tiefenlernungsbasierten Ansätze erläutert. Dabei werden insbesondere konvolutionelle 
+neuronale Netze (CNN), das Prinzip des Transfer Learning sowie YOLO-basierte 
+Detektionsmodelle betrachtet. Darüber hinaus werden im Kontext der 
+Videodatenverarbeitung Ansätze zur Objektverfolgung (Object Tracking) sowie grundlegende
+Prinzipien der zeitlichen Datenverarbeitung vorgestellt, die zur Sicherstellung der 
+zeitlichen Konsistenz und zur automatischen Ergänzung spärlich annotierter Sequenzen 
+beitragen. Abschließend werden die verwendeten Bewertungsmetriken sowie der zugrunde 
+liegende Lern- und Verarbeitungsablauf zusammengefasst, um das theoretische Fundament 
+für den im folgenden Kapitel vorgestellten methodischen Ansatz zu schaffen.
+
+\subsection{Aedes aegypti und urbane Brutstätten}
+
+\textit{Aedes aegypti} ist eine Mückenart, die vor allem in urbanen und stadtnahen Gebieten verbreitet ist und sich in unmittelbarer Nähe menschlicher Siedlungen vermehrt. Anstelle natürlicher Gewässer bevorzugt diese Art überwiegend kleine, meist menschengemachte Wasseransammlungen. Dadurch sind die Brutstätten von \textit{Aedes aegypti} in der Regel eng mit künstlichen Objekten und Strukturen verbunden. Die Brutstätten von \textit{Aedes aegypti} wurden in zahlreichen Studien im urbanen Kontext umfassend untersucht \cite{Vezzani2002,Paploski2016,Cavalcanti2016,Valenca2013}.
+
+
+Typische Brutstätten in städtischen Umgebungen sind unter anderem Eimer, Behälter, Altreifen, Blumentöpfe sowie weitere kleine Gefäße, in denen sich Regen- oder Restwasser ansammeln kann. Diese Objekte weisen unterschiedliche Formen, Größen und Materialien auf und treten unter variierenden Umwelt- und Hintergrundbedingungen auf. Im in dieser Arbeit verwendeten Datensatz werden solche Objekte als potenzielle Brutstätten von \textit{Aedes aegypti} annotiert.
+
+Alle genannten Brutstätten sind in der Lage, Wasser zu speichern und bieten gleichzeitig Schutz vor direkter Sonneneinstrahlung. Zudem wird das Wasser in diesen potenziellen Brutstätten häufig nicht regelmäßig ausgetauscht, sondern beispielsweise nur nach Niederschlägen erneuert. Dadurch entstehen optimale Bedingungen für die Entwicklung der Larven von \textit{Aedes aegypti}.
+
+Die beschriebenen Brutstätten sind nicht ausschließlich auf \textit{Aedes aegypti} beschränkt, sondern können auch von anderen Mückenarten genutzt werden. Dennoch ist \textit{Aedes aegypti} insbesondere in urbanen Umgebungen eine der am häufigsten vorkommenden Arten.
+
+
+\subsection{Objekterkennung}
+
+Die Objekterkennung zählt zu den zentralen Aufgaben der Computer Vision und befasst sich mit der automatischen Identifikation und Lokalisierung von Objekten in digitalen Bildern oder Videosequenzen. Ziel ist es, relevante Objekte innerhalb einer Szene zu erkennen, ihnen eine semantische Klasse zuzuordnen und ihre Position mithilfe von Begrenzungsrahmen (Bounding Boxes) zu bestimmen. Im Gegensatz zur reinen Bildklassifikation, bei der lediglich das Vorhandensein eines Objekts festgestellt wird, kombiniert die Objekterkennung somit Klassifikations- und Lokalisierungsaufgaben.
+
+Frühere Ansätze zur Objekterkennung basierten überwiegend auf handgefertigten Merkmalen sowie regelbasierten oder statistischen Methoden. Diese Verfahren stoßen jedoch insbesondere bei komplexen Szenen, variierenden Beleuchtungsverhältnissen und unterschiedlichen Objektgrößen an ihre Grenzen. Mit dem Fortschritt tiefenlernungsbasierter Methoden konnte die Leistungsfähigkeit von Objekterkennungssystemen deutlich gesteigert werden \cite{Zou2023}.
+
+Moderne Objekterkennungsmodelle nutzen in der Regel Convolutional Neural Networks (CNN), die in der Lage sind, hierarchische visuelle Merkmale direkt aus den Daten zu erlernen. Dabei reichen die extrahierten Merkmale von einfachen Kanten und Texturen bis hin zu komplexen Formen und semantischen Strukturen. Diese Eigenschaft macht CNN-basierte Ansätze besonders geeignet für Anwendungen mit hoher visueller Variabilität.
+
+Ein wesentlicher Aspekt der Objekterkennung ist die gleichzeitige Bewältigung von Klassifikation und räumlicher Lokalisierung. Während die Klassifikation bestimmt, zu welcher Kategorie ein Objekt gehört, beschreibt die Lokalisierung dessen Position innerhalb des Bildes. Diese Kombination ist insbesondere für Anwendungen wie Umweltüberwachung, Verkehrsanalysen sowie die Auswertung von Luft- und Drohnenaufnahmen von großer Bedeutung.
+
+Im Rahmen dieser Arbeit wird die Objekterkennung als zentrale Methode zur automatischen Identifikation potenzieller Brutstätten von \textit{Aedes aegypti} in drohnenbasierten Bild- und Videodaten eingesetzt. Die geringen Objektgrößen, komplexe Hintergründe und wechselnde Aufnahmeperspektiven stellen dabei besondere Herausforderungen dar und erfordern den Einsatz robuster, tiefenlernungsbasierter Detektionsverfahren. Aufbauend auf diesen Grundlagen werden in den folgenden Abschnitten die verwendeten Deep-Learning-Modelle und Ansätze detailliert erläutert.
+
+\subsection{Convolutional Neural Networks}
+
+Convolutional Neural Networks (CNNs) sind mehrschichtige, vorwärtsgerichtete
+neuronale Netzwerke, die speziell für die Verarbeitung gitterförmig strukturierter
+Daten wie Bilder entwickelt wurden. Aufgrund ihrer mehrstufigen Architektur eignen
+sich CNNs besonders gut für Aufgaben der Bildanalyse und Objekterkennung
+\cite{LeCun1998}. Eine typische CNN-Architektur besteht aus mehreren
+aufeinanderfolgenden Schichten, darunter Faltungs- (Convolution), Aktivierungs- und
+Pooling-Schichten sowie gegebenenfalls vollständig verbundene Schichten.
+
+Die Faltungsschichten wenden lernbare Filter auf das Eingabebild an, um lokale
+Merkmale wie Kanten, Ecken oder Texturen zu extrahieren. Mit zunehmender Tiefe des
+Netzwerks werden diese einfachen Merkmale zu komplexeren und semantisch
+aussagekräftigeren Repräsentationen kombiniert. Dieser hierarchische
+Merkmalslernprozess bildet die Grundlage für den erfolgreichen Einsatz von CNNs in
+visuell anspruchsvollen Anwendungen wie der Objekterkennung.
+
+Die Leistungsfähigkeit tiefer Convolutional Neural Networks wurde insbesondere durch
+die Arbeit von Krizhevsky et al. demonstriert, die mit der AlexNet-Architektur auf dem
+ImageNet-Datensatz signifikante Leistungssteigerungen gegenüber traditionellen
+Ansätzen erzielten \cite{Krizhevsky2012}. Diese Ergebnisse trugen maßgeblich zur
+Etablierung tiefer CNN-Modelle in der Computer Vision bei und führten zu einer breiten
+Anwendung in verschiedensten visuellen Erkennungsaufgaben.
+
+Im Gegensatz zu klassischen maschinellen Lernverfahren, bei denen relevante
+Merkmale häufig manuell und auf Basis von Domänenwissen entworfen werden,
+integrieren Convolutional Neural Networks die Merkmalsextraktion direkt in den
+Lernprozess. Dadurch sind CNNs in der Lage, problemrelevante und hierarchische
+visuelle Repräsentationen unmittelbar aus den Rohdaten zu erlernen. Dieser Ansatz
+führt insbesondere bei komplexen Szenen, variierenden Hintergrundbedingungen
+sowie bei der Detektion kleiner Objekte zu einer deutlich verbesserten
+Generalisierungsfähigkeit im Vergleich zu traditionellen Methoden des maschinellen
+Lernens \cite{LeCun1998,Goodfellow2016}.
+
+In der Objekterkennung bilden CNNs die zentrale Grundlage sowohl für die
+Klassifikation als auch für die räumliche Lokalisierung von Objekten. Die in dieser
+Arbeit eingesetzten Detektionsmodelle basieren auf CNN-Architekturen, die eine
+robuste Repräsentation visueller Merkmale über verschiedene Maßstäbe und
+Umgebungsbedingungen hinweg ermöglichen. Im folgenden Abschnitt wird erläutert,
+wie diese Grundprinzipien im Rahmen des Transfer Learning weitergenutzt werden.
