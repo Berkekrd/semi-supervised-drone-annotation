@@ -1,0 +1,73 @@
+\section{Stand der Forschung}
+
+In diesem Kapitel wird der aktuelle Stand der Forschung im Kontext dieser Arbeit dargestellt. Der Fokus liegt dabei auf bestehenden Ansätzen zur Detektion von Mückenbrutstätten in Luft- und Drohnenbildern sowie auf Methoden zur automatischen Annotation und Objekterkennung in Videodaten. Darüber hinaus werden Arbeiten aus verwandten Anwendungsdomänen betrachtet, die ähnliche methodische Konzepte wie Objektverfolgung, semi-supervised Learning und Pseudo-Labeling zur Reduktion des manuellen Annotierungsaufwands einsetzen. Ziel dieses Kapitels ist es, die vorliegende Arbeit in den bestehenden Forschungskontext einzuordnen und ihre Abgrenzung zu bisherigen Ansätzen klar herauszustellen.
+
+
+
+\subsection{Detektion von Mückenbrutstätten in Luft- und Drohnenbildern}
+
+Die automatische Detektion von Mückenbrutstätten hat in den letzten Jahren zunehmend an 
+Bedeutung gewonnen, insbesondere durch den verstärkten Einsatz von Luft- und 
+Drohnenbildern \cite{mahfodz2019review}. Ziel dieser Arbeiten ist es, große Gebiete effizient zu überwachen und den Aufwand manueller Vor-Ort-Inspektionen zu reduzieren. Die frühzeitige Identifikation potenzieller Brutstätten der Stechmücke \textit{Aedes aegypti} ist dabei von zentraler Bedeutung für die Prävention von durch Vektoren übertragenen Krankheiten wie Dengue \cite{knoblauch2023breeding}.
+
+Eine der grundlegenden Arbeiten in diesem Forschungsbereich ist der von Passos et al. 
+vorgestellte Mosquito Breeding Grounds (MBG) Datensatz. Die erste Version des Datensatzes (MBG-V1) basiert auf Videodaten, die mit unbemannten Luftfahrzeugen aufgenommen wurden, und diente als Grundlage für die Entwicklung automatischer Verfahren zur Detektion potenzieller Brutstätten \cite{passos2020mbgv1}. Die Ergebnisse dieser Arbeit zeigten, dass tiefenlern-basierte Objekterkennungsmodelle in der Lage sind, relevante Umweltobjekte in Drohnenaufnahmen zuverlässig zu erkennen.
+
+Mit der Veröffentlichung des MBG-V2 Datensatzes wurde dieser Ansatz weiter ausgebaut. 
+MBG-V2 umfasst eine größere Anzahl an Videosequenzen, unterschiedliche urbane Regionen 
+sowie eine erweiterte Menge an Objektklassen \cite{passos2024mbgv2}. Dadurch stellt der 
+Datensatz realistischere und zugleich anspruchsvollere Szenarien für die automatische 
+Objekterkennung dar. Auf MBG-V2 aufbauende Studien bestätigen, dass UAV-basierte Bilddaten eine geeignete und skalierbare Datenquelle für die Detektion von Mückenbrutstätten sind \cite{passos2023augmented}.
+
+Ein Großteil der bestehenden Arbeiten in diesem Forschungsfeld basiert jedoch auf 
+vollständig überwachten Lernverfahren, bei denen sämtliche Trainingsdaten manuell 
+annotiert werden müssen. Insbesondere bei video-basierten Datensätzen führt dieser Ansatz zu einem erheblichen Annotierungsaufwand und schränkt die Skalierbarkeit der Verfahren ein \cite{passos2023augmented}. Daraus ergibt sich ein klarer Forschungsbedarf an Methoden, die den manuellen Annotierungsaufwand reduzieren, ohne die Erkennungsleistung signifikant zu beeinträchtigen.
+
+
+\subsection{Automatische Annotation und Objektverfolgung in Videodaten}
+
+Im Vergleich zu Einzelbildern bieten video-basierte Datensätze den Vorteil, dass neben 
+räumlichen Informationen auch zeitliche Zusammenhänge genutzt werden können. Objekte 
+weisen über aufeinanderfolgende Frames hinweg eine visuelle und räumliche Kontinuität auf, die gezielt für die Objekterkennung und -verfolgung eingesetzt werden kann. Aus diesem Grund gewinnen Ansätze, die Objekterkennung und Objektverfolgung in Videodaten kombinieren, zunehmend an Bedeutung \cite{bewley2016sort, wojke2017deepsort}.
+
+Ein Beispiel für die erfolgreiche Anwendung dieses Ansatzes in einer verwandten 
+Anwendungsdomäne ist die automatische Detektion und Verfolgung von Fischen in natürlichen Umgebungen. In einer in PLOS ONE veröffentlichten Studie wird ein Verfahren vorgestellt, das einen YOLO-basierten Objekterkenner mit dem DeepSORT-Tracking-Algorithmus kombiniert, um Fische in Unterwasservideos zuverlässig zu detektieren und über lange Videosequenzen hinweg zu verfolgen \cite{fishtracking2025}. Die Ergebnisse zeigen, dass durch die Nutzung von Tracking-Informationen der manuelle Annotierungsaufwand reduziert und eine konsistente Objektidentifikation über die Zeit ermöglicht werden kann.
+
+Darüber hinaus wird in der Literatur hervorgehoben, dass Objektverfolgung dazu beiträgt, framebasierte Detektionsergebnisse zeitlich zu stabilisieren und Fehlklassifikationen zu reduzieren \cite{wojke2017deepsort}. Diese Eigenschaften sind insbesondere bei video-basierten Datensätzen mit begrenzter manueller Annotation von Vorteil, da sie die Qualität automatisch erzeugter Labels verbessern können.
+
+Im Kontext der automatischen Annotation bilden die durch Objektverfolgung gewonnenen 
+zeitlich konsistenten Objektidentitäten eine wichtige Grundlage für semi-supervised 
+Lernverfahren und Pseudo-Labeling-Ansätze. Aktuelle Arbeiten zeigen, dass bei der 
+video-basierten Objekterkennung eine begrenzte Anzahl manuell annotierter Frames durch 
+automatisch generierte Labels sinnvoll ergänzt werden kann \cite{li2022ssvod}. Solche 
+Ansätze stellen einen vielversprechenden Weg dar, um den manuellen Annotierungsaufwand in umfangreichen Videodatensätzen signifikant zu reduzieren.
+
+\subsection{Semi-supervised Learning und Pseudo-Labeling}
+
+Tiefenlern-basierte Objekterkennungsmodelle erfordern in der Regel große Mengen manuell 
+annotierter Trainingsdaten. Insbesondere bei video-basierten Datensätzen ist eine vollständige manuelle Annotation aller Frames aufgrund des hohen zeitlichen und personellen Aufwands nur eingeschränkt praktikabel. Aus diesem Grund gewinnen semi-supervised Lernverfahren, die mit einer begrenzten Menge annotierter Daten arbeiten, zunehmend an Bedeutung \cite{zhu2005ssl}.
+
+Ein weit verbreiteter Ansatz im semi-supervised Learning ist das sogenannte Pseudo-Labeling. Dabei wird ein zunächst mit annotierten Daten trainiertes Modell verwendet, um Vorhersagen auf unannotierten Daten zu erzeugen, welche anschließend als zusätzliche Trainingslabels genutzt werden \cite{lee2013pseudo}. Ziel dieses Verfahrens ist es, den manuellen Annotierungsaufwand zu reduzieren und gleichzeitig die Lernbasis des Modells zu erweitern.
+
+In den letzten Jahren wurden zahlreiche Pseudo-Labeling-basierte Methoden speziell für die Objekterkennung entwickelt. Ansätze wie Efficient Teacher nutzen ein Teacher-Student-Paradigma, um robuste Pseudo-Labels aus unannotierten Daten zu generieren und dadurch die Leistung bei begrenzter Annotation zu verbessern \cite{liu2021efficient}. Solche Methoden zeigen, dass semi-supervised Lernverfahren insbesondere in datenarmen Szenarien eine leistungsfähige Alternative zu vollständig überwachten Ansätzen darstellen können.
+
+Für video-basierte Objekterkennungsprobleme bietet semi-supervised Learning zusätzliche 
+Vorteile, da zeitliche Zusammenhänge zwischen aufeinanderfolgenden Frames berücksichtigt werden können. Arbeiten wie SSVOD demonstrieren, dass eine kleine Anzahl manuell annotierter Frames ausreicht, um mithilfe von Pseudo-Labeling und zeitlichem Kontext Informationen aus den verbleibenden, unannotierten Frames effektiv zu nutzen \cite{li2022ssvod}. Diese Ansätze stellen einen vielversprechenden Weg dar, um den manuellen Annotierungsaufwand bei umfangreichen Videodatensätzen signifikant zu reduzieren.
+
+Vor diesem Hintergrund bilden semi-supervised Learning und Pseudo-Labeling zentrale Konzepte für die Entwicklung automatischer Annotationsverfahren in video-basierten Szenarien.
+
+\subsection{Einordnung der vorliegenden Arbeit}
+
+Die in den vorherigen Abschnitten vorgestellten Arbeiten zeigen, dass die Detektion von 
+Mückenbrutstätten mithilfe von Luft- und Drohnenbildern ein aktives und relevantes 
+Forschungsgebiet darstellt. Bestehende Ansätze basieren dabei überwiegend auf vollständig überwachten Lernverfahren, bei denen alle Trainingsdaten manuell annotiert werden müssen \cite{passos2023augmented, knoblauch2023breeding}. Insbesondere bei video-basierten Datensätzen führt dieser Ansatz zu einem hohen zeitlichen und personellen Aufwand, der die Skalierbarkeit solcher Verfahren erheblich einschränkt.
+
+Arbeiten aus verwandten Anwendungsdomänen zeigen, dass die Kombination aus Objekterkennung, Objektverfolgung und automatischer Annotation ein vielversprechender Ansatz zur Reduktion des manuellen Annotierungsaufwands ist. Dies konnte sowohl in biologischen Anwendungsfällen, wie der Detektion und Verfolgung von Fischen in Videodaten, als auch in allgemeinen video-basierten Objekterkennungsproblemen gezeigt werden \cite{fishtracking2024, wojke2017deepsort}.
+
+Darüber hinaus belegen aktuelle Studien im Bereich des semi-supervised Learning, dass 
+Pseudo-Labeling-basierte Verfahren in der Lage sind, mit einer begrenzten Anzahl manuell annotierter Daten robuste Modelle zu trainieren \cite{lee2013pseudo, li2022ssvod}. Insbesondere bei Videodaten bietet die Nutzung zeitlicher Konsistenz zusätzliche Möglichkeiten, um automatisch generierte Labels zu stabilisieren und deren Qualität zu verbessern.
+
+Die vorliegende Arbeit knüpft an diese Erkenntnisse an und kombiniert erstmals die 
+video-basierte Detektion von Mückenbrutstätten mit einem iterativen, 
+semi-supervised Ansatz zur automatischen Annotation. Durch die gezielte Auswahl weniger 
+manuell annotierter Frames, die Nutzung von Objektverfolgung zur zeitlichen Konsistenz sowie die iterative Erweiterung des Trainingsdatensatzes mittels Pseudo-Labeling wird ein skalierbarer Ansatz zur Annotation umfangreicher Videodaten vorgestellt. Damit positioniert sich diese Arbeit an der Schnittstelle zwischen vollüberwachter Objekterkennung und automatischer, datengetriebener Annotation in video-basierten Szenarien.
