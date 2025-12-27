@@ -114,6 +114,15 @@ Moderne Objekterkennungsmodelle nutzen in der Regel Convolutional Neural Network
 
 Ein wesentlicher Aspekt der Objekterkennung ist die gleichzeitige Bewältigung von Klassifikation und räumlicher Lokalisierung. Während die Klassifikation bestimmt, zu welcher Kategorie ein Objekt gehört, beschreibt die Lokalisierung dessen Position innerhalb des Bildes. Diese Kombination ist insbesondere für Anwendungen wie Umweltüberwachung, Verkehrsanalysen sowie die Auswertung von Luft- und Drohnenaufnahmen von großer Bedeutung.
 
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.9\linewidth]{figures/hauptteil/object_detection_example.png}
+    \caption{Illustrative Darstellung der Objekterkennung anhand beispielhafter Ergebnisse des transformerbasierten DETR-Ansatzes. Gezeigt sind erkannte Objekte mit zugehörigen Begrenzungsrahmen (Bounding Boxes) und Klassenzuordnungen, welche das grundlegende Prinzip der gleichzeitigen Klassifikation und Lokalisierung veranschaulichen \cite{Carion2020}.}
+    \label{fig:detr_object_detection}
+\end{figure}
+
+
+
 Im Rahmen dieser Arbeit wird die Objekterkennung als zentrale Methode zur automatischen Identifikation potenzieller Brutstätten von \textit{Aedes aegypti} in drohnenbasierten Bild- und Videodaten eingesetzt. Die geringen Objektgrößen, komplexe Hintergründe und wechselnde Aufnahmeperspektiven stellen dabei besondere Herausforderungen dar und erfordern den Einsatz robuster, tiefenlernungsbasierter Detektionsverfahren. Aufbauend auf diesen Grundlagen werden in den folgenden Abschnitten die verwendeten Deep-Learning-Modelle und Ansätze detailliert erläutert.
 
 \subsection{Convolutional Neural Networks}
