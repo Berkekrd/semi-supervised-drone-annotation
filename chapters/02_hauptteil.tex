@@ -1,3 +1,4 @@
+\newpage
 \section{Theoretischer Hintergrund}
 In diesem Abschnitt wird der theoretische Hintergrund der vorliegenden Arbeit dargelegt.
 Zunächst werden die bevorzugten Brutstätten der Aedes aegypti-Mücke in urbanen Räumen 
@@ -17,6 +18,84 @@ für den im folgenden Kapitel vorgestellten methodischen Ansatz zu schaffen.
 
 \textit{Aedes aegypti} ist eine Mückenart, die vor allem in urbanen und stadtnahen Gebieten verbreitet ist und sich in unmittelbarer Nähe menschlicher Siedlungen vermehrt. Anstelle natürlicher Gewässer bevorzugt diese Art überwiegend kleine, meist menschengemachte Wasseransammlungen. Dadurch sind die Brutstätten von \textit{Aedes aegypti} in der Regel eng mit künstlichen Objekten und Strukturen verbunden. Die Brutstätten von \textit{Aedes aegypti} wurden in zahlreichen Studien im urbanen Kontext umfassend untersucht \cite{Vezzani2002,Paploski2016,Cavalcanti2016,Valenca2013}.
 
+\begin{figure}[htbp]
+    \centering
+    % Alt yazıları biraz küçültüyoruz ki kelimeler bölünmeden sığsın
+    \captionsetup[subfigure]{font=footnotesize, justification=centering}
+
+    % --- BİRİNCİ SIRA (6 İkon) ---
+    \begin{subfigure}[t]{0.15\textwidth}
+        \centering
+        \includegraphics[width=0.85\linewidth]{figures/hauptteil/aedes/noun-water-tank-8050952.png}
+        \caption{Wassertank}
+    \end{subfigure}%
+    \hfill
+    \begin{subfigure}[t]{0.15\textwidth}
+        \centering
+        \includegraphics[width=0.85\linewidth]{figures/hauptteil/aedes/noun-storm-drain-7782294.png}
+        \caption{Gully}
+    \end{subfigure}%
+    \hfill
+    \begin{subfigure}[t]{0.15\textwidth}
+        \centering
+        \includegraphics[width=0.85\linewidth]{figures/hauptteil/aedes/noun-dumpster-6767390.png}
+        \caption{Müllcontainer}
+    \end{subfigure}%
+    \hfill
+    \begin{subfigure}[t]{0.15\textwidth}
+        \centering
+        \includegraphics[width=0.85\linewidth]{figures/hauptteil/aedes/noun-potted-plant-7796000.png}
+        \caption{Topfpflanze}
+    \end{subfigure}%
+    \hfill
+    \begin{subfigure}[t]{0.15\textwidth}
+        \centering
+        \includegraphics[width=0.85\linewidth]{figures/hauptteil/aedes/noun-plastic-bag-8156007.png}
+        \caption{Plastiktüte}
+    \end{subfigure}%
+    \hfill
+    \begin{subfigure}[t]{0.15\textwidth}
+        \centering
+        \includegraphics[width=0.85\linewidth]{figures/hauptteil/aedes/noun-trash-bin-8129233.png}
+        \caption{Mülltonne}
+    \end{subfigure}
+
+    \vspace{0.7cm} % İki sıra arası boşluk
+
+    % --- İKİNCİ SIRA (5 İkon - Ortalanmış) ---
+    \begin{subfigure}[t]{0.15\textwidth}
+        \centering
+        \includegraphics[width=0.85\linewidth]{figures/hauptteil/aedes/noun-delete-5095152.png}
+        \caption{Abfalleimer}
+    \end{subfigure}%
+    \hspace{0.3cm}
+    \begin{subfigure}[t]{0.15\textwidth}
+        \centering
+        \includegraphics[width=0.85\linewidth]{figures/hauptteil/aedes/noun-bottles-8191727.png}
+        \caption{Flaschen}
+    \end{subfigure}%
+    \hspace{0.3cm}
+    \begin{subfigure}[t]{0.15\textwidth}
+        \centering
+        \includegraphics[width=0.85\linewidth]{figures/hauptteil/aedes/noun-bucket-8194432.png}
+        \caption{Eimer}
+    \end{subfigure}%
+    \hspace{0.3cm}
+    \begin{subfigure}[t]{0.15\textwidth}
+        \centering
+        \includegraphics[width=0.85\linewidth]{figures/hauptteil/aedes/noun-pool-6987939.png}
+        \caption{Pool}
+    \end{subfigure}%
+    \hspace{0.3cm}
+    \begin{subfigure}[t]{0.15\textwidth}
+        \centering
+        \includegraphics[width=0.85\linewidth]{figures/hauptteil/aedes/noun-puddle-7737633.png}
+        \caption{Pfütze}
+    \end{subfigure}
+
+    \caption{Übersicht typischer urbaner Brutstätten von \textit{Aedes aegypti} (basierend auf den im Datensatz enthaltenen Kategorien).}
+    \label{fig:breeding_sites_overview}
+\end{figure}
 
 Typische Brutstätten in städtischen Umgebungen sind unter anderem Eimer, Behälter, Altreifen, Blumentöpfe sowie weitere kleine Gefäße, in denen sich Regen- oder Restwasser ansammeln kann. Diese Objekte weisen unterschiedliche Formen, Größen und Materialien auf und treten unter variierenden Umwelt- und Hintergrundbedingungen auf. Im in dieser Arbeit verwendeten Datensatz werden solche Objekte als potenzielle Brutstätten von \textit{Aedes aegypti} annotiert.
 

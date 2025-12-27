@@ -386,49 +386,82 @@ Zur objektiven Bewertung des vorgeschlagenen semi-supervisierten Ansatzes wird e
 klar definiertes Evaluationsprotokoll verwendet. Ziel der Evaluation ist es, sowohl 
 die Detektionsleistung des Objekterkennungsmodells als auch den Einfluss der 
 iterativen Erweiterung des Trainingsdatensatzes durch Pseudo-Labels und 
-Objektverfolgung systematisch zu analysieren.
+Objektverfolgung systematisch zu analysieren. Die Evaluation orientiert sich an den 
+standardisierten Auswertungsverfahren des YOLO-Frameworks und stellt die 
+Reproduzierbarkeit der Ergebnisse sicher \cite{ultralytics2024}.
 
 \subsubsection{Evaluation Metrics}
 
 Die Leistungsbewertung erfolgt mithilfe etablierter Metriken aus dem Bereich der 
 Objekterkennung. Dazu zählen insbesondere Precision, Recall und der daraus 
-abgeleitete F1-Score. Diese Kennzahlen erlauben eine differenzierte Betrachtung 
-zwischen korrekt erkannten Objekten, Fehlalarmen und übersehenen Instanzen.
+abgeleitete F1-Score, welche eine differenzierte Betrachtung zwischen korrekt 
+erkannten Objekten, Fehlalarmen und übersehenen Instanzen ermöglichen.
 
-Zusätzlich wird die mittlere durchschnittliche Genauigkeit (mean Average Precision, 
-mAP) verwendet, um die Detektionsleistung über verschiedene 
-Konfidenzschwellen hinweg zu bewerten. Die Kombination dieser Metriken ermöglicht 
-eine umfassende Einschätzung der Modellqualität sowohl auf Klassen- als auch auf 
-Gesamtebene.
+Als zentrale Gesamtmetrik wird die mean Average Precision (mAP) verwendet. Diese 
+bewertet die Detektionsleistung über verschiedene Konfidenzschwellen hinweg und 
+stellt den Standardvergleichswert für YOLO-basierte Modelle dar. Die verwendeten 
+Metriken entsprechen den automatisch erzeugten Evaluationsausgaben des YOLOv5-
+Frameworks \cite{ultralytics2024}.
 
 \subsubsection{Frame-level and Track-level Evaluation}
 
 Da es sich bei den betrachteten Daten um Videosequenzen handelt, erfolgt die 
-Evaluation auf zwei unterschiedlichen Ebenen. Auf Frame-Ebene werden einzelne 
-Videoframes unabhängig voneinander ausgewertet, wobei jede Detektion als 
-eigenständige Vorhersage betrachtet wird.
+Evaluation auf zwei Ebenen. Auf Frame-Ebene werden einzelne Videoframes unabhängig 
+voneinander ausgewertet, wobei jede Detektion als eigenständige Vorhersage behandelt 
+wird.
 
-Ergänzend dazu wird eine Track-basierte Evaluation durchgeführt, bei der die durch 
-Objektverfolgung erzeugten Objekttrajektorien berücksichtigt werden. Diese 
-Auswertung erlaubt es, die zeitliche Konsistenz der Detektionen zu analysieren und 
-den Einfluss der Tracking-basierten Label-Propagation auf die Stabilität der 
-Ergebnisse zu untersuchen. Insbesondere kurzfristige Fehlklassifikationen können 
-auf diese Weise von konsistenten Objektbeobachtungen unterschieden werden.
+Ergänzend dazu wird eine Track-basierte Betrachtung durchgeführt, bei der die durch 
+Objektverfolgung erzeugten Objekttrajektorien berücksichtigt werden. Diese Analyse 
+dient der qualitativen Bewertung der zeitlichen Konsistenz der Detektionen und 
+ermöglicht eine Einschätzung, inwiefern Tracking-basierte Label-Propagation zur 
+Stabilisierung der Vorhersagen beiträgt. Eine explizite statistische Testung auf 
+Track-Ebene wird dabei nicht durchgeführt.
+
+\begin{table}[H]
+\centering
+\caption{Vergleich von Frame- und Track-basierter Evaluation}
+\label{tab:frame_track_eval}
+\begin{tabular}{lccc}
+\hline
+\textbf{Evaluationsebene} & \textbf{Precision} & \textbf{Recall} & \textbf{mAP@50} \\
+\hline
+Frame-level & -- & -- & -- \\
+Track-level & -- & -- & -- \\
+\hline
+\end{tabular}
+\end{table}
 
 \subsubsection{Comparison Across Iterations}
 
 Ein zentraler Bestandteil der Evaluation ist der Vergleich der Modellleistung über 
-mehrere Iterationen des Self-Training-Prozesses hinweg. Hierbei werden die Ergebnisse 
-des initialen Modells (Iteration 0), das ausschließlich auf manuellen Annotationen 
-trainiert wurde, den Resultaten der nachfolgenden Iterationen mit erweiterten 
-Trainingsdatensätzen gegenübergestellt.
+mehrere Iterationen des Self-Training-Prozesses hinweg. Die Ergebnisse des initialen 
+Modells, das ausschließlich auf manuell annotierten Frames trainiert wurde, werden 
+den Resultaten der nachfolgenden Iterationen mit erweiterten Trainingsdatensätzen 
+gegenübergestellt.
 
 Dieser Vergleich ermöglicht eine quantitative Analyse des Beitrags der automatisch 
-generierten Pseudo-Labels zur Leistungssteigerung des Modells. Gleichzeitig erlaubt 
-er die Identifikation potenzieller Sättigungseffekte oder Leistungseinbußen, die 
-durch fehlerhafte automatische Annotationen entstehen könnten.
+generierten Pseudo-Labels zur Leistungssteigerung des Modells sowie die Identifikation 
+möglicher Sättigungseffekte oder Leistungsstagnationen. Die Auswertung erfolgt anhand 
+der validierungsbasierten mAP-Werte sowie der zugehörigen Precision- und Recall-Kurven, 
+die während des Trainings automatisch protokolliert werden.
 
-Das beschriebene Evaluationsprotokoll stellt sicher, dass die Auswirkungen der 
-einzelnen Komponenten des vorgeschlagenen Ansatzes nachvollziehbar und reproduzierbar 
-analysiert werden können und bildet die Grundlage für die in Kapitel~6 präsentierten 
-experimentellen Ergebnisse.
+\begin{table}[H]
+\centering
+\caption{Modellleistung über Iterationen des Self-Training-Prozesses}
+\label{tab:iteration_comparison}
+\begin{tabular}{lcccc}
+\hline
+\textbf{Iteration} & \textbf{Trainingsdaten} & \textbf{mAP@50} & \textbf{Precision} & \textbf{Recall} \\
+\hline
+Iteration 0 & Manuelle Annotationen & -- & -- & -- \\
+Iteration 1 & + Pseudo-Labels & -- & -- & -- \\
+Iteration 2 & + Tracking-basierte Pseudo-Labels & -- & -- & -- \\
+\hline
+\end{tabular}
+\end{table}
+
+Zur visuellen Analyse der Modellleistung werden zusätzlich automatisch generierte 
+Evaluationsgrafiken des YOLO-Frameworks herangezogen, darunter Precision-Recall-
+Kurven, Konfusionsmatrizen sowie Konfidenz-basierte Leistungsdarstellungen. Die 
+Visualisierung erfolgt mithilfe der Bibliotheken \textit{matplotlib} und 
+\textit{seaborn} \cite{hunter2007,waskom2021}.
