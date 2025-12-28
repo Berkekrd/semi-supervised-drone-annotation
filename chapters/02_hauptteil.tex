@@ -277,67 +277,149 @@ automatische Objekterkennung in drohnenbasierten Videoaufnahmen.
 
 \subsubsection{Bewertungsmetriken}
 
-Zur objektiven Bewertung der Leistungsfähigkeit von
-Objekterkennungsmodellen werden standardisierte Evaluationsmetriken
-verwendet. Diese Metriken ermöglichen einen quantitativen Vergleich
-zwischen verschiedenen Modellen und Trainingskonfigurationen und sind
-insbesondere für die Analyse der Detektionsgenauigkeit und der
-Lokalisierungsqualität von zentraler Bedeutung. In dieser Arbeit werden
-die Metriken Intersection over Union (IoU), Precision, Recall sowie Mean
-Average Precision (mAP) eingesetzt, da sie sich als etablierter Standard
-in der Objekterkennung bewährt haben \cite{Zou2023,Lin2015}.
+Zur objektiven Bewertung der Leistungsfähigkeit von Objekterkennungsmodellen
+werden standardisierte Evaluationsmetriken eingesetzt. Diese ermöglichen einen
+quantitativen Vergleich unterschiedlicher Modelle und Trainingskonfigurationen
+und bilden die Grundlage für eine reproduzierbare und nachvollziehbare Analyse
+der Detektions- und Lokalisierungsqualität. In dieser Arbeit werden die Metriken
+Intersection over Union (IoU), Precision, Recall sowie Mean Average Precision (mAP)
+verwendet, da sie als etablierter Standard in der Objekterkennung gelten
+\cite{Zou2023,Lin2015,Everingham2010}.
+
+\paragraph{Confusion Matrix und Grundbegriffe}
+Die Bewertung von Objekterkennungsmodellen basiert auf der sogenannten
+Confusion Matrix, welche die Beziehung zwischen vorhergesagten und tatsächlichen
+Objekten beschreibt. Dabei werden vier grundlegende Fälle unterschieden:
+
+\begin{itemize}
+    \item \textbf{True Positive (TP):} Ein Objekt wird korrekt detektiert und richtig klassifiziert.
+    \item \textbf{False Positive (FP):} Ein Objekt wird detektiert, obwohl kein entsprechendes Ground-Truth-Objekt existiert.
+    \item \textbf{False Negative (FN):} Ein vorhandenes Objekt wird vom Modell nicht erkannt.
+    \item \textbf{True Negative (TN):} Ein Objekt wird korrekt als nicht vorhanden klassifiziert.
+\end{itemize}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.55\linewidth]{figures/hauptteil/confusion_matrix.jpeg}
+    \caption{Schematische Darstellung der Confusion Matrix zur Bewertung von Objekterkennungsmodellen. Die Begriffe \emph{Positive} und \emph{Negative} bezeichnen dabei das Vorhandensein bzw. Nichtvorhandensein eines Objekts in Bezug auf eine definierte Objektklasse.}
+    \label{fig:confusion_matrix}
+\end{figure}
+
+
+Diese Größen bilden die Grundlage für die Berechnung zentraler
+Evaluationsmetriken wie Precision und Recall. Abbildung~\ref{fig:confusion_matrix} zeigt eine schematische Darstellung der Confusion Matrix im Kontext der
+Objekterkennung.
 
 \paragraph{Intersection over Union (IoU)}
-Die Intersection over Union (IoU) misst den Überlappungsgrad zwischen
-einer vorhergesagten Bounding Box und der zugehörigen Ground-Truth-Box.
-Sie ist definiert als das Verhältnis der Fläche der Schnittmenge zur
-Fläche der Vereinigung beider Boxen. Eine hohe IoU weist auf eine präzise
-räumliche Lokalisierung des Objekts hin. In der Praxis wird eine
-Detektion häufig dann als korrekt gewertet, wenn die IoU einen
-vordefinierten Schwellenwert überschreitet, beispielsweise 0{,}5.
+Die Intersection over Union (IoU) misst den Überlappungsgrad zwischen einer
+vorhergesagten Bounding Box und der zugehörigen Ground-Truth-Box. Sie ist definiert
+als das Verhältnis der Fläche der Schnittmenge zur Fläche der Vereinigung beider
+Boxen:
+
+\begin{equation}
+\text{IoU} = \frac{\text{Fläche}(B_{\text{pred}} \cap B_{\text{gt}})}
+{\text{Fläche}(B_{\text{pred}} \cup B_{\text{gt}})}
+\end{equation}
+
+\begin{figure}[H]
+    \centering
+    \begin{tikzpicture}[scale=1]
+
+        % --- Coordinates for boxes ---
+        % Ground Truth box (gt): (0,0) to (4,3)
+        % Prediction box (pred): (2,1) to (6,4)
+
+        % --- Union area (light gray fill) ---
+        % Union is simply both boxes together; we visualize it by filling both boxes with a light shade.
+        \fill[black!8] (0,0) rectangle (4,3);
+        \fill[black!8] (2,1) rectangle (6,4);
+
+        % --- Intersection area (hatched) ---
+        \fill[pattern=north east lines, pattern color=black] (2,1) rectangle (4,3);
+
+        % --- Draw outlines on top ---
+        \draw[line width=1pt] (0,0) rectangle (4,3);
+        \draw[line width=1pt] (2,1) rectangle (6,4);
+
+        % --- Labels (placed to avoid overlap) ---
+        \node[anchor=south] at (2,3.15) {Ground Truth $B_{\mathrm{gt}}$};
+        \node[anchor=south] at (4,4.15) {Prediction $B_{\mathrm{pred}}$};
+
+        % Intersection label (centered inside hatched area)
+        \node at (3,2) {$B_{\mathrm{gt}} \cap B_{\mathrm{pred}}$};
+
+        % Union label (below)
+        \node[anchor=north] at (3,-0.35) {Vereinigung $B_{\mathrm{gt}} \cup B_{\mathrm{pred}}$};
+
+    \end{tikzpicture}
+    \caption{Schematische Darstellung der Intersection over Union (IoU) zwischen einer vorhergesagten Bounding Box und der Ground-Truth-Box. Die schraffierte Fläche entspricht der Schnittmenge, die hell markierte Fläche der Vereinigung beider Boxen.}
+    \label{fig:iou_visualization}
+\end{figure}
+
+
+Eine hohe IoU weist auf eine präzise räumliche Lokalisierung hin. In der Praxis 
+wird eine Detektion häufig dann als korrekt gewertet, wenn ein vordefinierter
+Schwellenwert überschritten wird, beispielsweise $\text{IoU} \geq 0{,}5$.
+Abbildung~\ref{fig:iou_visualization} illustriert das Konzept der IoU
+schematisch.
 
 \paragraph{Precision}
-Die Precision beschreibt den Anteil korrekt erkannter Objekte an allen
-vom Modell vorhergesagten Objekten. Sie gibt an, wie zuverlässig die vom
-Modell gemeldeten Detektionen sind und wie viele davon tatsächlich
-relevant sind. Eine hohe Precision deutet darauf hin, dass das Modell
-nur wenige Fehlalarme (False Positives) erzeugt.
+Die Precision beschreibt den Anteil korrekt erkannter Objekte an allen vom Modell
+vorhergesagten Objekten. Sie gibt an, wie zuverlässig die vom Modell gemeldeten
+Detektionen sind und wie viele davon tatsächlich relevant sind:
+
+\begin{equation}
+\text{Precision} = \frac{TP}{TP + FP}
+\end{equation}
+
+Eine hohe Precision deutet darauf hin, dass das Modell nur wenige Fehlalarme
+(False Positives) erzeugt.
 
 \paragraph{Recall}
-Der Recall misst den Anteil der korrekt erkannten Objekte an allen
-tatsächlich vorhandenen Objekten im Datensatz. Diese Metrik beschreibt,
-wie vollständig das Modell relevante Objekte detektiert. Ein hoher
-Recall ist insbesondere in sicherheits- oder gesundheitsrelevanten
-Anwendungen von Bedeutung, da möglichst wenige relevante Objekte
-übersehen werden sollen.
+Der Recall misst den Anteil der korrekt erkannten Objekte an allen tatsächlich
+vorhandenen Objekten im Datensatz und beschreibt damit die Vollständigkeit der
+Detektion:
+\begin{equation}
+\text{Recall} = \frac{TP}{TP + FN}
+\end{equation}
+Ein hoher Recall ist insbesondere in sicherheits- oder gesundheitsrelevanten
+Anwendungen von Bedeutung, da möglichst wenige relevante Objekte übersehen werden
+sollen.
+
+\paragraph{Average Precision (AP)}
+Die Average Precision (AP) ist eine zusammenfassende Bewertungsmetrik für eine
+einzelne Objektklasse und entspricht der Fläche unter der Precision-Recall-Kurve.
+Formal lässt sich die AP als Integral der Precision über den Recall definieren:
+
+\begin{equation}
+\text{AP} = \int_{0}^{1} \text{Precision}(r)\, dr
+\end{equation}
+
+Dabei beschreibt $r$ den Recall-Wert. Die AP berücksichtigt somit sowohl die
+Detektionsgenauigkeit als auch die Vollständigkeit der Erkennung über verschiedene
+Konfidenzschwellen hinweg.
 
 \paragraph{Mean Average Precision (mAP)}
-Die Mean Average Precision (mAP) ist eine zusammenfassende
-Bewertungsmetrik zur Beurteilung der Gesamtleistung eines
-Objekterkennungsmodells. Sie kombiniert die Aspekte der
-Detektionsgenauigkeit (Precision) und der Vollständigkeit (Recall) und
-ermöglicht damit eine ganzheitliche Bewertung der Modellleistung.
-
-Zur Berechnung der mAP wird für jede Objektklasse die sogenannte
-Average Precision (AP) bestimmt. Diese ergibt sich aus der
-Precision-Recall-Relation und beschreibt, wie gut ein Modell relevante
-Objekte erkennt, ohne dabei eine hohe Anzahl an Fehlalarmen zu erzeugen.
-Die mAP ergibt sich anschließend als Mittelwert der AP-Werte über alle
-betrachteten Klassen.
-
-Durch die Zusammenfassung der Detektionsleistung über alle Klassen
-hinweg stellt die mAP eine robuste Kennzahl dar, die sowohl die
-Klassifikationsqualität als auch die räumliche Genauigkeit der
-Objekterkennung berücksichtigt. Aus diesem Grund wird die mAP in dieser
-Arbeit als zentrale Metrik zur Bewertung der eingesetzten YOLOv8-Modelle
+Die Mean Average Precision (mAP) ergibt sich als Mittelwert der Average Precision
+über alle betrachteten Objektklassen:
+\begin{equation}
+\text{mAP} = \frac{1}{N} \sum_{i=1}^{N} \text{AP}_i
+\end{equation}
+wobei $N$ die Anzahl der Objektklassen bezeichnet. Die mAP stellt eine robuste
+Kennzahl dar, da sie sowohl die Klassifikationsleistung als auch die räumliche
+Genauigkeit der Objekterkennung berücksichtigt. Aus diesem Grund wird die mAP in
+dieser Arbeit als zentrale Metrik zur Bewertung der eingesetzten YOLOv8-Modelle
 verwendet.
 
-In dieser Arbeit dienen die genannten Metriken zur systematischen
-Analyse der Leistungsfähigkeit der eingesetzten YOLOv8-Modelle bei der
-Detektion potenzieller Brutstätten von \textit{Aedes aegypti} in
-drohnenbasierten Bild- und Videodaten.
+In dieser Arbeit dienen die beschriebenen Metriken zur systematischen Analyse der
+Leistungsfähigkeit der eingesetzten YOLOv8-Modelle bei der Detektion potenzieller
+Brutstätten von \textit{Aedes aegypti} in drohnenbasierten Bild- und Videodaten.
+Insbesondere die mAP erlaubt dabei eine ganzheitliche Bewertung der Detektions-
+und Lokalisierungsqualität unter realistischen Einsatzbedingungen.
+
 
 \subsection{Machine Learning Workflow}
+
 
 Machine-Learning-Workflows dienen als strukturierter Ansatz zur
 Entwicklung, Evaluation und Analyse von Machine-Learning-Modellen.
