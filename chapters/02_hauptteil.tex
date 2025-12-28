@@ -165,6 +165,12 @@ Arbeit eingesetzten Detektionsmodelle basieren auf CNN-Architekturen, die eine
 robuste Repräsentation visueller Merkmale über verschiedene Maßstäbe und
 Umgebungsbedingungen hinweg ermöglichen. Im folgenden Abschnitt wird erläutert,
 wie diese Grundprinzipien im Rahmen des Transfer Learning weitergenutzt werden.
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.9\linewidth]{figures/hauptteil/cnn_architecture_tum.png}
+    \caption{Schematische Darstellung des grundlegenden Aufbaus eines Convolutional Neural Networks (CNN). Das Eingabebild wird durch aufeinanderfolgende Faltungs- und Pooling-Schichten in hierarchische Merkmalsrepräsentationen überführt, die in den vollständig verbundenen Schichten für die Klassifikation genutzt werden. Die Darstellung ist angelehnt an \cite{VehicleDetectionAerialTUM}.}
+    \label{fig:cnn_architecture}
+\end{figure}
 
 \subsubsection{Transfer Learning}
 
@@ -197,6 +203,14 @@ Insbesondere die frühen Faltungsschichten eines CNNs werden häufig eingefroren
 für die Extraktion grundlegender visueller Merkmale verantwortlich sind \cite{UltralyticsTL}.
 Die späteren Schichten hingegen werden gezielt an die spezifische Zielaufgabe angepasst.
 
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.95\linewidth]{figures/hauptteil/transfer_learning_yosinski.png}
+    \caption{Darstellung der Übertragbarkeit von Merkmalen in tiefen neuronalen Netzen. Die Abbildung zeigt verschiedene Transfer-Learning-Szenarien zwischen einer Quell- und einer Zielaufgabe, wobei frühe Schichten häufig eingefroren und spätere Schichten für die Zielaufgabe feinjustiert werden. Angepasst nach \cite{Yosinski2014}.}
+    \label{fig:transfer_learning_yosinski}
+\end{figure}
+
+
 Im Kontext dieser Arbeit spielt Transfer Learning eine zentrale Rolle, da die verfügbaren
 Trainingsdaten für die Detektion potenzieller Brutstätten von \textit{Aedes aegypti} nur
 begrenzt und teilweise spärlich annotiert sind. Durch die Nutzung vortrainierter Modelle
@@ -204,6 +218,8 @@ kann dennoch eine robuste Merkmalsrepräsentation erlernt werden, ohne ein Model
 vollständig von Grund auf neu trainieren zu müssen. Dieser Ansatz bildet die Grundlage
 für den Einsatz moderner Detektionsarchitekturen wie YOLO, die im nächsten Abschnitt
 detailliert vorgestellt werden.
+
+
 
 
 \subsubsection{YOLOv8}
