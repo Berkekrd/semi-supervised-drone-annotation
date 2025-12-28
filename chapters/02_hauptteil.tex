@@ -420,6 +420,54 @@ und Lokalisierungsqualität unter realistischen Einsatzbedingungen.
 
 \subsection{Machine Learning Workflow}
 
+\begin{figure}[H]
+\centering
+\begin{tikzpicture}[
+    box/.style={
+        draw,
+        rounded corners,
+        minimum width=4.2cm,
+        minimum height=1.25cm,
+        align=center,
+        font=\small,
+        inner xsep=8pt,
+        inner ysep=6pt
+    },
+    arrow/.style={-Latex, thick},
+    feedback/.style={-Latex, thick, dashed}
+]
+
+% --- Top row (left -> right) ---
+\node[box] (data) at (0,0) {Datenerhebung\\{\footnotesize (Bild- und Videodaten)}};
+\node[box] (prep) [right=1.4cm of data] {Datenvorverarbeitung\\{\footnotesize (Frames, Annotationen)}};
+\node[box] (train) [right=1.4cm of prep] {Modelltraining\\{\footnotesize (CNN / YOLO)}};
+
+% --- Bottom row (right -> left) ---
+\node[box] (eval)  [below=1.7cm of train] {Evaluation\\{\footnotesize (IoU, mAP)}};
+\node[box] (dep)   [left=1.4cm of eval] {Deployment};
+
+% --- Main flow arrows (U-shape) ---
+\draw[arrow] (data) -- (prep);
+\draw[arrow] (prep) -- (train);
+\draw[arrow] (train) -- (eval);
+\draw[arrow] (eval) -- (dep);
+
+% --- Feedback loops (iterative) ---
+\draw[feedback, bend left=18] (eval.north) to (prep.south);
+\draw[feedback, bend right=18] (eval.north) to (train.south);
+
+% --- Note for deployment ---
+\node[draw=none, font=\footnotesize, align=center, below=0.55cm of dep]
+{(nicht Bestandteil dieser Arbeit)};
+
+\end{tikzpicture}
+
+\caption{Schematische Darstellung des in dieser Arbeit verwendeten Machine-Learning-Workflows. 
+Der Prozess umfasst Datenerhebung, Datenvorverarbeitung, Modelltraining, Evaluation sowie Deployment. 
+Zwischen Vorverarbeitung, Training und Evaluation bestehen iterative Rückkopplungsschleifen zur schrittweisen Optimierung.}
+\label{fig:ml_workflow}
+\end{figure}
+
 
 Machine-Learning-Workflows dienen als strukturierter Ansatz zur
 Entwicklung, Evaluation und Analyse von Machine-Learning-Modellen.
