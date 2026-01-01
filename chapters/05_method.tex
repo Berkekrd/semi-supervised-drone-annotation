@@ -197,70 +197,91 @@ Objektverfolgung, Pseudo-Label-Generierung und iterativen Modellanpassung.
 
 \subsection{Automatische Annotation durch Pseudo-Labeling}
 
-Im nächsten Schritt des vorgeschlagenen Ansatzes wird das initial mittels Transfer 
-Learning trainierte Objekterkennungsmodell eingesetzt, um nicht manuell annotierte 
-Zwischenframes automatisch zu analysieren. Die dabei erzeugten Detektionen werden 
-als sogenannte Pseudo-Labels interpretiert und bilden die Grundlage für eine 
+Im nächsten Schritt des vorgeschlagenen Ansatzes wird das initial mittels Transfer
+Learning trainierte Objekterkennungsmodell eingesetzt, um nicht manuell annotierte
+Zwischenframes automatisch zu analysieren. Die dabei erzeugten Detektionen werden
+als sogenannte Pseudo-Labels interpretiert und bilden die Grundlage für eine
 schrittweise Erweiterung des Trainingsdatensatzes.
 
-Ziel des Pseudo-Labeling-Verfahrens ist es, ausgehend von einer begrenzten Anzahl 
-manuell annotierter Frames eine deutlich größere Menge an Trainingsdaten zu 
-generieren. Auf diese Weise soll die Generalisierungsfähigkeit des Modells verbessert 
-werden, ohne den manuellen Annotierungsaufwand proportional zur Datenmenge zu erhöhen. 
-Die vom Modell erzeugten Vorhersagen werden jedoch nicht ungefiltert übernommen, 
-sondern einer gezielten Qualitätskontrolle unterzogen.
+Ziel des Pseudo-Labeling-Verfahrens ist es, ausgehend von einer begrenzten Anzahl
+manuell annotierter Frames eine deutlich größere Menge an Trainingsdaten zu
+generieren. Auf diese Weise soll die Generalisierungsfähigkeit des Modells verbessert
+werden, ohne den manuellen Annotierungsaufwand proportional zur Datenmenge zu erhöhen.
+Die vom Modell erzeugten Vorhersagen werden jedoch nicht ungefiltert übernommen,
+sondern einer gezielten und explizit definierten Qualitätskontrolle unterzogen.
 
-Um die Zuverlässigkeit der automatisch erzeugten Annotationen sicherzustellen, 
-werden Pseudo-Labels nur dann akzeptiert, wenn sie vordefinierte heuristische 
-Kriterien erfüllen. Dazu zählen insbesondere Mindestschwellwerte für die 
-Detektionskonfidenz sowie die zeitliche Konsistenz der Detektionen über mehrere 
-aufeinanderfolgende Videoframes hinweg. Diese Filtermechanismen reduzieren die 
-Wahrscheinlichkeit, dass vereinzelte Fehlklassifikationen oder instabile Detektionen 
-in den Trainingsprozess eingehen.
+Die Auswahl gültiger Pseudo-Labels erfolgt anhand vordefinierter heuristischer
+Kriterien. Ein automatisch erzeugtes Detektionsergebnis $d$ wird nur dann als
+Pseudo-Label in den Trainingsdatensatz übernommen, wenn sowohl die
+Detektionskonfidenz als auch die zeitliche Stabilität der zugehörigen Objektverfolgung
+ausreichend hoch sind. Formal lässt sich die Menge der akzeptierten Pseudo-Labels
+wie folgt definieren:
 
-Ein wesentlicher Vorteil der hier betrachteten Videoaufnahmen liegt in ihrer 
-zeitlichen Struktur. Durch die Nutzung eines Objektverfolgungsverfahrens können 
-Detektionen desselben Objekts über mehrere Frames hinweg miteinander verknüpft werden. 
-Die daraus resultierenden Objekttrajektorien ermöglichen es, Pseudo-Labels nicht nur 
-frameweise, sondern auf Basis konsistenter zeitlicher Zusammenhänge zu erzeugen. 
-Dadurch wird die Robustheit der automatischen Annotation zusätzlich erhöht.
+\begin{equation}
+\mathcal{L}_{\text{pseudo}} =
+\left\{ d \in \mathcal{D} \;\middle|\;
+\text{score}(d) > \tau_{\text{conf}}
+\;\land\;
+\text{len}(\text{track}(d)) > \tau_{\text{track}}
+\right\},
+\end{equation}
 
-Die auf diese Weise generierten Pseudo-Labels werden mit den ursprünglich manuell 
-annotierten Daten zusammengeführt und bilden einen erweiterten Trainingsdatensatz. 
-Dieser Datensatz dient als Grundlage für eine erneute Anpassung des 
-Objekterkennungsmodells. Durch eine optionale iterative Wiederholung dieses Prozesses 
-kann ein Self-Training-Mechanismus realisiert werden, bei dem sich die Modellleistung 
-schrittweise verbessert.
+wobei $\mathcal{D}$ die Menge aller automatisch erzeugten Detektionen bezeichnet.
+Der Schwellwert $\tau_{\text{conf}}$ definiert die minimale erforderliche
+Detektionskonfidenz, während $\tau_{\text{track}}$ eine Mindestdauer angibt, über
+die ein Objekt konsistent über mehrere aufeinanderfolgende Videoframes hinweg
+verfolgt werden muss.
 
-Das Pseudo-Labeling stellt somit einen zentralen Bestandteil des vorgestellten 
-semi-supervisierten Ansatzes dar. Gleichzeitig ist die Qualität der erzeugten Labels 
-stark von der Leistungsfähigkeit des initialen Modells sowie von den gewählten 
-Filterstrategien abhängig. Eine sorgfältige Auswahl dieser Parameter ist daher 
-entscheidend für die Stabilität und Zuverlässigkeit des gesamten 
-Anotationsprozesses.
+Ein wesentlicher Vorteil der hier betrachteten Videoaufnahmen liegt in ihrer
+zeitlichen Struktur. Durch den Einsatz eines Objektverfolgungsverfahrens können
+Detektionen desselben Objekts über mehrere Frames hinweg miteinander verknüpft und
+als zusammenhängende Objekttrajektorien interpretiert werden. Diese zeitliche
+Konsistenz dient als zusätzlicher Indikator für die Zuverlässigkeit der
+automatisch erzeugten Annotationen und reduziert die Wahrscheinlichkeit, dass
+kurzlebige oder instabile Fehlklassifikationen in den Trainingsprozess eingehen.
+
+Die auf diese Weise generierten und gefilterten Pseudo-Labels werden anschließend
+mit den ursprünglich manuell annotierten Daten zusammengeführt und bilden einen
+erweiterten Trainingsdatensatz. Dieser Datensatz dient als Grundlage für eine
+erneute Anpassung des Objekterkennungsmodells. Durch eine optionale iterative
+Wiederholung dieses Prozesses kann ein Self-Training-Mechanismus realisiert werden,
+bei dem sich die Modellleistung schrittweise verbessert.
+
+Das Pseudo-Labeling stellt somit einen zentralen Bestandteil des vorgestellten
+semi-supervisierten Ansatzes dar. Gleichzeitig ist die Qualität der erzeugten Labels
+maßgeblich von der Leistungsfähigkeit des initialen Modells sowie von den gewählten
+Schwellwerten und Filterstrategien abhängig. Eine sorgfältige Auswahl dieser
+Parameter ist daher entscheidend für die Stabilität, Reproduzierbarkeit und
+Zuverlässigkeit des gesamten Annotationsprozesses.
 
 \subsection{Objektverfolgung zur Label-Propagation}
 
 Ein zentraler Bestandteil des vorgeschlagenen semi-supervisierten 
-Anotationsansatzes ist der gezielte Einsatz von Objektverfolgung zur aktiven 
+Annotationsansatzes ist der gezielte Einsatz von Objektverfolgung zur aktiven 
 Unterstützung der Label-Propagation. Im Gegensatz zu rein framebasierten 
 Verfahren wird die zeitliche Kontinuität von Objekten in Videosequenzen explizit 
 ausgenutzt, um automatisch erzeugte Annotationen robuster und konsistenter zu 
 gestalten.
 
 Die Objektverfolgung baut in dieser Arbeit auf den Ausgaben des zuvor trainierten 
-Objekterkennungsmodells auf. Detektionen in aufeinanderfolgenden Videoframes werden 
-anhand räumlicher Überlappung, zeitlicher Nähe sowie optionaler 
-Erscheinungsmerkmale miteinander verknüpft. Auf diese Weise entstehen 
-Objekttrajektorien, die es erlauben, einzelne Detektionen als zusammengehörige 
-Beobachtungen desselben Objekts über die Zeit zu interpretieren.
+Objekterkennungsmodells auf und folgt dem \emph{tracking-by-detection}-Paradigma. 
+Dabei werden Detektionen des YOLO-Modells frameweise erzeugt und anschließend 
+mithilfe eines Multi-Object-Tracking-Verfahrens über aufeinanderfolgende 
+Videoframes hinweg miteinander verknüpft. Konkret kommt der in der 
+Ultralytics-Implementierung integrierte Tracker \textit{BoT-SORT} zum Einsatz, 
+der ein Bewegungsmodell auf Basis eines Kalman-Filters mit einer IoU-basierten 
+Datenassoziation kombiniert, um stabile Objekttrajektorien zu erzeugen.
 
-Die aus der Objektverfolgung gewonnenen zeitlichen Informationen werden gezielt 
-für die Generierung zusätzlicher Pseudo-Labels genutzt. Ein Objekttrack, der über 
-eine Mindestanzahl aufeinanderfolgender Frames stabil verfolgt werden kann, dient 
-als Indikator für die Zuverlässigkeit der zugrunde liegenden Detektionen. 
-Kurzlebige oder inkonsistente Detektionen werden dadurch effektiv aus dem 
-Pseudo-Labeling-Prozess ausgeschlossen.
+Durch die Objektverfolgung entstehen konsistente Objekttracks, die es erlauben, 
+einzelne Detektionen als zusammengehörige Beobachtungen desselben Objekts über 
+die Zeit zu interpretieren. Die aus der Objektverfolgung gewonnenen zeitlichen 
+Informationen werden gezielt für die Generierung zusätzlicher Pseudo-Labels 
+genutzt. Ein Objekttrack, der über eine definierte Mindestanzahl 
+aufeinanderfolgender Frames stabil verfolgt werden kann, dient dabei als 
+Indikator für die Zuverlässigkeit der zugrunde liegenden Detektionen. 
+Kurzlebige, instabile oder inkonsistente Detektionen werden durch diese 
+Tracking-basierten Kriterien effektiv aus dem Pseudo-Labeling-Prozess 
+ausgeschlossen.
 
 Darüber hinaus ermöglicht die Objektverfolgung die gezielte Übertragung von 
 Annotationen zwischen benachbarten Frames. Klassen- und Positionsinformationen 
@@ -275,9 +296,11 @@ Konsistenzkriterien ergänzt. Dies führt zu einer höheren Qualität der erzeug
 Pseudo-Labels und bildet eine stabile Grundlage für die nachfolgenden Schritte 
 der iterativen Modellanpassung.
 
-Zusammenfassend stellt die Objektverfolgung in dem vorgestellten Ansatz nicht nur 
-ein Hilfsmittel zur Visualisierung dar, sondern übernimmt eine zentrale Rolle bei 
-der Strukturierung und Validierung automatisch erzeugter Annotationen.
+Zusammenfassend übernimmt die Objektverfolgung in dem vorgestellten Ansatz eine 
+zentrale Rolle bei der Strukturierung, Validierung und zeitlichen Konsistenzprüfung 
+automatisch erzeugter Annotationen und stellt damit einen wesentlichen Baustein 
+des gesamten semi-supervisierten Lernprozesses dar.
+
 
 \subsection{Iterativer Self-Training-Ansatz}
 
@@ -362,23 +385,85 @@ Objekte berücksichtigt werden.
 \subsubsection{Hyperparameters and Training Configuration}
 
 Die Auswahl der Hyperparameter erfolgt unter Berücksichtigung der verfügbaren 
-Rechenressourcen sowie der spezifischen Eigenschaften der verwendeten Videodaten. 
-Die Lernrate wird so gewählt, dass ein stabiler Trainingsverlauf gewährleistet ist, 
-ohne die Konvergenz unnötig zu verlangsamen oder instabile Gradienten zu erzeugen.
+Rechenressourcen sowie der spezifischen Eigenschaften der verwendeten UAV-Videodaten. 
+Ziel ist ein stabiler Trainingsverlauf, der eine ausreichende Generalisierung des 
+Modells ermöglicht, ohne dabei instabile Gradienten oder Überanpassung zu begünstigen. 
+Die Lernrate wird entsprechend konservativ gewählt und im Rahmen des Fine-Tuning-
+Prozesses schrittweise angepasst.
 
-Batch-Größe und Eingangsbildauflösung werden in Abhängigkeit von der GPU-Speicherkapazität 
-sowie der typischen Objektgrößen in den Luftaufnahmen festgelegt. Insbesondere für 
-die Detektion kleiner Objekte ist eine ausreichend hohe Bildauflösung von Bedeutung.
+Batch-Größe und Eingangsbildauflösung werden in Abhängigkeit von der verfügbaren 
+GPU-Speicherkapazität sowie den typischen Objektgrößen in den Luftaufnahmen festgelegt. 
+Insbesondere für die Detektion kleiner Objekte, wie sie in UAV-Perspektiven häufig 
+auftreten, ist eine ausreichend hohe Eingangsauflösung von zentraler Bedeutung, um 
+feinstrukturierte visuelle Merkmale zuverlässig erfassen zu können.
+
+Neben den klassischen Trainingsparametern spielt die eingesetzte 
+Datenaugmentierungsstrategie eine wichtige Rolle für die Robustheit des Modells. 
+Da UAV-Aufnahmen eine hohe Variabilität hinsichtlich Blickwinkel, Flughöhe und 
+Orientierung aufweisen, werden während des Trainings gezielt augmentierende 
+Transformationen eingesetzt. Dazu zählen insbesondere Skalierungsoperationen zur 
+Simulation unterschiedlicher Objektgrößen, Rotationen zur Abbildung variierender 
+Kamerawinkel sowie Mosaic-Augmentation, bei der mehrere Trainingsbilder zu einer 
+komplexeren Szene kombiniert werden. Diese Techniken tragen dazu bei, die 
+Generalisierungsfähigkeit des Modells insbesondere in dichten Szenen und bei kleinen 
+Objekten zu verbessern. Ergänzend können weitere Augmentierungen wie MixUp oder 
+leichte Unschärfe angewendet werden, um die Robustheit gegenüber Bildrauschen und 
+Bewegungsunschärfe zu erhöhen.
 
 Die Trainingsdauer wird durch eine maximale Anzahl von Epochen begrenzt. Zusätzlich 
-werden Strategien zur Vermeidung von Überanpassung berücksichtigt, beispielsweise 
-durch frühzeitiges Beenden des Trainings bei stagnierender Validierungsleistung. 
-Im Rahmen des Transfer Learnings wird zudem experimentell untersucht, inwieweit das 
-Einfrieren oder Freigeben einzelner Netzwerkschichten den Lernprozess beeinflusst.
+werden Strategien zur Vermeidung von Überanpassung berücksichtigt, etwa durch 
+frühzeitiges Beenden des Trainings bei stagnierender Validierungsleistung. Im Rahmen 
+des Transfer Learnings wird zudem untersucht, inwieweit das Einfrieren oder selektive 
+Freigeben einzelner Netzwerkschichten den Anpassungsprozess an die domänenspezifischen 
+Eigenschaften der Luftaufnahmen beeinflusst.
 
-Die in diesem Abschnitt beschriebene Trainingsstrategie und 
-Hyperparameterauswahl stellen sicher, dass der vorgeschlagene Ansatz reproduzierbar, 
-stabil und an unterschiedliche experimentelle Rahmenbedingungen anpassbar ist.
+Die in diesem Abschnitt beschriebene Trainingsstrategie und Hyperparameterauswahl 
+stellen sicher, dass der vorgeschlagene Ansatz reproduzierbar, stabil und an 
+unterschiedliche experimentelle Rahmenbedingungen anpassbar ist.
+
+\subsubsection{Implementierungsdetails (Hard- und Software)}
+
+Die Implementierung des vorgeschlagenen Ansatzes erfolgte unter Verwendung gängiger
+und etablierter Werkzeuge aus dem Bereich des Deep Learnings und der
+videobasierten Objekterkennung. Sämtliche Experimente wurden in einer
+Python-Umgebung (Python~3.x) durchgeführt. Als Deep-Learning-Framework kam
+\textit{PyTorch} zum Einsatz, während für die Objekterkennung die
+\textit{Ultralytics YOLOv8}-Implementierung verwendet wurde.
+
+Das Training sowie die Inferenz der Modelle wurden auf einer GPU-beschleunigten
+Rechenumgebung ausgeführt. Hierbei wurde eine NVIDIA-GPU eingesetzt, die eine
+ausreichende Speicherkapazität für hochauflösende UAV-Bilddaten sowie für die
+verwendeten Batch-Größen bereitstellte. Die GPU-Beschleunigung war insbesondere
+für das iterative Training und die automatische Annotation großer Mengen von
+Videoframes von zentraler Bedeutung.
+
+Die manuelle Annotation der initialen Trainingsdaten erfolgte mithilfe des
+Open-Source-Annotationstools \textit{CVAT (Computer Vision Annotation Tool)}.
+CVAT wurde zur Erstellung präziser Bounding-Box-Annotationen in ausgewählten
+Videoframes eingesetzt und ermöglichte eine konsistente Verwaltung der
+Annotationsdaten. Die erzeugten Annotationen dienten als Ausgangspunkt für das
+Transfer Learning sowie für den nachfolgenden semi-supervisierten
+Self-Training-Prozess.
+
+\begin{table}[H]
+\centering
+\caption{Übersicht der Implementierungsdetails}
+\label{tab:implementation_details}
+\begin{tabular}{ll}
+\hline
+\textbf{Kategorie} & \textbf{Beschreibung} \\
+\hline
+Programmiersprache & Python 3.x \\
+Deep-Learning-Framework & PyTorch \\
+Objekterkennungsmodell & Ultralytics YOLOv8 \\
+Trainingsumgebung & GPU-beschleunigte Rechenumgebung \\
+Hardware & NVIDIA GPU (CUDA-fähig) \\
+Annotationstool & CVAT (Computer Vision Annotation Tool) \\
+Datentyp & UAV-Videodaten (Frame-basiert) \\
+\hline
+\end{tabular}
+\end{table}
+
 
 \subsection{Evaluation Protocol}
 
@@ -390,6 +475,7 @@ Objektverfolgung systematisch zu analysieren. Die Evaluation orientiert sich an 
 standardisierten Auswertungsverfahren des YOLO-Frameworks und stellt die 
 Reproduzierbarkeit der Ergebnisse sicher \cite{ultralytics2024}.
 
+
 \subsubsection{Evaluation Metrics}
 
 Die Leistungsbewertung erfolgt mithilfe etablierter Metriken aus dem Bereich der 
@@ -400,7 +486,7 @@ erkannten Objekten, Fehlalarmen und übersehenen Instanzen ermöglichen.
 Als zentrale Gesamtmetrik wird die mean Average Precision (mAP) verwendet. Diese 
 bewertet die Detektionsleistung über verschiedene Konfidenzschwellen hinweg und 
 stellt den Standardvergleichswert für YOLO-basierte Modelle dar. Die verwendeten 
-Metriken entsprechen den automatisch erzeugten Evaluationsausgaben des YOLOv5-
+Metriken entsprechen den automatisch erzeugten Evaluationsausgaben des YOLOv8-
 Frameworks \cite{ultralytics2024}.
 
 \subsubsection{Frame-level and Track-level Evaluation}
