@@ -8,20 +8,22 @@ Ziel der Arbeit ist es, den manuellen Annotierungsaufwand bei Drohnenvideos zu r
 
 ## Repository-Struktur
 
+```text
 repo/
-├── thesis/ # LaTeX-Dateien der Masterarbeit
-├── src/ # Wiederverwendbarer Python-Code für Training, Pseudo-Labeling, Tracking, Filterung und Evaluation
-├── scripts/ # Direkt ausführbare Skripte für zentrale Arbeitsschritte
-├── notebooks/ # Jupyter Notebooks für Experimente, Analysen und Visualisierungen
-├── configs/ # Konfigurationsdateien für Dataset, Training, Pseudo-Labeling, Tracking und Evaluation
-├── data/ # Beschreibung der Dataset-Struktur; keine vollständigen Rohdaten
-├── models/ # Modellbeschreibungen; keine großen Modellgewichte
-├── results/ # Metriken, Plots, Beispielvorhersagen und qualitative Ergebnisse
-├── experiments/ # Experimentprotokolle, Versuchsdokumentation und Zwischenergebnisse
-├── docs/ # Ergänzende Dokumentation, Methodik, Status und Meeting Notes
-├── README.md # Zentrale Projektbeschreibung
-├── .gitignore # Ausschluss großer oder temporärer Dateien aus Git
-└── requirements.txt # Python-Abhängigkeiten des Projekts
+├── thesis/           # LaTeX-Dateien der Masterarbeit
+├── src/              # Wiederverwendbarer Python-Code für Training, Pseudo-Labeling, Tracking, Filterung und Evaluation
+├── scripts/          # Direkt ausführbare Skripte für zentrale Arbeitsschritte
+├── notebooks/        # Jupyter Notebooks für Experimente, Analysen und Visualisierungen
+├── configs/          # Konfigurationsdateien für Dataset, Training, Pseudo-Labeling, Tracking und Evaluation
+├── data/             # Beschreibung der Dataset-Struktur; keine vollständigen Rohdaten
+├── models/           # Modellbeschreibungen; keine großen Modellgewichte
+├── results/          # Metriken, Plots, Beispielvorhersagen und qualitative Ergebnisse
+├── experiments/      # Experimentprotokolle, Versuchsdokumentation und Zwischenergebnisse
+├── docs/             # Ergänzende Dokumentation, Methodik, Status und Meeting Notes
+├── README.md         # Zentrale Projektbeschreibung
+├── .gitignore        # Ausschluss großer oder temporärer Dateien aus Git
+└── requirements.txt  # Python-Abhängigkeiten des Projekts
+```
 
 ## Thema der Arbeit
 
