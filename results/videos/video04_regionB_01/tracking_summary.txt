@@ -1,0 +1,19 @@
+TRACKING SUMMARY WITH GPS
+============================
+Video: C:\thesis\flight-mbg-v2-04-regionB\avi\video04_regionB.avi
+GPS log: C:\thesis\flight-mbg-v2-04-regionB\log\video04_regionB.csv
+Model: C:\thesis\runs\detect\train\weights\best.pt
+Tracker: bytetrack.yaml
+FPS: 29.97
+Video size: 3840x2160
+Processed frames: 6285
+Total detections: 51867
+Total unique tracked objects: 716
+
+Class-based summary:
+- bucket: detections=1011, unique_tracks=75
+- plastic bag: detections=608, unique_tracks=3
+- pool: detections=4147, unique_tracks=47
+- storm drain: detections=2682, unique_tracks=68
+- tire: detections=1284, unique_tracks=33
+- watertank: detections=42135, unique_tracks=498

@@ -1,0 +1,60 @@
+# === Große Mediendateien / Ausgaben ===
+# Videos gehören nicht ins Git-Repo (GitHub-Limit 100 MB/Datei).
+# Stattdessen extern speichern (Cloud / Git LFS) und hier nur Beschreibungen ablegen.
+*.mp4
+*.avi
+*.mov
+*.mkv
+*.webm
+
+# === Modellgewichte (keine großen Gewichte ins Repo) ===
+*.pt
+*.pth
+*.onnx
+*.weights
+*.ckpt
+*.h5
+*.pb
+*.tflite
+*.engine
+
+# === Rohdaten / Archive ===
+data/raw/
+*.zip
+*.tar
+*.tar.gz
+*.tgz
+*.7z
+*.rar
+
+# === Python ===
+__pycache__/
+*.py[cod]
+*$py.class
+*.egg-info/
+.ipynb_checkpoints/
+.venv/
+venv/
+env/
+.env
+
+# === LaTeX-Build-Artefakte ===
+*.aux
+*.log
+*.out
+*.toc
+*.lof
+*.lot
+*.synctex.gz
+*.fls
+*.fdb_latexmk
+*.bbl
+*.blg
+*.bcf
+*.run.xml
+
+# === OS / IDE ===
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/
