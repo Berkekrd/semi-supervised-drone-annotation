@@ -5,12 +5,18 @@
 {\Large \textbf{Zusammenfassung}}
 \end{center}
 
-\vspace{1.5cm}
+\vspace{0.8cm}
 
-% TODO: Abstract / Zusammenfassung hier einfügen.
+\noindent Die automatische Erkennung potenzieller Brutstätten von \textit{Aedes aegypti} in urbanen Gebieten ist ein wichtiger Bestandteil datengetriebener Ansätze zur Unterstützung der Vektorkontrolle. UAV-basierte Bild- und Videodaten ermöglichen eine effiziente Erfassung größerer städtischer Bereiche, ihre automatische Analyse ist jedoch anspruchsvoll, da relevante Objekte häufig klein, teilweise verdeckt und in komplexe Hintergrundstrukturen eingebettet sind. Zusätzlich erfordert das Training leistungsfähiger Objekterkennungsmodelle große Mengen hochwertiger Annotationen, deren manuelle Erstellung bei Videodaten sehr zeitaufwendig ist.
+
+Diese Arbeit untersucht einen semi-supervisierten Ansatz zur automatischen Annotation von UAV-Videodaten mittels Transfer Learning, Pseudo-Labeling und tracking-basierter Label-Propagation. Als Datengrundlage dient der MBG-V2-Datensatz, der Drohnenaufnahmen urbaner Gebiete sowie Annotationen potenzieller Brutstätten enthält. Zunächst wird ein YOLOv8-basiertes Baseline-Modell auf manuell annotierten Frames trainiert. Anschließend wird dieses Modell verwendet, um zusätzliche Pseudo-Labels auf nicht manuell annotierten Frames zu erzeugen. Ergänzend wird ein Tracking-Verfahren eingesetzt, um Detektionen über mehrere aufeinanderfolgende Frames hinweg zeitlich zu verknüpfen und die Konsistenz automatisch erzeugter Annotationen qualitativ zu untersuchen.
+
+Die experimentellen Ergebnisse zeigen, dass das Baseline-Modell bereits eine brauchbare Ausgangsleistung erreicht. Über alle Klassen erzielt es einen mAP@50-Wert von 0{,}545 und einen besten globalen F1-Wert von etwa 0{,}53, wobei häufige und visuell klar erkennbare Klassen wie \textit{pool} und \textit{watertank} zuverlässiger erkannt werden als kleine, seltene oder hintergrundähnliche Klassen. Die Pseudo-Labeling-Stufe erweitert die Datenbasis deutlich und verbessert die Abdeckung mehrerer unterrepräsentierter Klassen, führt jedoch nicht zu einer klaren Leistungssteigerung: Der mAP@50-Wert liegt anschließend bei 0{,}542 und der beste globale F1-Wert sinkt auf etwa 0{,}49. Dies deutet darauf hin, dass automatisch erzeugte Labels zwar die Datenmenge erhöhen, aber zugleich Rauschen und Fehlannotationen in den Trainingsprozess einbringen können.
+
+Die qualitative Analyse der tracking-basierten Label-Propagation zeigt, dass die zeitliche Struktur von UAV-Videos grundsätzlich zur Stabilisierung von Detektionen genutzt werden kann: Wiederkehrende Objekte lassen sich über mehrere Frames hinweg verfolgen und bilden so eine konsistentere Grundlage für automatische Annotationen. Gleichzeitig bleiben kleine Objektgrößen, komplexe Hintergründe, Klassenungleichgewicht und instabile Detektionen zentrale Herausforderungen. Insgesamt zeigt die Arbeit, dass semi-supervisierte Verfahren den manuellen Annotierungsaufwand reduzieren können, ihre Wirksamkeit jedoch stark von der Qualität der erzeugten Pseudo-Labels und geeigneten Filterstrategien abhängt.
 
 \vfill
 
-\noindent\textbf{Schlagwörter:} % TODO
+\noindent\textbf{Schlagwörter:} Objekterkennung, UAV-Videodaten, Drohnenaufnahmen, \textit{Aedes aegypti}, Mückenbrutstätten, YOLOv8, Transfer Learning, semi-supervised Learning, Pseudo-Labeling, Label-Propagation, Multi-Object-Tracking, ByteTrack
 
 \newpage

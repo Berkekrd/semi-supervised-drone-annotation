@@ -6,31 +6,31 @@ In diesem Kapitel wird der aktuelle Stand der Forschung im Kontext dieser Arbeit
 
 \subsection{Detektion von Mückenbrutstätten in Luft- und Drohnenbildern}
 
-Die automatische Detektion von Mückenbrutstätten hat in den letzten Jahren zunehmend an 
-Bedeutung gewonnen, insbesondere durch den verstärkten Einsatz von Luft- und 
+Die automatische Detektion von Mückenbrutstätten hat in den letzten Jahren zunehmend an
+Bedeutung gewonnen, insbesondere durch den verstärkten Einsatz von Luft- und
 Drohnenbildern \cite{mahfodz2019review}. Ziel dieser Arbeiten ist es, große Gebiete effizient zu überwachen und den Aufwand manueller Vor-Ort-Inspektionen zu reduzieren. Die frühzeitige Identifikation potenzieller Brutstätten der Stechmücke \textit{Aedes aegypti} ist dabei von zentraler Bedeutung für die Prävention von durch Vektoren übertragenen Krankheiten wie Dengue \cite{knoblauch2023breeding}.
 
-Eine der grundlegenden Arbeiten in diesem Forschungsbereich ist der von Passos et al. 
+Eine der grundlegenden Arbeiten in diesem Forschungsbereich ist der von Passos et al.
 vorgestellte Mosquito Breeding Grounds (MBG) Datensatz. Die erste Version des Datensatzes (MBG-V1) basiert auf Videodaten, die mit unbemannten Luftfahrzeugen aufgenommen wurden, und diente als Grundlage für die Entwicklung automatischer Verfahren zur Detektion potenzieller Brutstätten \cite{passos2020mbgv1}. Die Ergebnisse dieser Arbeit zeigten, dass tiefenlern-basierte Objekterkennungsmodelle in der Lage sind, relevante Umweltobjekte in Drohnenaufnahmen zuverlässig zu erkennen.
 
-Mit der Veröffentlichung des MBG-V2 Datensatzes wurde dieser Ansatz weiter ausgebaut. 
-MBG-V2 umfasst eine größere Anzahl an Videosequenzen, unterschiedliche urbane Regionen 
-sowie eine erweiterte Menge an Objektklassen \cite{passos2024mbgv2}. Dadurch stellt der 
-Datensatz realistischere und zugleich anspruchsvollere Szenarien für die automatische 
+Mit der Veröffentlichung des MBG-V2 Datensatzes wurde dieser Ansatz weiter ausgebaut.
+MBG-V2 umfasst eine größere Anzahl an Videosequenzen, unterschiedliche urbane Regionen
+sowie eine erweiterte Menge an Objektklassen \cite{passos2024mbgv2}. Dadurch stellt der
+Datensatz realistischere und zugleich anspruchsvollere Szenarien für die automatische
 Objekterkennung dar. Auf MBG-V2 aufbauende Studien bestätigen, dass UAV-basierte Bilddaten eine geeignete und skalierbare Datenquelle für die Detektion von Mückenbrutstätten sind \cite{passos2023augmented}.
 
-Ein Großteil der bestehenden Arbeiten in diesem Forschungsfeld basiert jedoch auf 
-vollständig überwachten Lernverfahren, bei denen sämtliche Trainingsdaten manuell 
+Ein Großteil der bestehenden Arbeiten in diesem Forschungsfeld basiert jedoch auf
+vollständig überwachten Lernverfahren, bei denen sämtliche Trainingsdaten manuell
 annotiert werden müssen. Insbesondere bei video-basierten Datensätzen führt dieser Ansatz zu einem erheblichen Annotierungsaufwand und schränkt die Skalierbarkeit der Verfahren ein \cite{passos2023augmented}. Daraus ergibt sich ein klarer Forschungsbedarf an Methoden, die den manuellen Annotierungsaufwand reduzieren, ohne die Erkennungsleistung signifikant zu beeinträchtigen.
 
 \begin{figure}[H]
     \centering
     \includegraphics[width=0.9\linewidth]{figures/datasets/mbgv2_annotated_examples.jpeg}
     \caption{Beispielhafte manuell annotierte Drohnenaufnahmen aus dem MBG-V2-Datensatz.
-    Markiert sind potenzielle Brutstätten von \textit{Aedes aegypti} wie Wassertanks und
-    Straßeneinläufe, die aufgrund ihrer geringen Objektgröße und komplexen urbanen
-    Hintergrundstrukturen eine besondere Herausforderung für die automatische
-    Objekterkennung darstellen.}
+        Markiert sind potenzielle Brutstätten von \textit{Aedes aegypti} wie Wassertanks und
+        Straßeneinläufe, die aufgrund ihrer geringen Objektgröße und komplexen urbanen
+        Hintergrundstrukturen eine besondere Herausforderung für die automatische
+        Objekterkennung darstellen.}
     \label{fig:mbgv2_detection_examples}
 \end{figure}
 
@@ -67,11 +67,11 @@ detektieren und über lange Videosequenzen hinweg zu verfolgen
     \centering
     \includegraphics[width=0.9\linewidth]{figures/related_work/fish_tracking_example.jpeg}
     \caption{Beispielhafte Kombination aus YOLO-basierter Objektdetektion
-    und DeepSORT-Objektverfolgung in Unterwasservideos. Die Abbildung
-    veranschaulicht die zeitlich konsistente Verfolgung detektierter
-    Objekte über mehrere Frames hinweg und dient als methodisches
-    Beispiel für die Nutzung von Tracking-Informationen zur Reduktion
-    manuellen Annotierungsaufwands. Adaptiert nach \cite{fishtracking2024}.}
+        und DeepSORT-Objektverfolgung in Unterwasservideos. Die Abbildung
+        veranschaulicht die zeitlich konsistente Verfolgung detektierter
+        Objekte über mehrere Frames hinweg und dient als methodisches
+        Beispiel für die Nutzung von Tracking-Informationen zur Reduktion
+        manuellen Annotierungsaufwands. Adaptiert nach \cite{fishtracking2024}.}
     \label{fig:yolo_deepsort_fish}
 \end{figure}
 
@@ -97,7 +97,7 @@ reduzieren und gleichzeitig robuste Detektionsmodelle zu trainieren.
 
 \subsection{Semi-supervised Learning und Pseudo-Labeling}
 
-Tiefenlern-basierte Objekterkennungsmodelle erfordern in der Regel große Mengen manuell 
+Tiefenlern-basierte Objekterkennungsmodelle erfordern in der Regel große Mengen manuell
 annotierter Trainingsdaten. Insbesondere bei video-basierten Datensätzen ist eine vollständige manuelle Annotation aller Frames aufgrund des hohen zeitlichen und personellen Aufwands nur eingeschränkt praktikabel. Aus diesem Grund gewinnen semi-supervised Lernverfahren, die mit einer begrenzten Menge annotierter Daten arbeiten, zunehmend an Bedeutung \cite{zhu2005ssl}.
 
 Ein weit verbreiteter Ansatz im semi-supervised Learning ist das sogenannte Pseudo-Labeling. Dabei wird ein zunächst mit annotierten Daten trainiertes Modell verwendet, um Vorhersagen auf unannotierten Daten zu erzeugen, welche anschließend als zusätzliche Trainingslabels genutzt werden \cite{lee2013pseudo}. Ziel dieses Verfahrens ist es, den manuellen Annotierungsaufwand zu reduzieren und gleichzeitig die Lernbasis des Modells zu erweitern.
@@ -106,20 +106,20 @@ Ein weit verbreiteter Ansatz im semi-supervised Learning ist das sogenannte Pseu
     \centering
     \includegraphics[width=0.95\linewidth]{figures/related_work/efficient_teacher_pipeline.jpeg}
     \caption{Schematische Darstellung eines Pseudo-Labeling-basierten
-    semi-supervised Lernverfahrens für die Objekterkennung nach dem
-    Teacher-Student-Prinzip. Ein mit annotierten Daten trainiertes
-    Modell (Teacher) erzeugt Pseudo-Labels für unannotierte Daten,
-    welche nach einer Konfidenzfilterung für das erneute Training eines
-    Student-Modells genutzt werden. Die Abbildung dient der
-    konzeptionellen Veranschaulichung und ist adaptiert nach
-    \cite{liu2021efficient}.}
+        semi-supervised Lernverfahrens für die Objekterkennung nach dem
+        Teacher-Student-Prinzip. Ein mit annotierten Daten trainiertes
+        Modell (Teacher) erzeugt Pseudo-Labels für unannotierte Daten,
+        welche nach einer Konfidenzfilterung für das erneute Training eines
+        Student-Modells genutzt werden. Die Abbildung dient der
+        konzeptionellen Veranschaulichung und ist adaptiert nach
+        \cite{liu2021efficient}.}
     \label{fig:efficient_teacher_pipeline}
 \end{figure}
 
 
 In den letzten Jahren wurden zahlreiche Pseudo-Labeling-basierte Methoden speziell für die Objekterkennung entwickelt. Ansätze wie Efficient Teacher nutzen ein Teacher-Student-Paradigma, um robuste Pseudo-Labels aus unannotierten Daten zu generieren und dadurch die Leistung bei begrenzter Annotation zu verbessern \cite{liu2021efficient}. Solche Methoden zeigen, dass semi-supervised Lernverfahren insbesondere in datenarmen Szenarien eine leistungsfähige Alternative zu vollständig überwachten Ansätzen darstellen können.
 
-Für video-basierte Objekterkennungsprobleme bietet semi-supervised Learning zusätzliche 
+Für video-basierte Objekterkennungsprobleme bietet semi-supervised Learning zusätzliche
 Vorteile, da zeitliche Zusammenhänge zwischen aufeinanderfolgenden Frames berücksichtigt werden können. Arbeiten wie SSVOD demonstrieren, dass eine kleine Anzahl manuell annotierter Frames ausreicht, um mithilfe von Pseudo-Labeling und zeitlichem Kontext Informationen aus den verbleibenden, unannotierten Frames effektiv zu nutzen \cite{li2022ssvod}. Diese Ansätze stellen einen vielversprechenden Weg dar, um den manuellen Annotierungsaufwand bei umfangreichen Videodatensätzen signifikant zu reduzieren.
 
 Vor diesem Hintergrund bilden semi-supervised Learning und Pseudo-Labeling zentrale Konzepte für die Entwicklung automatischer Annotationsverfahren in video-basierten Szenarien.
@@ -159,19 +159,19 @@ vollüberwachter Objekterkennung und automatischer, datengetriebener Annotation 
 video-basierten Szenarien.
 
 \begin{figure}[H]
-\centering
-\begin{tikzpicture}[
-    box/.style={draw, rounded corners, minimum width=4cm, minimum height=1cm, align=center},
-    arrow/.style={->, thick}
-]
-\node[box] (sup) {Fully supervised\\Object Detection\\(manuelle Annotation)};
-\node[box, below=1.2cm of sup] (this) {Diese Arbeit\\Detection + Tracking\\Semi-supervised Annotation};
-\node[box, below=1.2cm of this] (unsup) {Fully automatic\\Ansätze};
+    \centering
+    \begin{tikzpicture}[
+            box/.style={draw, rounded corners, minimum width=4cm, minimum height=1cm, align=center},
+            arrow/.style={->, thick}
+        ]
+        \node[box] (sup) {Fully supervised\\Object Detection\\(manuelle Annotation)};
+        \node[box, below=1.2cm of sup] (this) {Diese Arbeit\\Detection + Tracking\\Semi-supervised Annotation};
+        \node[box, below=1.2cm of this] (unsup) {Fully automatic\\Ansätze};
 
-\draw[arrow] (sup) -- (this);
-\draw[arrow] (this) -- (unsup);
-\end{tikzpicture}
-\caption{Einordnung der vorliegenden Arbeit zwischen vollständig überwachten und
-automatischen Ansätzen zur Objekterkennung in Videodaten.}
-\label{fig:work_positioning}
+        \draw[arrow] (sup) -- (this);
+        \draw[arrow] (this) -- (unsup);
+    \end{tikzpicture}
+    \caption{Einordnung der vorliegenden Arbeit zwischen vollständig überwachten und
+        automatischen Ansätzen zur Objekterkennung in Videodaten.}
+    \label{fig:work_positioning}
 \end{figure}
