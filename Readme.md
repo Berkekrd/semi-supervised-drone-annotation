@@ -2,28 +2,22 @@
 
 Dieses Repository enthält den aktuellen Entwicklungsstand meiner Masterarbeit im Bereich Computer Vision.
 
-Ziel der Arbeit ist es, den manuellen Annotierungsaufwand bei Drohnenvideos zu reduzieren. Dafür werden nur spärlich manuell annotierte Frames als Ausgangspunkt verwendet. Die nicht annotierten Zwischenframes sollen anschließend automatisch mithilfe von Object Detection, Pseudo-Labeling, heuristischer Filterung und Tracking-basierter Konsistenzprüfung annotiert werden.
+Ziel der Arbeit ist es, den manuellen Annotierungsaufwand bei Drohnenvideos zu reduzieren. Dafür werden nur spärlich manuell annotierte Frames als Ausgangspunkt verwendet. Die nicht annotierten Zwischenframes werden anschließend automatisch mithilfe von Object Detection, Pseudo-Labeling, heuristischer Filterung und Tracking-basierter Konsistenzprüfung annotiert.
 
-> **Hinweis:** Dieses Repository stellt noch nicht die finale Abgabeversion dar. Es handelt sich um eine nahezu finale Entwicklungsstruktur etwa einen Monat vor der geplanten Fertigstellung.
+> **Hinweis:** Dieses Repository stellt noch nicht die finale Abgabeversion dar. Es handelt sich um den Entwicklungsstand etwa einen Monat vor der geplanten Fertigstellung. Der Python-Code der Pipeline (Training, Pseudo-Labeling, Tracking, Evaluation) wird bis zur Abgabe ergänzt.
 
 ## Repository-Struktur
 
 ```text
 repo/
-├── thesis/           # LaTeX-Dateien der Masterarbeit
-├── src/              # Wiederverwendbarer Python-Code für Training, Pseudo-Labeling, Tracking, Filterung und Evaluation
-├── scripts/          # Direkt ausführbare Skripte für zentrale Arbeitsschritte
-├── notebooks/        # Jupyter Notebooks für Experimente, Analysen und Visualisierungen
-├── configs/          # Konfigurationsdateien für Dataset, Training, Pseudo-Labeling, Tracking und Evaluation
-├── data/             # Beschreibung der Dataset-Struktur; keine vollständigen Rohdaten
-├── models/           # Modellbeschreibungen; keine großen Modellgewichte
-├── results/          # Metriken, Plots, Beispielvorhersagen und qualitative Ergebnisse
-├── experiments/      # Experimentprotokolle, Versuchsdokumentation und Zwischenergebnisse
-├── docs/             # Ergänzende Dokumentation, Methodik, Status und Meeting Notes
-├── README.md         # Zentrale Projektbeschreibung
-├── .gitignore        # Ausschluss großer oder temporärer Dateien aus Git
-└── requirements.txt  # Python-Abhängigkeiten des Projekts
+├── thesis/       # LaTeX-Quellen der Masterarbeit (Kapitel, Abbildungen, Literatur)
+├── results/      # Ergebnisse der Pipeline, v. a. qualitative Tracking-Ergebnisse
+├── Readme.md     # Zentrale Projektbeschreibung
+└── .gitignore    # Ausschluss großer oder temporärer Dateien (z. B. Videos, Modellgewichte)
 ```
+
+- **[`thesis/`](thesis/)** – vollständige LaTeX-Struktur der Arbeit inkl. aller Kapitel und der Abbildungen der Experimente (Baseline- und Pseudo-Labeling-Ergebnisse unter `thesis/figures/`).
+- **[`results/`](results/README.md)** – Tracking-Ergebnisse (YOLO + ByteTrack + GPS) pro Video mit Report, Zusammenfassung und Link zum extern gehosteten Video.
 
 ## Thema der Arbeit
 
@@ -35,9 +29,7 @@ Der Fokus liegt auf der Kombination von Object Detection, Pseudo-Labeling, heuri
 
 ## Problemstellung
 
-Die verfügbaren Drohnenvideos enthalten nur spärliche manuelle Annotationen. Dadurch entsteht die Herausforderung, die nicht annotierten Zwischenframes möglichst zuverlässig automatisch zu labeln.
-
-Die zentrale Fragestellung lautet:
+Die verfügbaren Drohnenvideos enthalten nur spärliche manuelle Annotationen. Die zentrale Fragestellung lautet:
 
 > Wie können nicht annotierte Zwischenframes automatisch annotiert werden, ohne jeden Frame manuell labeln zu müssen?
 
@@ -52,7 +44,7 @@ Dabei müssen insbesondere folgende Probleme berücksichtigt werden:
 
 ## Methodik
 
-Die geplante Pipeline besteht aus mehreren Schritten:
+Die Pipeline besteht aus mehreren Schritten:
 
 ```text
 Sparse manuelle Annotationen
