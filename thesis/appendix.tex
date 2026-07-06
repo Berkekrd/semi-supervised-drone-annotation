@@ -1,10 +1,14 @@
 % =========================================================
 % Anhang (article-kompatibel)
 % =========================================================
-% Hinweis: Die ursprüngliche Vorlage nutzte IEEEtran-Befehle
-% (\appendices, \restoreapp), die in der article-Klasse nicht
-% definiert sind. Daher wird hier der Standard-\appendix-Mechanismus
-% zusammen mit dem appendix-Paket verwendet.
+% Hinweis: Die gewünschte Struktur verwendet \chapter. Da diese
+% Arbeit die article-Klasse nutzt, sind die Kapitel als \section
+% (durch \appendix als A, B, C ... nummeriert) und die inneren
+% Abschnitte als \subsection umgesetzt.
+%
+% Werte stammen, soweit vorhanden, aus der tatsächlichen Konfiguration
+% des Projekts (args.yaml, Pipeline-Skripte, Tracking-Reports).
+% Wo konkrete Werte fehlen, sind Platzhalter wie [ANZAHL] eingetragen.
 
 \clearpage
 \appendix
@@ -17,473 +21,344 @@
 % Unterabschnitte des Anhangs wieder im Inhaltsverzeichnis anzeigen
 \addtocontents{toc}{\protect\setcounter{tocdepth}{2}}
 
+% Platzhalter-Box für noch nicht vorhandene Abbildungen (kompiliert ohne Bilddatei)
+\newcommand{\anhangplaceholder}[1]{%
+    \fbox{\parbox[c][5cm][c]{0.9\textwidth}{%
+        \centering\itshape Platzhalter für Abbildung --- Pfad einfügen: \texttt{#1}}}}
+
 
 % =========================================================
 \section{Zusätzliche Materialien zum Datensatzkapitel}
 \label{app:datensatz}
 
-Dieser Anhang ergänzt die Beschreibung des MBG-V2-Datensatzes aus
-Abschnitt~\ref{sec:datasets} um die vollständige Zuordnung zwischen
-überflogenen Regionen und Videosequenzen sowie um die im Trainings-Setup
-verwendete Klassenzuordnung.
+Dieser Anhang enthält ergänzende Informationen zum verwendeten Datensatz.
+Die hier zusammengestellten Details vertiefen das Datensatzkapitel
+(Abschnitt~\ref{sec:datasets}) des Haupttextes, ohne dieses mit umfangreichen
+Tabellen und Einzelwerten zu überladen. Sie dienen der Nachvollziehbarkeit und
+Reproduzierbarkeit der durchgeführten Experimente.
 
-\subsection{Zuordnung von Regionen und Videos}
+\subsection{Übersicht der verwendeten Videodaten}
 
-Der MBG-V2-Datensatz umfasst 13 urbane Regionen (A--M), die aus Gründen der
-Dateigröße jeweils in zwei komplementäre Videosequenzen unterteilt wurden.
-Daraus ergeben sich insgesamt 26 Videos. Tabelle~\ref{tab:region_video_mapping}
-zeigt die vollständige Zuordnung.
+Die folgende Tabelle gibt einen Überblick über die im Rahmen dieser Arbeit
+verwendeten Videosequenzen sowie über den Umfang der daraus extrahierten,
+manuell annotierten und automatisch erzeugten Daten. Etwa jeder 30.~Frame eines
+Videos wurde manuell annotiert; die übrigen Frames wurden zunächst nicht
+annotiert.
 
-\begin{table}[H]
+\begin{table}[htbp]
     \centering
-    \caption{Zuordnung der überflogenen Regionen zu den Videosequenzen des MBG-V2-Datensatzes.}
-    \label{tab:region_video_mapping}
-    \begin{tabular}{lll}
+    \caption{Übersicht der verwendeten Videodaten sowie der zugehörigen
+    manuellen und automatisch erzeugten Annotationen.}
+    \label{tab:anhang_videouebersicht}
+    \resizebox{\textwidth}{!}{%
+    \begin{tabular}{lccccl}
         \toprule
-        \textbf{Region} & \textbf{Video 1} & \textbf{Video 2} \\
+        \textbf{Video} & \textbf{Extrahierte Frames} &
+        \textbf{Manuell annot. Frames} & \textbf{Manuelle Annotationen} &
+        \textbf{Pseudo-Labels} & \textbf{Bemerkung} \\
         \midrule
-        Region A & video01\_regionA & video02\_regionA \\
-        Region B & video03\_regionB & video04\_regionB \\
-        Region C & video05\_regionC & video06\_regionC \\
-        Region D & video07\_regionD & video08\_regionD \\
-        Region E & video09\_regionE & video10\_regionE \\
-        Region F & video11\_regionF & video12\_regionF \\
-        Region G & video13\_regionG & video14\_regionG \\
-        Region H & video15\_regionH & video16\_regionH \\
-        Region I & video17\_regionI & video18\_regionI \\
-        Region J & video19\_regionJ & video20\_regionJ \\
-        Region K & video21\_regionK & video22\_regionK \\
-        Region L & video23\_regionL & video24\_regionL \\
-        Region M & video25\_regionM & video26\_regionM \\
+        video01\_regionA & [ANZAHL] & [ANZAHL] & [ANZAHL] & [ANZAHL] & [BEMERKUNG] \\
+        video02\_regionA & [ANZAHL] & [ANZAHL] & [ANZAHL] & [ANZAHL] & [BEMERKUNG] \\
+        video03\_regionB & [ANZAHL] & [ANZAHL] & [ANZAHL] & [ANZAHL] & [BEMERKUNG] \\
+        video04\_regionB & 6285     & [ANZAHL] & [ANZAHL] & [ANZAHL] & Tracking-Beispiel \\
+        \multicolumn{6}{c}{\dots} \\
+        \midrule
+        \textbf{Gesamt (26 Videos)} & [ANZAHL] & [ANZAHL] & [ANZAHL] & [ANZAHL] & \\
+        \bottomrule
+    \end{tabular}%
+    }
+\end{table}
+
+\subsection{Aufteilung des Datensatzes}
+
+Der Datensatz wurde in einen Trainings- und einen Validierungsteil aufgeteilt.
+Die Aufteilung erfolgte reproduzierbar mit festem Zufallsseed im Verhältnis von
+80~\% zu 20~\%. Der Trainingsteil dient der Modellanpassung, der
+Validierungsteil der Überwachung des Trainingsverlaufs und der abschließenden,
+ausschließlich auf manuellen Annotationen basierenden Bewertung. Ein separater
+Testteil wurde in dieser Arbeit nicht gebildet.
+
+\begin{table}[htbp]
+    \centering
+    \caption{Aufteilung des Datensatzes in Trainings- und Validierungsdaten
+    (Verhältnis 80/20).}
+    \label{tab:anhang_split}
+    \begin{tabular}{lccc}
+        \toprule
+        \textbf{Split} & \textbf{Frames} & \textbf{Annotationen} & \textbf{Anteil} \\
+        \midrule
+        Training     & [ANZAHL] & [ANZAHL] & 80\,\% \\
+        Validierung  & [ANZAHL] & [ANZAHL] & 20\,\% \\
+        Test         & --       & --       & nicht verwendet \\
+        \midrule
+        \textbf{Gesamt} & [ANZAHL] & [ANZAHL] & 100\,\% \\
         \bottomrule
     \end{tabular}
 \end{table}
 
-\subsection{Klassenzuordnung des Trainings-Setups}
+\subsection{Verteilung der Annotationen}
 
-Für das Training der YOLO-Modelle wurden die track-basierten CVAT-Annotationen
-in framebasierte Labels überführt. Die dabei verwendete Zuordnung zwischen
-Klassennamen und numerischen YOLO-Klassen-IDs (\texttt{CLASS\_MAP}) ist in
-Tabelle~\ref{tab:class_map} dargestellt. Diese Zuordnung ist über alle Skripte
-der Pipeline hinweg konsistent.
+Manuelle Annotationen und automatisch erzeugte Pseudo-Labels werden getrennt
+betrachtet, um den Beitrag der halbüberwachten Annotation transparent zu machen.
+Die Pseudo-Labels werden sowohl vor als auch nach der Filterung ausgewiesen. Für
+die Filterung wurde eine minimale Detektionskonfidenz von 0{,}60 verwendet; die
+klassenbalancierte Auswahl strebte etwa 800~Instanzen je Klasse an
+(maximal 1000~Pseudo-Boxen je Klasse).
 
-\begin{table}[H]
+\begin{table}[htbp]
     \centering
-    \caption{Im Trainings-Setup verwendete Klassenzuordnung (\texttt{CLASS\_MAP}).}
-    \label{tab:class_map}
-    \begin{tabular}{cll}
+    \caption{Verteilung der manuellen Annotationen und der automatisch erzeugten
+    Pseudo-Labels vor und nach der Filterung.}
+    \label{tab:anhang_annotationsverteilung}
+    \begin{tabular}{lccl}
         \toprule
-        \textbf{YOLO-ID} & \textbf{Klassenname (Code)} & \textbf{Bezeichnung} \\
+        \textbf{Datentyp} & \textbf{Anzahl Frames} &
+        \textbf{Anzahl Annotationen} & \textbf{Verwendung} \\
         \midrule
-        0  & \texttt{pool}            & Pool / offene Wasserfläche \\
-        1  & \texttt{bottle}          & Flasche \\
-        2  & \texttt{bucket}          & Eimer \\
-        3  & \texttt{puddle}          & Pfütze \\
-        4  & \texttt{tire}            & Reifen \\
-        5  & \texttt{watertank}       & Wassertank \\
-        6  & \texttt{dumpster}        & Müllcontainer \\
-        7  & \texttt{large\_trash\_bin} & Große Mülltonne \\
-        8  & \texttt{plastic\_bag}    & Plastiktüte \\
-        9  & \texttt{small\_trash\_bin} & Kleine Mülltonne \\
-        10 & \texttt{storm\_drain}    & Gully / Straßenablauf \\
+        Manuelle Annotationen              & [ANZAHL] & [ANZAHL] & Training + Validierung \\
+        Pseudo-Labels vor Filterung        & [ANZAHL] & [ANZAHL] & Zwischenstand, nicht direkt genutzt \\
+        Pseudo-Labels nach Filterung       & [ANZAHL] & [ANZAHL] & Kandidaten für das Training \\
+        Für das Training verwendete Labels & [ANZAHL] & [ANZAHL] & manuell + gefilterte Pseudo-Labels \\
         \bottomrule
     \end{tabular}
 \end{table}
+
+\subsection{Beispielhafte Annotationen}
+
+Zur qualitativen Veranschaulichung zeigt die folgende Abbildung beispielhafte
+Frames mit den zugehörigen Annotationen. Dargestellt werden manuelle
+Annotationen, automatisch erzeugte Pseudo-Labels sowie durch Objektverfolgung
+unterstützte Label-Propagation.
+
+\begin{figure}[htbp]
+    \centering
+    \anhangplaceholder{figures/appendix\_dataset\_examples.png}
+    \caption{Beispielhafte Frames zur qualitativen Veranschaulichung der
+    Annotationen. Gezeigt werden manuelle Annotationen, automatisch erzeugte
+    Pseudo-Labels und durch Tracking unterstützte Label-Propagation.}
+    \label{fig:anhang_dataset_examples}
+\end{figure}
 
 
 % =========================================================
 \section{Zusätzliche Materialien zur Methodik}
 \label{app:methodik}
 
-Dieser Anhang dokumentiert die für die Reproduzierbarkeit relevanten
-Konfigurationsdateien, die durch die Pipeline erzeugte Verzeichnisstruktur
-sowie die vollständigen Trainings-, Filter- und Auswahlparameter.
+Dieser Anhang dokumentiert die konkreten Konfigurationen und Parameter der
+verwendeten Methoden (vgl.\ Abschnitt~\ref{sec:method}). Ziel ist es, die
+einzelnen Verarbeitungsschritte reproduzierbar zu machen, ohne den methodischen
+Haupttext mit Detailwerten zu überladen.
 
-\subsection{Konfigurationsdateien}
-\label{app:configfiles}
+\subsection{Konfiguration des YOLOv8-Trainings}
 
-Das Basistraining aus Abschnitt~\ref{sec:method} verwendet die
-Datenkonfiguration \texttt{data\_main.yaml}. Abbildung~\ref{lst:data_main} zeigt
-den strukturellen Aufbau dieser YOLO-Datenkonfiguration.
+Die folgende Tabelle fasst die wichtigsten Parameter der Trainingskonfiguration
+des Objekterkennungsmodells zusammen.
 
-\begin{figure}[H]
-\begin{Verbatim}[frame=single,fontsize=\small]
-path: datasets/merged_dataset
-train: train/images
-val: val/images
-
-names:
-  0: pool
-  1: bottle
-  2: bucket
-  3: puddle
-  4: tire
-  5: watertank
-  6: dumpster
-  7: large_trash_bin
-  8: plastic_bag
-  9: small_trash_bin
-  10: storm_drain
-\end{Verbatim}
-\caption{Aufbau der YOLO-Datenkonfiguration \texttt{data\_main.yaml}.}
-\label{lst:data_main}
-\end{figure}
-
-Für die semi-supervisierten Trainingsstufen werden analog aufgebaute
-Konfigurationen verwendet: \texttt{data\_semi.yaml} für das
-detektionsbasierte Pseudo-Labeling und \texttt{data\_tracking\_semi.yaml}
-für die tracking-basierte Label-Propagation. In beiden Fällen enthält das
-Trainingsset manuelle und automatisch erzeugte Labels, während das
-Validierungsset ausschließlich aus manuell annotierten Frames besteht.
-
-Bei der Konvertierung werden die Bounding-Boxen aus dem CVAT-XML-Format in
-das normierte YOLO-Format überführt. Eine Labelzeile besitzt die Form
-\texttt{class x\_center y\_center width height}, wobei alle Koordinaten relativ
-zur Bildbreite bzw.\ -höhe angegeben werden:
-
-\begin{figure}[H]
-\begin{Verbatim}[frame=single,fontsize=\small]
-5 0.512300 0.478900 0.043800 0.061200
-\end{Verbatim}
-\caption{Beispiel einer normierten YOLO-Labelzeile für die Klasse
-\texttt{watertank} (ID~5).}
-\label{lst:yolo_label}
-\end{figure}
-
-\subsection{Verzeichnisstruktur der Pipeline}
-\label{app:directory}
-
-Die einzelnen Verarbeitungsschritte erzeugen eine feste Verzeichnisstruktur.
-Abbildung~\ref{fig:directory_structure} zeigt die zentralen Ordner der
-Datenaufbereitungs- und Pseudo-Labeling-Pipeline.
-
-\begin{figure}[H]
-\begin{Verbatim}[frame=single,fontsize=\small]
-datasets/
-  merged_dataset/                    # manuell annotiertes Dataset
-    train/{images,labels}
-    val/{images,labels}
-  pseudo_dataset/                    # rohe Detection-Pseudo-Labels je Video
-  pseudo_dataset_split/              # klassenbalancierte Auswahl (Quota)
-  semi_supervised_dataset/           # manual + Detection-Pseudo, val nur manuell
-  tracking_pseudo_dataset/           # klassenbalancierte Tracking-Pseudo-Labels
-  tracking_semi_supervised_dataset/  # manual + Tracking-Pseudo, val nur manuell
-
-runs/
-  detect/train/weights/best.pt       # Baseline-Modell
-  pseudo/                            # Detection-Pseudo-Labels + target_config.json
-  pseudo_filtered/                   # confidence-gefilterte Pseudo-Labels
-  tracking_pseudo/                   # Tracking-Pseudo-Labels + Reports
-\end{Verbatim}
-\caption{Durch die Pipeline erzeugte Verzeichnisstruktur (vereinfacht).}
-\label{fig:directory_structure}
-\end{figure}
-
-\subsection{Trainings- und Hyperparameter}
-\label{app:hyperparams}
-
-Tabelle~\ref{tab:hyperparams} fasst die wichtigsten Hyperparameter der beiden
-Trainingsstufen zusammen. Das Fine-Tuning setzt auf den Gewichten des
-Basismodells auf und verwendet eine deutlich kleinere Lernrate sowie eine
-geringere Epochenzahl.
-
-\begin{table}[H]
+\begin{table}[htbp]
     \centering
-    \caption{Wichtigste Hyperparameter des Baseline- und des Fine-Tuning-Trainings.}
-    \label{tab:hyperparams}
-    \begin{tabular}{lll}
-        \toprule
-        \textbf{Parameter} & \textbf{Baseline} & \textbf{Fine-Tuning (Pseudo)} \\
-        \midrule
-        Ausgangsmodell        & \texttt{yolov8n.pt} & \texttt{best.pt} (Baseline) \\
-        Epochen               & 150                 & 30                 \\
-        Patience (Early Stop) & 30                  & 7                  \\
-        Batch-Größe           & 16                  & 16                 \\
-        Bildauflösung (imgsz) & 1024                & 1024               \\
-        Optimierer            & AdamW               & AdamW              \\
-        Lernrate (lr0)        & 0{,}001             & 0{,}0003           \\
-        Lernraten-Endfaktor (lrf) & 0{,}01          & 0{,}01             \\
-        Cosine-LR-Schedule    & ja                  & ja                 \\
-        Momentum              & 0{,}937             & 0{,}937            \\
-        Weight Decay          & 0{,}0005            & 0{,}0005           \\
-        Warmup-Epochen        & 3{,}0               & 3{,}0              \\
-        Box-/Cls-/DFL-Gewicht & 7{,}5 / 0{,}5 / 1{,}5 & 7{,}5 / 0{,}5 / 1{,}5 \\
-        Seed                  & 0                   & 0                  \\
-        \bottomrule
-    \end{tabular}
-\end{table}
-
-Tabelle~\ref{tab:augmentation} listet die eingesetzten Augmentierungsparameter
-auf, die für beide Trainingsstufen identisch sind.
-
-\begin{table}[H]
-    \centering
-    \caption{Verwendete Datenaugmentierungsparameter (Ultralytics YOLOv8).}
-    \label{tab:augmentation}
+    \caption{Konfiguration des YOLOv8-Trainings (Baseline).}
+    \label{tab:anhang_yolo_config}
     \begin{tabular}{ll}
         \toprule
         \textbf{Parameter} & \textbf{Wert} \\
         \midrule
-        HSV-Farbton (hsv\_h)      & 0{,}015 \\
-        HSV-Sättigung (hsv\_s)    & 0{,}7   \\
-        HSV-Helligkeit (hsv\_v)   & 0{,}4   \\
-        Translation (translate)   & 0{,}1   \\
-        Skalierung (scale)        & 0{,}5   \\
-        Horizontale Spiegelung (fliplr) & 0{,}5 \\
-        Mosaic                    & 1{,}0   \\
-        MixUp                     & 0{,}0   \\
-        Random Erasing            & 0{,}4   \\
-        Auto-Augment              & RandAugment \\
+        Modellvariante        & YOLOv8n (\texttt{yolov8n.pt}) \\
+        Bildgröße             & $1024 \times 1024$ \\
+        Epochen               & 150 \\
+        Batch Size            & 16 \\
+        Optimizer             & AdamW \\
+        Learning Rate (lr0)   & 0{,}001 \\
+        Confidence Threshold  & 0{,}25 (Inferenz) \\
+        IoU Threshold (NMS)   & 0{,}7 \\
         \bottomrule
     \end{tabular}
 \end{table}
 
-\subsection{Filter- und Auswahlparameter des Pseudo-Labelings}
-\label{app:filterparams}
+\subsection{Parameter der Pseudo-Label-Generierung}
 
-Die Qualität der automatisch erzeugten Labels wird über heuristische Kriterien
-gesteuert. Tabelle~\ref{tab:filterparams} fasst die Schwellenwerte der
-tracking-basierten Label-Propagation sowie der klassenbalancierten
-Frame-Auswahl zusammen.
+Bei der automatischen Erzeugung der Pseudo-Labels wurden ausschließlich
+Detektionen übernommen, die definierte Schwellenwerte hinsichtlich Konfidenz und
+Bounding-Box-Eigenschaften erfüllten. Detektionen unterhalb dieser Schwellen
+wurden verworfen, um die Qualität der erzeugten Labels sicherzustellen.
 
-\begin{table}[H]
+\begin{table}[htbp]
     \centering
-    \caption{Filter- und Auswahlparameter für die Pseudo-Label-Erzeugung.}
-    \label{tab:filterparams}
-    \begin{tabular}{lll}
+    \caption{Parameter der Pseudo-Label-Generierung.}
+    \label{tab:anhang_pseudo_params}
+    \begin{tabular}{ll}
         \toprule
-        \textbf{Parameter} & \textbf{Wert} & \textbf{Bedeutung} \\
+        \textbf{Parameter} & \textbf{Wert} \\
         \midrule
-        Tracker                 & \texttt{bytetrack.yaml} & Verwendetes Tracking-Verfahren \\
-        Detektions-Schwelle     & 0{,}25 & Eingangsschwelle für den Tracker \\
-        Min.\ Track-Länge       & 3      & Mindestanzahl sichtbarer Frames je Track \\
-        Min.\ Track-Konfidenz   & 0{,}60 & Schwelle für die mittlere Track-Konfidenz \\
-        Min.\ Klassenkonsistenz & 0{,}70 & Anteil der dominanten Klasse im Track \\
-        Min.\ Box-Konfidenz     & 0{,}60 & Schwelle je einzelner Bounding-Box \\
-        Zielanzahl je Klasse    & 800    & Angestrebte Boxen (manuell + Pseudo) \\
-        Max.\ Pseudo-Boxen/Klasse & 1000 & Obergrenze pro Klasse \\
-        Max.\ Pseudo-Frames     & 3000   & Obergrenze der ausgewählten Frames \\
+        Confidence Threshold  & 0{,}25 (Generierung), $\geq$ 0{,}60 (nach Filterung) \\
+        IoU Threshold (NMS)   & 0{,}7 \\
+        Minimale Boxgröße     & normierte Fläche $\geq 1\cdot10^{-6}$ \\
+        Maximale Boxgröße     & keine explizite Obergrenze \\
+        Verwendetes Modell    & Baseline-YOLOv8n (\texttt{best.pt}) \\
+        Bemerkung             & nur Zielklassen; klassenbalancierte Auswahl (Quota) \\
         \bottomrule
     \end{tabular}
 \end{table}
+
+\subsection{Parameter des Trackings}
+
+Zur zeitlichen Zuordnung von Detektionen in aufeinanderfolgenden Frames wurde
+das Tracking-Verfahren ByteTrack eingesetzt. Dadurch können Objekte über mehrere
+Frames hinweg konsistent verfolgt und die resultierenden Trajektorien für die
+Label-Propagation genutzt werden.
+
+\begin{table}[htbp]
+    \centering
+    \caption{Parameter des verwendeten Tracking-Verfahrens (ByteTrack).}
+    \label{tab:anhang_tracking_params}
+    \begin{tabular}{ll}
+        \toprule
+        \textbf{Parameter} & \textbf{Wert} \\
+        \midrule
+        Tracker          & ByteTrack (\texttt{bytetrack.yaml}) \\
+        Track Threshold  & 0{,}25 (Eingangs-Detektionsschwelle) \\
+        Match Threshold  & [WERT] (Standardwert \texttt{bytetrack.yaml}) \\
+        Track Buffer     & [WERT] (Standardwert \texttt{bytetrack.yaml}) \\
+        Frame Rate       & 29{,}97 FPS (Beispielvideo \texttt{video04\_regionB}) \\
+        Bemerkung        & Standardkonfiguration; \texttt{persist=True} \\
+        \bottomrule
+    \end{tabular}
+\end{table}
+
+\subsection{Verzeichnisstruktur}
+
+Die folgende, beispielhafte Verzeichnisstruktur veranschaulicht die Organisation
+der Daten und Zwischenergebnisse innerhalb des Projekts.
+
+\begin{verbatim}
+data/
+    frames/
+    labels/
+    pseudo_labels/
+    tracking/
+runs/
+scripts/
+README.md
+\end{verbatim}
 
 
 % =========================================================
 \section{Zusätzliche Ergebnisse}
 \label{app:ergebnisse}
 
-Dieser Anhang enthält ergänzende Abbildungen und Tabellen, die die im
-Ergebniskapitel (Abschnitt~\ref{sec:experiments}) dargestellten Auswertungen
-vertiefen, dort aus Platzgründen jedoch nicht aufgeführt wurden.
+Dieser Anhang enthält ergänzende Ergebnisdarstellungen, die die im
+Ergebniskapitel (Abschnitt~\ref{sec:experiments}) getroffenen Aussagen visuell
+untermauern. Die Abbildungen dienen der vertiefenden Betrachtung und ergänzen
+die im Haupttext gezeigten Auswertungen.
 
-\subsection{Baseline-Modell}
+\subsection{Ergänzende Trainingskurven}
 
-Abbildung~\ref{fig:app_baseline_train_batch} zeigt ein Beispiel der
-Trainingsstapel des Baseline-Modells. Deutlich erkennbar ist der Effekt der
-Mosaic-Augmentation, bei der jeweils vier Trainingsbilder zu einer Szene
-kombiniert werden.
+Die folgende Abbildung zeigt ergänzende Verläufe der Trainings- und
+Validierungsmetriken über die Epochen. Sie veranschaulicht das
+Konvergenzverhalten des Modells während des Trainings.
 
-\begin{figure}[H]
+% Alternativ vorhanden: figures/baseline/BoxP_curve.png, figures/baseline/BoxR_curve.png
+\begin{figure}[htbp]
     \centering
-    \includegraphics[width=0.9\textwidth]{figures/baseline/train_batch0.jpg}
-    \caption{Beispiel eines augmentierten Trainingsstapels des Baseline-Modells
-    (Mosaic-Augmentation).}
-    \label{fig:app_baseline_train_batch}
+    \anhangplaceholder{figures/appendix\_training\_curves.png}
+    \caption{Ergänzende Trainings- und Validierungskurven über den
+    Trainingsverlauf.}
+    \label{fig:anhang_training_curves}
 \end{figure}
 
-Die klassenweisen Precision- und Recall-Verläufe in
-Abbildung~\ref{fig:app_baseline_pr_curves} ergänzen die im Hauptteil
-dargestellte Precision-Recall-Kurve.
+\subsection{Ergänzende Konfusionsmatrizen}
 
-\begin{figure}[H]
+Die folgende Abbildung zeigt ergänzende Konfusionsmatrizen, die das
+Klassifikationsverhalten des Modells über die betrachteten Klassen hinweg
+darstellen und typische Verwechslungen zwischen Klassen sichtbar machen.
+
+\begin{figure}[htbp]
     \centering
-    \begin{subfigure}[b]{0.49\textwidth}
-        \includegraphics[width=\linewidth]{figures/baseline/BoxP_curve.png}
-        \caption{Precision-Confidence-Kurve}
-    \end{subfigure}
-    \hfill
-    \begin{subfigure}[b]{0.49\textwidth}
-        \includegraphics[width=\linewidth]{figures/baseline/BoxR_curve.png}
-        \caption{Recall-Confidence-Kurve}
-    \end{subfigure}
-    \caption{Klassenweise Precision- und Recall-Verläufe des Baseline-Modells.}
-    \label{fig:app_baseline_pr_curves}
+    \anhangplaceholder{figures/appendix\_confusion\_matrix.png}
+    \caption{Ergänzende Konfusionsmatrix zur Analyse des
+    Klassifikationsverhaltens des Modells.}
+    \label{fig:anhang_confusion_matrix}
 \end{figure}
 
-Abbildung~\ref{fig:app_baseline_val_batch1} zeigt einen weiteren qualitativen
-Vergleich zwischen Ground-Truth-Labels und Modellvorhersagen auf einem
-zusätzlichen Validierungsstapel.
+\subsection{Beispiele erfolgreicher und fehlerhafter Detektionen}
 
-\begin{figure}[H]
+Die folgende Abbildung zeigt beispielhafte Detektionsergebnisse auf
+Validierungsdaten. Neben korrekt erkannten Objekten werden auch typische
+Fehlerfälle sichtbar, wodurch Stärken und Grenzen des Modells qualitativ
+veranschaulicht werden.
+
+\begin{figure}[htbp]
     \centering
-    \begin{subfigure}[b]{\textwidth}
-        \includegraphics[width=\linewidth]{figures/baseline/val_batch1_labels.jpg}
-        \caption{Ground-Truth-Labels}
-    \end{subfigure}
-    \\[1ex]
-    \begin{subfigure}[b]{\textwidth}
-        \includegraphics[width=\linewidth]{figures/baseline/val_batch1_pred.jpg}
-        \caption{Modellvorhersagen}
-    \end{subfigure}
-    \caption{Zusätzlicher qualitativer Validierungsvergleich des Baseline-Modells.}
-    \label{fig:app_baseline_val_batch1}
+    \includegraphics[width=\textwidth]{figures/baseline/val_batch1_pred.jpg}
+    \caption{Beispiele erfolgreicher und fehlerhafter Detektionen des
+    Baseline-Modells auf einem Validierungsstapel.}
+    \label{fig:anhang_detection_examples}
 \end{figure}
 
-\subsection{Pseudo-Labeling-Stufe}
+\subsection{Beispiele der Tracking-basierten Label-Propagation}
 
-Analog zeigt Abbildung~\ref{fig:app_pseudo_pr_curves} die klassenweisen
-Precision- und Recall-Verläufe nach dem Fine-Tuning mit Pseudo-Labels.
+Die folgende Abbildung veranschaulicht die tracking-basierte Label-Propagation
+über aufeinanderfolgende Frames. Dargestellt wird, wie Detektionen mithilfe der
+Objektverfolgung zeitlich verknüpft und als Grundlage für die Erzeugung
+zusätzlicher Labels genutzt werden.
 
-\begin{figure}[H]
+% Alternativ vorhanden: figures/tracking/tracking_frame1.jpeg, figures/tracking/tracking_frame2.jpeg
+\begin{figure}[htbp]
     \centering
-    \begin{subfigure}[b]{0.49\textwidth}
-        \includegraphics[width=\linewidth]{figures/pseudo/BoxP_curve.png}
-        \caption{Precision-Confidence-Kurve}
-    \end{subfigure}
-    \hfill
-    \begin{subfigure}[b]{0.49\textwidth}
-        \includegraphics[width=\linewidth]{figures/pseudo/BoxR_curve.png}
-        \caption{Recall-Confidence-Kurve}
-    \end{subfigure}
-    \caption{Klassenweise Precision- und Recall-Verläufe der Pseudo-Labeling-Stufe.}
-    \label{fig:app_pseudo_pr_curves}
+    \anhangplaceholder{figures/appendix\_tracking\_propagation.png}
+    \caption{Beispiele der tracking-basierten Label-Propagation über
+    aufeinanderfolgende Frames.}
+    \label{fig:anhang_tracking_propagation}
 \end{figure}
-
-\subsection{Tracking-basierte Auswertung}
-
-Tabelle~\ref{tab:app_tracking_detail} zeigt die vollständige klassenweise
-Auswertung des Tracking-Laufs auf dem 4K-Drohnenvideo \texttt{video04\_regionB}
-(6.285 Frames, 51.867 Detektionen, 716 eindeutige Tracks).
-
-\begin{table}[H]
-    \centering
-    \caption{Klassenweise Tracking-Statistik für \texttt{video04\_regionB}
-    (YOLO + ByteTrack).}
-    \label{tab:app_tracking_detail}
-    \begin{tabular}{lrr}
-        \toprule
-        \textbf{Klasse} & \textbf{Detektionen} & \textbf{Eindeutige Tracks} \\
-        \midrule
-        watertank    & 42.135 & 498 \\
-        pool         & 4.147  & 47  \\
-        storm drain  & 2.682  & 68  \\
-        tire         & 1.284  & 33  \\
-        bucket       & 1.011  & 75  \\
-        plastic bag  & 608    & 3   \\
-        \midrule
-        \textbf{Summe} & \textbf{51.867} & \textbf{716} \\
-        \bottomrule
-    \end{tabular}
-\end{table}
 
 
 % =========================================================
 \section{Quellcode und Reproduzierbarkeit}
 \label{app:quellcode}
 
-Der im Rahmen dieser Arbeit entwickelte Quellcode ist öffentlich im folgenden
-GitHub-Repository verfügbar:
+Der im Rahmen dieser Arbeit entwickelte Quellcode wurde zusammen mit der
+digitalen Abgabe bereitgestellt und ist zusätzlich öffentlich unter
+\url{https://github.com/Berkekrd/semi-supervised-drone-annotation} verfügbar.
+Er umfasst Skripte zur Datenvorverarbeitung, zur Generierung der Pseudo-Labels,
+zum Objekttracking, zum Training des Modells sowie zur Evaluation der Ergebnisse.
 
-\begin{center}
-\url{https://github.com/Berkekrd/semi-supervised-drone-annotation}
-\end{center}
+Die wichtigsten Ausführungsschritte sowie die benötigten Abhängigkeiten sind in
+der beiliegenden README-Datei dokumentiert. Die abgegebene Version des
+Quellcodes entspricht dem Stand, der für die in dieser Arbeit beschriebenen
+Experimente verwendet wurde. Auf die vollständige Wiedergabe des Quellcodes
+innerhalb der Arbeit wird bewusst verzichtet; stattdessen wird auf die digitale
+Abgabe verwiesen.
 
-Das Repository enthält sämtliche Skripte der Verarbeitungspipeline, ein
-integriertes Jupyter-Notebook (\texttt{notebooks/pipeline.ipynb}) sowie eine
-ausführliche Beschreibung der Ausführung in den zugehörigen README-Dateien.
+Die folgende, beispielhafte Verzeichnisstruktur gibt einen Überblick über die
+Organisation des bereitgestellten Quellcodes.
 
-\subsection{Struktur des Repositorys}
-
-\begin{figure}[H]
-\begin{Verbatim}[frame=single,fontsize=\small]
+\begin{verbatim}
 semi-supervised-drone-annotation/
-  scripts/                 # Pipeline als nummerierte Skripte (main1 - main18)
-    main1.py ... main18.py
-    README.md
-  notebooks/
-    pipeline.ipynb         # gesamte Pipeline mit Erlaeuterungen
-  results/                 # Tracking-Ergebnisse (CSV, Summary, Reports)
-  thesis/                  # LaTeX-Quellen der Arbeit
-  Readme.md
-\end{Verbatim}
-\caption{Verzeichnisstruktur des Quellcode-Repositorys.}
-\label{fig:repo_structure}
-\end{figure}
-
-\subsection{Überblick über die Skripte der Pipeline}
-
-Tabelle~\ref{tab:script_overview} gibt einen Überblick über die 18 Skripte, die
-die vollständige Pipeline von der Datenaufbereitung bis zur Evaluation abbilden.
-
-\begin{table}[H]
-    \centering
-    \caption{Übersicht der Pipeline-Skripte (\texttt{main1}--\texttt{main18}).}
-    \label{tab:script_overview}
-    \begin{tabular}{lll}
-        \toprule
-        \textbf{Skript} & \textbf{Phase} & \textbf{Aufgabe} \\
-        \midrule
-        \texttt{main1}  & Datenaufbereitung & Validierung der Klassenzuordnung (CVAT-XML) \\
-        \texttt{main2}  & Datenaufbereitung & Konvertierung CVAT-XML $\rightarrow$ YOLO \\
-        \texttt{main3}  & Datenaufbereitung & Konsistenzprüfung der Image/Label-Paare \\
-        \texttt{main4}  & Datenaufbereitung & Train/Val-Split (80/20) \\
-        \texttt{main5}  & Baseline          & Training des Baseline-Modells \\
-        \texttt{main6}  & Detection-Pseudo  & Gezielte Pseudo-Label-Generierung \\
-        \texttt{main7}  & Detection-Pseudo  & Analyse und Threshold-Empfehlung \\
-        \texttt{main8}  & Detection-Pseudo  & Confidence-Filterung \\
-        \texttt{main9}  & Detection-Pseudo  & Aufbau des Pseudo-Datasets \\
-        \texttt{main10} & Detection-Pseudo  & Klassenbalancierte Auswahl (Quota) \\
-        \texttt{main11} & Detection-Pseudo  & Merge zum Semi-Supervised-Dataset \\
-        \texttt{main12} & Detection-Pseudo  & Fine-Tuning \\
-        \texttt{main13} & Tracking-Demo     & ByteTrack-Tracking mit GPS-Zuordnung \\
-        \texttt{main14} & Tracking-Pseudo   & Tracking-basierte Label-Propagation \\
-        \texttt{main15} & Tracking-Pseudo   & Balanciertes Tracking-Pseudo-Dataset \\
-        \texttt{main16} & Tracking-Pseudo   & Merge + Erzeugung der data.yaml \\
-        \texttt{main17} & Tracking-Pseudo   & Fine-Tuning (Tracking-Labels) \\
-        \texttt{main18} & Evaluation        & Vergleich aller drei Modelle \\
-        \bottomrule
-    \end{tabular}
-\end{table}
-
-\subsection{Ausführung}
-
-Für die Ausführung wird eine Python-Umgebung (Python~3.x) mit den Paketen
-\textit{Ultralytics YOLOv8}, \textit{PyTorch}, \textit{OpenCV} und
-\textit{pandas} benötigt. Die Skripte sind in der numerischen Reihenfolge
-(\texttt{main1} bis \texttt{main18}) auszuführen; die in den Skripten
-hinterlegten Pfade beziehen sich auf die ursprüngliche Arbeitsumgebung und
-müssen an die jeweilige Umgebung angepasst werden. Detaillierte Hinweise finden
-sich in der Datei \texttt{scripts/README.md} sowie in der übergeordneten
-\texttt{Readme.md} des Repositorys.
+    scripts/            # Pipeline als Skripte (main1.py ... main18.py)
+    notebooks/          # pipeline.ipynb (gesamte Pipeline)
+    results/            # Tracking-Ergebnisse (CSV, Reports)
+    thesis/             # LaTeX-Quellen der Arbeit
+    Readme.md
+\end{verbatim}
 
 
 % =========================================================
-\section{Eigenständigkeitserklärung}
-\label{app:erklaerung}
+\section*{Eigenständigkeitserklärung}
+\addcontentsline{toc}{section}{Eigenständigkeitserklärung}
 
-Hiermit versichere ich, dass ich die vorliegende Arbeit selbstständig verfasst
-und keine anderen als die angegebenen Quellen und Hilfsmittel benutzt habe.
-Alle Ausführungen, die anderen Schriften wörtlich oder sinngemäß entnommen
-wurden, sind kenntlich gemacht. Gleiches gilt auch für Zeichnungen, Skizzen,
-bildliche Darstellungen sowie für Quellen aus dem Internet und
-KI-basierte Anwendungen oder Werkzeuge. Die Arbeit wurde in gleicher oder
-ähnlicher Fassung noch nicht Bestandteil einer Studien- oder Prüfungsleistung.
-Die elektronische Fassung der Arbeit stimmt mit der gedruckten Version überein.
+Hiermit erkläre ich, dass ich die vorliegende Arbeit selbstständig und ohne
+unzulässige fremde Hilfe verfasst habe. Es wurden keine anderen als die
+angegebenen Quellen und Hilfsmittel benutzt. Alle Stellen der Arbeit, die
+wörtlich oder sinngemäß aus anderen Quellen übernommen wurden, sind als solche
+kenntlich gemacht. Die Arbeit wurde in gleicher oder ähnlicher Form noch keiner
+anderen Prüfungsbehörde vorgelegt und auch nicht veröffentlicht.
 
-\vspace{30mm}
+\vspace{2cm}
 
 \noindent
-\begin{minipage}[t]{6cm}
-    \centering
-    \hrulefill \\
-    Ort, Datum
-\end{minipage}
-\hfill
-\begin{minipage}[t]{6cm}
-    \centering
-    \hrulefill \\
-    Berke Karaduman
-\end{minipage}
+\begin{tabular}{@{}p{6cm}@{\hspace{2cm}}p{6cm}@{}}
+    \hrulefill & \hrulefill \\
+    {[ORT], [DATUM]} & {[VORNAME NACHNAME]} \\
+\end{tabular}
 
 \newpage
 \MSonehalfspacing
