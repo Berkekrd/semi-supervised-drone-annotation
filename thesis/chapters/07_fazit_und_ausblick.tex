@@ -1,47 +1,215 @@
 \section{Fazit und Ausblick}
 
-Ziel dieser Arbeit war die Untersuchung eines semi-supervisierten Ansatzes zur automatischen Annotation von UAV-Videodaten für die Detektion potenzieller Brutstätten von \textit{Aedes aegypti}. Im Mittelpunkt stand dabei die Frage, ob eine begrenzte Menge manuell annotierter Frames ausreicht, um ein YOLO-basiertes Objekterkennungsmodell zu trainieren, das anschließend zur automatischen Erweiterung des Trainingsdatensatzes eingesetzt werden kann. Zusätzlich wurde untersucht, inwieweit die zeitliche Struktur von Videodaten durch tracking-basierte Label-Propagation genutzt werden kann, um automatisch erzeugte Annotationen zu stabilisieren.
+Ziel dieser Arbeit war die Untersuchung eines semi-supervisierten Ansatzes zur
+automatischen Annotation von UAV-Videodaten für die Detektion potenzieller
+Brutstätten von \textit{Aedes aegypti}. Im Mittelpunkt stand die Frage, ob eine
+begrenzte Menge manuell annotierter Frames ausreicht, um ein YOLO-basiertes
+Objekterkennungsmodell zu trainieren und dieses anschließend zur automatischen
+Erweiterung des Trainingsdatensatzes einzusetzen. Zusätzlich wurde untersucht,
+inwieweit die zeitliche Struktur von Videodaten durch tracking-basierte
+Label-Propagation genutzt werden kann, um automatisch erzeugte Annotationen
+zu stabilisieren und als zusätzliche Trainingsdaten zu verwenden.
 
-Als Ausgangspunkt wurde ein Baseline-Modell auf manuell annotierten Frames des MBG-V2-Datensatzes trainiert. Dieses Modell diente als Referenz für die nachfolgenden semi-supervisierten Experimente. Anschließend wurden mit Hilfe des Baseline-Modells zusätzliche Pseudo-Labels auf nicht manuell annotierten Frames erzeugt und in einem erweiterten Trainingsdatensatz verwendet. Ergänzend wurde ein Tracking-Verfahren eingesetzt, um Detektionen über mehrere aufeinanderfolgende Frames hinweg zu verknüpfen und dadurch die zeitliche Konsistenz der automatischen Annotation qualitativ zu analysieren.
+Als Ausgangspunkt wurde ein Baseline-Modell auf manuell annotierten Frames des
+MBG-V2-Datensatzes trainiert. Dieses Modell diente als Referenz für die
+nachfolgenden semi-supervisierten Experimente. Anschließend wurden mithilfe des
+Baseline-Modells zusätzliche Pseudo-Labels auf nicht manuell annotierten Frames
+erzeugt und in einem erweiterten Trainingsdatensatz verwendet. In einem weiteren
+Schritt wurde ByteTrack eingesetzt, um Detektionen über mehrere
+aufeinanderfolgende Frames hinweg zu verknüpfen. Die daraus gewonnenen
+tracking-basierten Pseudo-Labels wurden gefiltert, mit den manuellen
+Trainingsdaten kombiniert und in einem eigenen Retraining-Schritt quantitativ
+evaluiert.
 
-Die Ergebnisse zeigen, dass das Baseline-Modell bereits eine brauchbare Ausgangsleistung erreicht. Über alle ausgewerteten Klassen hinweg wurde ein mAP@50-Wert von 0{,}545 erzielt. Der beste globale F1-Wert lag bei etwa 0{,}53. Besonders häufige und visuell klar erkennbare Klassen wie \textit{pool} und \textit{watertank} konnten vergleichsweise zuverlässig erkannt werden. Gleichzeitig zeigten sich deutliche Einschränkungen bei kleinen, seltenen oder visuell schwer unterscheidbaren Klassen. Diese Klassen wurden häufig mit dem Hintergrund verwechselt oder gar nicht erkannt.
+Die Ergebnisse zeigen, dass das ausschließlich auf manuellen Annotationen
+trainierte Baseline-Modell im finalen Vergleich die beste Gesamtleistung erreicht.
+Auf demselben manuell annotierten Validierungssplit erzielt es eine Precision von
+0{,}831, einen Recall von 0{,}485, einen mAP@50-Wert von 0{,}572 und einen
+mAP@50--95-Wert von 0{,}343. Besonders häufige und visuell klar erkennbare
+Klassen wie \textit{pool} und \textit{watertank} konnten vergleichsweise zuverlässig
+erkannt werden. Gleichzeitig zeigten sich deutliche Einschränkungen bei kleinen,
+seltenen oder visuell schwer unterscheidbaren Klassen. Diese Objekte wurden
+häufig mit dem Hintergrund verwechselt oder gar nicht erkannt.
 
-Die Pseudo-Labeling-Stufe führte zu einer deutlichen Erweiterung der Datenbasis. Insbesondere mehrere zuvor unterrepräsentierte Klassen wie \textit{bucket}, \textit{tire}, \textit{large trash bin} und \textit{plastic bag} erhielten zusätzliche Trainingsinstanzen. Die reine Erhöhung der Label-Anzahl führte jedoch nicht automatisch zu einer Verbesserung der Modellleistung. Der mAP@50-Wert der Pseudo-Labeling-Stufe lag mit 0{,}542 nahezu auf dem Niveau des Baseline-Modells, während der beste globale F1-Wert auf etwa 0{,}49 sank. Dieses Ergebnis zeigt, dass automatisch erzeugte Labels zwar die Klassenabdeckung verbessern können, gleichzeitig aber auch Rauschen und Fehlannotationen in den Trainingsprozess einbringen.
+Die detection-basierte Pseudo-Labeling-Stufe führte zu einer deutlichen
+Erweiterung der Datenbasis. Insbesondere mehrere zuvor unterrepräsentierte
+Klassen wie \textit{bucket}, \textit{tire}, \textit{large trash bin} und
+\textit{plastic bag} erhielten zusätzliche Trainingsinstanzen. Die reine Erhöhung
+der Label-Anzahl führte jedoch nicht automatisch zu einer Verbesserung der
+Modellleistung. Im finalen Vergleich erreichte das detection-basierte
+Pseudo-Labeling eine Precision von 0{,}692, einen Recall von 0{,}489, einen
+mAP@50-Wert von 0{,}564 und einen mAP@50--95-Wert von 0{,}323. Der Recall
+lag damit minimal über dem Baseline-Modell, während die Precision deutlich sank.
+Dieses Ergebnis zeigt, dass automatisch erzeugte Labels zwar die Klassenabdeckung
+verbessern können, gleichzeitig aber auch Rauschen und Fehlannotationen in den
+Trainingsprozess einbringen.
 
-Ein zentrales Ergebnis dieser Arbeit ist daher, dass die Qualität der Pseudo-Labels entscheidender ist als deren reine Anzahl. Wenn Fehlvorhersagen des Baseline-Modells ungefiltert oder nur schwach gefiltert in den erweiterten Trainingsdatensatz übernommen werden, können sich diese Fehler im anschließenden Training verstärken. Besonders sichtbar wurde dies bei False Positives für die Klasse \textit{watertank} sowie bei schwierigen Hintergrundstrukturen, die potenziellen Brutstätten visuell ähneln. Die Ergebnisse verdeutlichen damit eine typische Herausforderung semi-supervisierter Objekterkennung: Automatische Annotation kann den manuellen Aufwand reduzieren, erfordert jedoch geeignete Mechanismen zur Qualitätssicherung.
+Die tracking-basierte Label-Propagation erzeugte konservativere Pseudo-Labels.
+Das entsprechend trainierte Modell erreichte eine Precision von 0{,}765, einen
+Recall von 0{,}445, einen mAP@50-Wert von 0{,}543 und einen mAP@50--95-Wert
+von 0{,}327. Damit übertraf es das detection-basierte Pseudo-Labeling hinsichtlich
+Precision, blieb jedoch unterhalb des Baseline-Modells. Die Ergebnisse zeigen,
+dass Tracking zur Qualitätskontrolle automatisch erzeugter Labels beitragen kann,
+indem kurzlebige oder inkonsistente Einzelvorhersagen stärker herausgefiltert
+werden. Gleichzeitig reicht die tracking-basierte Filterung in der vorliegenden
+Konfiguration nicht aus, um die Leistung des manuell trainierten Baseline-Modells
+zu übertreffen.
 
-Die tracking-basierte Label-Propagation zeigte in der qualitativen Analyse, dass die zeitliche Struktur von UAV-Videos grundsätzlich einen Mehrwert bietet. Objekte, die über mehrere aufeinanderfolgende Frames hinweg stabil erkannt werden, können als zuverlässiger betrachtet werden als isolierte Einzelvorhersagen. Dadurch kann Tracking dazu beitragen, kurzzeitige instabile Detektionen zu erkennen und automatisch erzeugte Labels zeitlich zu plausibilisieren. Gleichzeitig ersetzt Tracking keine quantitative Modellbewertung. Für einen vollständigen Nachweis einer Leistungssteigerung wäre ein zusätzlicher Trainingslauf mit tracking-basiert propagierten Labels erforderlich, der anschließend auf demselben Validierungssplit evaluiert wird.
+Ein zentrales Ergebnis dieser Arbeit ist daher, dass die Qualität der Pseudo-Labels
+entscheidender ist als deren reine Anzahl. Wenn Fehlvorhersagen des
+Baseline-Modells ungefiltert oder nur schwach gefiltert in den erweiterten
+Trainingsdatensatz übernommen werden, können sich diese Fehler im
+anschließenden Training verstärken. Besonders sichtbar wurde dies bei False
+Positives für die Klasse \textit{watertank} sowie bei schwierigen
+Hintergrundstrukturen, die potenziellen Brutstätten visuell ähneln. Die Ergebnisse
+verdeutlichen damit eine typische Herausforderung semi-supervisierter
+Objekterkennung: Automatische Annotation kann den manuellen Aufwand
+reduzieren, erfordert jedoch geeignete Mechanismen zur Qualitätssicherung.
+
+Zusammenfassend zeigt diese Arbeit, dass semi-supervisierte Annotation mit
+Pseudo-Labeling und tracking-basierter Label-Propagation grundsätzlich geeignet
+ist, zusätzliche Trainingsdaten aus UAV-Videosequenzen zu erschließen. Die
+untersuchten Verfahren konnten die Datenbasis erweitern und typische Probleme
+automatischer Annotation sichtbar machen. Eine klare Leistungssteigerung
+gegenüber dem manuell trainierten Baseline-Modell wurde jedoch nicht erreicht.
+Tracking erwies sich dabei als hilfreicher Mechanismus zur konservativeren
+Auswahl von Pseudo-Labels, ersetzt aber keine sorgfältige Filterung, Validierung
+und gegebenenfalls manuelle Kontrolle automatisch erzeugter Annotationen.
 
 \subsection{Beantwortung der Forschungsfragen}
 
-Die erste Forschungsfrage bezog sich darauf, inwieweit ein YOLO-basiertes Baseline-Modell auf Grundlage einer begrenzten Menge manuell annotierter UAV-Frames potenzielle Brutstätten erkennen kann. Die Ergebnisse zeigen, dass dies grundsätzlich möglich ist. Das Baseline-Modell erreicht eine solide Ausgangsleistung und erkennt insbesondere häufige und visuell eindeutige Klassen zuverlässig. Gleichzeitig bleibt der Recall begrenzt, da kleine und seltene Objekte häufig übersehen werden.
+Die erste Forschungsfrage bezog sich darauf, inwieweit ein YOLO-basiertes
+Baseline-Modell auf Grundlage einer begrenzten Menge manuell annotierter
+UAV-Frames potenzielle Brutstätten erkennen kann. Die Ergebnisse zeigen, dass
+dies grundsätzlich möglich ist. Das Baseline-Modell erreicht im finalen Vergleich
+eine Precision von 0{,}831, einen Recall von 0{,}485, einen mAP@50-Wert von
+0{,}572 und einen mAP@50--95-Wert von 0{,}343. Besonders häufige und visuell
+eindeutige Klassen wie \textit{pool} und \textit{watertank} werden zuverlässig
+erkannt. Gleichzeitig bleibt der Recall begrenzt, da kleine und seltene Objekte
+häufig übersehen werden.
 
-Die zweite Forschungsfrage untersuchte, ob automatische Pseudo-Label-Generierung den Trainingsdatensatz sinnvoll erweitern und die Klassenabdeckung verbessern kann. Diese Frage kann teilweise positiv beantwortet werden. Die Pseudo-Labels erweiterten die Datenbasis deutlich und reduzierten die extreme Ungleichverteilung einzelner Klassen. Besonders unterrepräsentierte Klassen erhielten zusätzliche Beispiele. Allerdings war die Qualität dieser Labels nicht in allen Fällen ausreichend, um eine Verbesserung der Modellleistung zu erreichen.
+Die zweite Forschungsfrage untersuchte, ob automatische Pseudo-Label-Generierung
+den Trainingsdatensatz sinnvoll erweitern und die Klassenabdeckung verbessern
+kann. Diese Frage kann teilweise positiv beantwortet werden. Die Pseudo-Labels
+erweiterten die Datenbasis deutlich und reduzierten die extreme Ungleichverteilung
+mehrerer Klassen. Besonders unterrepräsentierte Klassen erhielten zusätzliche
+Beispiele. Allerdings war die Qualität dieser Labels nicht in allen Fällen
+ausreichend, um eine Verbesserung der Modellleistung zu erreichen.
 
-Die dritte Forschungsfrage betraf die Auswirkungen der Pseudo-Labels auf Precision, Recall, mAP@50 und mAP@50--95. Die Ergebnisse zeigen, dass die Pseudo-Labeling-Stufe trotz größerer Datenmenge keine klare Leistungssteigerung erzielte. Der mAP@50-Wert blieb nahezu unverändert, während der F1-Wert leicht sank. Dies deutet darauf hin, dass die zusätzlichen Labels teilweise fehlerhafte oder unsichere Annotationen enthielten und dadurch den Trainingsprozess nicht eindeutig verbesserten.
+Die dritte Forschungsfrage betraf die Auswirkungen der Pseudo-Labels auf
+Precision, Recall, mAP@50 und mAP@50--95. Die Ergebnisse zeigen, dass die
+detection-basierte Pseudo-Labeling-Stufe trotz größerer Datenmenge keine klare
+Leistungssteigerung erzielte. Zwar stieg der Recall im finalen Vergleich leicht von
+0{,}485 auf 0{,}489, gleichzeitig sank die Precision jedoch deutlich von 0{,}831
+auf 0{,}692. Auch der mAP@50--95-Wert lag mit 0{,}323 unter dem Wert des
+Baseline-Modells. Dies deutet darauf hin, dass die zusätzlichen Labels teilweise
+fehlerhafte oder unsichere Annotationen enthielten und dadurch den Trainingsprozess
+nicht eindeutig verbesserten.
 
-Die vierte Forschungsfrage bezog sich auf die tracking-basierte Label-Propagation. Die qualitative Analyse zeigt, dass Tracking einen sinnvollen Beitrag zur zeitlichen Stabilisierung von Detektionen leisten kann. Besonders bei Objekten, die über mehrere Frames hinweg sichtbar bleiben, können stabile Objekttracks als zusätzlicher Hinweis auf die Zuverlässigkeit einer Detektion dienen. Tracking ist daher insbesondere als ergänzende Qualitätskontrolle für automatisch erzeugte Labels geeignet.
+Die vierte Forschungsfrage bezog sich auf die tracking-basierte Label-Propagation.
+Die Ergebnisse zeigen, dass Tracking einen sinnvollen Beitrag zur zeitlichen
+Stabilisierung und Qualitätskontrolle automatisch erzeugter Detektionen leisten
+kann. Durch die Nutzung stabiler Objekttracks konnten konservativere
+Pseudo-Labels erzeugt werden. Das tracking-basierte Modell erreichte eine
+Precision von 0{,}765 und lag damit deutlich über dem detection-basierten
+Pseudo-Labeling. Gleichzeitig blieb es mit einem Recall von 0{,}445, einem
+mAP@50-Wert von 0{,}543 und einem mAP@50--95-Wert von 0{,}327 unterhalb
+des Baseline-Modells. Tracking verbessert somit die Zuverlässigkeit der
+Pseudo-Label-Auswahl, führte in dieser Arbeit jedoch nicht zu einer höheren
+Gesamtleistung als das manuell trainierte Modell.
 
-Die fünfte Forschungsfrage untersuchte typische Fehlerquellen bei der automatischen Annotation von UAV-Videodaten. Als zentrale Fehlerquellen wurden kleine Objektgrößen, komplexe Hintergrundstrukturen, Klassenungleichgewicht, visuell ähnliche Objekte und instabile Detektionen identifiziert. Besonders problematisch sind Objekte, die nur wenige Pixel groß sind oder sich farblich und strukturell kaum vom Hintergrund unterscheiden.
+Die fünfte Forschungsfrage untersuchte typische Fehlerquellen bei der
+automatischen Annotation von UAV-Videodaten. Als zentrale Fehlerquellen wurden
+kleine Objektgrößen, komplexe Hintergrundstrukturen, Klassenungleichgewicht,
+visuell ähnliche Objekte und instabile Detektionen identifiziert. Besonders
+problematisch sind Objekte, die nur wenige Pixel groß sind oder sich farblich und
+strukturell kaum vom Hintergrund unterscheiden. Die Fehleranalyse zeigt, dass
+viele Probleme nicht primär durch falsche Klassenzuordnungen zwischen
+Objektklassen entstehen, sondern durch nicht erkannte Objekte und Verwechslungen
+mit dem Hintergrund.
 
 \subsection{Limitationen}
 
-Die Ergebnisse dieser Arbeit müssen im Kontext mehrerer Einschränkungen betrachtet werden. Erstens basiert die Auswertung auf einer begrenzten Menge manuell annotierter Daten. Obwohl der MBG-V2-Datensatz umfangreiche UAV-Videodaten enthält, sind nicht alle Frames vollständig manuell annotiert. Dadurch bleibt die verfügbare Menge zuverlässiger Ground-Truth-Daten begrenzt.
+Die Ergebnisse dieser Arbeit müssen im Kontext mehrerer Einschränkungen
+betrachtet werden. Erstens basiert die Auswertung auf einer begrenzten Menge
+manuell annotierter Daten. Obwohl der MBG-V2-Datensatz umfangreiche
+UAV-Videodaten enthält, sind nicht alle Frames vollständig manuell annotiert.
+Dadurch bleibt die verfügbare Menge zuverlässiger Ground-Truth-Daten begrenzt.
 
-Zweitens ist die Klassenverteilung stark unausgewogen. Die Klasse \textit{watertank} ist deutlich häufiger vertreten als mehrere andere Klassen. Diese Ungleichverteilung beeinflusst sowohl das Training als auch die Evaluation. Häufige Klassen werden stabiler gelernt, während seltene Klassen nur eingeschränkt bewertet werden können.
+Zweitens ist die Klassenverteilung stark unausgewogen. Die Klasse
+\textit{watertank} ist deutlich häufiger vertreten als mehrere andere Klassen. Diese
+Ungleichverteilung beeinflusst sowohl das Training als auch die Evaluation.
+Häufige Klassen werden stabiler gelernt, während seltene Klassen nur eingeschränkt
+bewertet werden können. Besonders die Ergebnisse für Klassen mit sehr wenigen
+Validierungsinstanzen, etwa \textit{bottle}, \textit{plastic bag} oder
+\textit{large trash bin}, müssen daher vorsichtig interpretiert werden.
 
-Drittens wurden die Pseudo-Labels in dieser Arbeit nur mit einfachen Filterstrategien verwendet. Eine feinere Qualitätskontrolle, beispielsweise durch klassenabhängige Confidence-Schwellenwerte oder eine manuelle Stichprobenprüfung, wurde nicht vollständig ausgeschöpft. Dadurch konnten fehlerhafte Pseudo-Labels in den erweiterten Trainingsdatensatz gelangen.
+Drittens wurden die Pseudo-Labels in dieser Arbeit mit vergleichsweise einfachen
+Filterstrategien erzeugt. Eine feinere Qualitätskontrolle, beispielsweise durch
+klassenabhängige Confidence-Schwellenwerte, automatische Unsicherheitsmaße oder
+eine systematische manuelle Stichprobenprüfung, wurde nicht vollständig
+ausgeschöpft. Dadurch konnten fehlerhafte Pseudo-Labels in den erweiterten
+Trainingsdatensatz gelangen.
 
-Viertens wurde die tracking-basierte Label-Propagation qualitativ untersucht, jedoch nicht vollständig als eigener retrainierter Modellschritt quantitativ ausgewertet. Die Tracking-Ergebnisse zeigen zwar den Nutzen zeitlicher Konsistenz, erlauben aber keinen direkten Vergleich in Form eines zusätzlichen mAP-Wertes.
+Viertens konnte die tracking-basierte Label-Propagation das Baseline-Modell nicht
+übertreffen. Obwohl sie quantitativ durch einen eigenen Retraining-Schritt
+ausgewertet wurde und eine höhere Precision als das detection-basierte
+Pseudo-Labeling erreichte, blieb die Gesamtleistung unterhalb des manuell
+trainierten Modells. Dies zeigt, dass zeitliche Konsistenz allein nicht ausreicht,
+wenn die zugrunde liegenden Detektionen unsicher sind oder kleine Objekte bereits
+vom Baseline-Modell häufig übersehen werden.
+
+Fünftens beschränkt sich die Arbeit auf eine ausgewählte Trainings- und
+Filterkonfiguration. Andere YOLO-Modellgrößen, höhere Eingangsauflösungen,
+Patch-basierte Verfahren oder alternative Tracking-Algorithmen wurden nicht
+systematisch verglichen. Die Ergebnisse sind daher als experimentelle Bewertung
+des vorgeschlagenen Workflows zu verstehen und nicht als abschließende
+Optimierung aller möglichen Modell- und Filtervarianten.
 
 \subsection{Ausblick}
 
-Aufbauend auf den Ergebnissen dieser Arbeit ergeben sich mehrere Ansätze für zukünftige Arbeiten. Ein wichtiger nächster Schritt besteht in einer stärkeren Qualitätskontrolle der Pseudo-Labels. Dazu könnten höhere oder klassenabhängige Confidence-Schwellenwerte eingesetzt werden. Für häufige Klassen wie \textit{watertank} könnte ein strengerer Schwellenwert sinnvoll sein, um False Positives zu reduzieren. Für seltene Klassen könnten dagegen angepasste Strategien erforderlich sein, um genügend zusätzliche Trainingsbeispiele zu erhalten, ohne zu viele Fehlannotationen zu übernehmen.
+Aufbauend auf den Ergebnissen dieser Arbeit ergeben sich mehrere Ansätze für
+zukünftige Arbeiten. Ein wichtiger nächster Schritt besteht in einer stärkeren
+Qualitätskontrolle der Pseudo-Labels. Dazu könnten höhere oder klassenabhängige
+Confidence-Schwellenwerte eingesetzt werden. Für häufige Klassen wie
+\textit{watertank} könnte ein strengerer Schwellenwert sinnvoll sein, um False
+Positives zu reduzieren. Für seltene Klassen könnten dagegen angepasste Strategien
+erforderlich sein, um genügend zusätzliche Trainingsbeispiele zu erhalten, ohne zu
+viele Fehlannotationen zu übernehmen.
 
-Ein weiterer vielversprechender Ansatz ist die systematische Nutzung tracking-basierter Kriterien. Pseudo-Labels könnten nur dann in den Trainingsdatensatz übernommen werden, wenn sie über mehrere Frames hinweg stabil verfolgt werden. Dadurch ließen sich kurzlebige Einzelvorhersagen und instabile False Positives reduzieren. Zusätzlich könnten Tracklänge, mittlere Konfidenz und räumliche Stabilität als Kriterien für die Label-Qualität verwendet werden.
+Ein weiterer Ansatz ist die systematische Weiterentwicklung tracking-basierter
+Filterkriterien. In dieser Arbeit wurden Tracklänge, mittlere Konfidenz und
+Klassenkonsistenz zur Auswahl tracking-basierter Pseudo-Labels genutzt. Zukünftige
+Arbeiten könnten diese Kriterien erweitern, beispielsweise durch räumliche
+Stabilitätsmaße, Bewegungsmodelle, Track-Unterbrechungen oder Unsicherheitsmaße
+über mehrere Frames hinweg. Dadurch ließen sich kurzlebige Einzelvorhersagen
+und instabile False Positives möglicherweise noch zuverlässiger reduzieren.
 
-Darüber hinaus könnte der Datensatz durch zusätzliche manuell annotierte Videosequenzen erweitert werden. Besonders für seltene und kleine Klassen wäre eine gezielte Erweiterung sinnvoll. Eine größere und ausgewogenere Datenbasis könnte die Erkennung schwieriger Klassen verbessern und gleichzeitig die Qualität der automatisch erzeugten Labels erhöhen.
+Darüber hinaus könnte der Datensatz durch zusätzliche manuell annotierte
+Videosequenzen erweitert werden. Besonders für seltene und kleine Klassen wäre
+eine gezielte Erweiterung sinnvoll. Eine größere und ausgewogenere Datenbasis
+könnte die Erkennung schwieriger Klassen verbessern und gleichzeitig die Qualität
+der automatisch erzeugten Labels erhöhen.
 
-Auch eine weiterführende Modelloptimierung wäre denkbar. Dazu gehören alternative YOLO-Modellgrößen, angepasste Bildauflösungen, Patch-basierte Verarbeitung großer UAV-Bilder oder spezialisierte Augmentierungsstrategien für kleine Objekte. Gerade bei UAV-Aufnahmen kann eine höhere Eingangsauflösung oder eine Aufteilung der Bilder in kleinere Ausschnitte helfen, kleine Objekte besser sichtbar zu machen.
+Auch eine weiterführende Modelloptimierung wäre denkbar. Dazu gehören
+alternative YOLO-Modellgrößen, angepasste Bildauflösungen, Patch-basierte
+Verarbeitung großer UAV-Bilder oder spezialisierte Augmentierungsstrategien für
+kleine Objekte. Gerade bei UAV-Aufnahmen kann eine höhere Eingangsauflösung
+oder eine Aufteilung der Bilder in kleinere Ausschnitte helfen, kleine Objekte
+besser sichtbar zu machen.
 
-Zusammenfassend zeigt diese Arbeit, dass semi-supervisierte Annotation mit Pseudo-Labeling und Tracking ein vielversprechender Ansatz zur Reduktion manuellen Annotierungsaufwands in UAV-Videodaten ist. Gleichzeitig machen die Ergebnisse deutlich, dass automatische Labels nicht unkritisch übernommen werden dürfen. Entscheidend für den Erfolg des Ansatzes ist eine kontrollierte Auswahl qualitativ hochwertiger Pseudo-Labels. Tracking-basierte zeitliche Konsistenz stellt hierfür einen sinnvollen ergänzenden Mechanismus dar und bietet eine wichtige Grundlage für zukünftige Verbesserungen automatischer Annotationsverfahren in videobasierten UAV-Datensätzen.
+Zusätzlich könnten zukünftige Arbeiten die tracking-basierte Label-Propagation
+mit aktiven Lernstrategien kombinieren. Dabei könnten besonders unsichere oder
+widersprüchliche Tracks gezielt für eine manuelle Nachkontrolle ausgewählt
+werden. Auf diese Weise ließe sich der manuelle Annotierungsaufwand weiterhin
+begrenzen, während die Qualität der Trainingsdaten gezielt verbessert wird.
+
+Zusammenfassend zeigt diese Arbeit, dass semi-supervisierte Annotation mit
+Pseudo-Labeling und Tracking ein vielversprechender Ansatz zur Reduktion
+manuellen Annotierungsaufwands in UAV-Videodaten ist. Gleichzeitig machen die
+Ergebnisse deutlich, dass automatische Labels nicht unkritisch übernommen werden
+dürfen. Entscheidend für den Erfolg des Ansatzes ist eine kontrollierte Auswahl
+qualitativ hochwertiger Pseudo-Labels. Tracking-basierte zeitliche Konsistenz
+stellt hierfür einen sinnvollen ergänzenden Mechanismus dar und bietet eine
+wichtige Grundlage für zukünftige Verbesserungen automatischer
+Annotationsverfahren in videobasierten UAV-Datensätzen.

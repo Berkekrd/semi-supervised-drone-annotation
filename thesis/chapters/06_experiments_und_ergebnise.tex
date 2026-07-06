@@ -360,56 +360,169 @@ Insgesamt zeigt dieses Experiment, dass die automatische Pseudo-Label-Generierun
 
 \subsection{Ergebnisse der tracking-basierten Label-Propagation}
 
-Ziel dieses Experiments war nicht die erneute Optimierung des Detektionsmodells, sondern die qualitative Bewertung der Tracking-Leistung im Hinblick auf eine konsistente Objektverfolgung über mehrere aufeinanderfolgende Frames. Da die Objektverfolgung direkt auf den UAV-Videosequenzen durchgeführt wurde, erfolgt die Bewertung anhand repräsentativer Frame-Sequenzen. Dadurch lässt sich untersuchen, ob erkannte Objekte trotz Kamerabewegung und wechselnder Perspektiven über mehrere Frames hinweg konsistent verfolgt werden können.
+In diesem Experiment wurde untersucht, ob die zeitliche Struktur der UAV-Videos
+zur Erzeugung zuverlässigerer Pseudo-Labels genutzt werden kann. Im Unterschied
+zur rein detection-basierten Pseudo-Labeling-Stufe wurden die automatisch
+erzeugten Detektionen nicht nur anhand ihrer Konfidenz bewertet, sondern zusätzlich
+mithilfe von ByteTrack über mehrere aufeinanderfolgende Frames hinweg verfolgt.
+Dadurch konnten stabile Objekttracks identifiziert und kurzlebige oder inkonsistente
+Einzelvorhersagen aus dem Pseudo-Labeling-Prozess ausgeschlossen werden.
 
-\subsubsection{Tracking-Auswertung}
+\subsubsection{Erzeugung tracking-basierter Pseudo-Labels}
 
-Nach Abschluss der Objekterkennung wurde die Tracking-Komponente auf die vollständige UAV-Videosequenz angewendet. Während dieses Prozesses wurde zusätzlich ein automatischer Tracking-Bericht erzeugt, der statistische Informationen über die verarbeiteten Frames, die Anzahl der Detektionen sowie die erzeugten Objekttracks enthält. Diese Auswertung dient als quantitative Zusammenfassung der Tracking-Ausführung und ergänzt die anschließende qualitative Analyse.
+Für die tracking-basierte Label-Propagation wurde das Baseline-Modell zunächst
+auf vier UAV-Videosequenzen angewendet. Die daraus resultierenden Detektionen
+wurden anschließend mit ByteTrack zu Objekttracks verknüpft. Zur Qualitätskontrolle
+wurden nur solche Tracks übernommen, die eine Mindestlänge, eine ausreichende
+mittlere Konfidenz sowie eine konsistente Klassenzuordnung aufwiesen.
 
-\begin{table}[htbp]
+Insgesamt wurden 10\,746 Kandidatenframes mit tracking-basierten Pseudo-Labels
+erzeugt. Da die vollständige Übernahme aller automatisch erzeugten Labels zu einer
+erneuten Verstärkung dominanter Klassen geführt hätte, wurde anschließend eine
+klassenbasierte Auswahl durchgeführt. Dabei wurden insbesondere unterrepräsentierte
+Klassen wie \textit{bucket}, \textit{tire}, \textit{large trash bin} und
+\textit{plastic bag} gezielt berücksichtigt. Nach dieser Auswahl wurden 1\,192 Frames
+mit tracking-basierten Pseudo-Labels in den Trainingsdatensatz übernommen.
+
+\begin{table}[H]
     \centering
-    \caption{Zusammenfassung der Tracking-Auswertung über die gesamte Videosequenz}
-    \label{tab:tracking_summary}
+    \caption{Ausgewählte tracking-basierte Pseudo-Labels nach Klassen}
+    \label{tab:tracking_pseudo_distribution}
+    \begin{tabular}{lrrr}
+        \hline
+        \textbf{Klasse}          & \textbf{Manuelle Instanzen} & \textbf{Tracking-Pseudo-Labels} & \textbf{Gesamt} \\
+        \hline
+        \textit{pool}            & 310                         & 490                             & 800             \\
+        \textit{bucket}          & 204                         & 482                             & 686             \\
+        \textit{tire}            & 390                         & 410                             & 800             \\
+        \textit{large trash bin} & 50                          & 339                             & 389             \\
+        \textit{plastic bag}     & 26                          & 510                             & 536             \\
+        \textit{storm drain}     & 677                         & 123                             & 800             \\
+        \hline
+    \end{tabular}
+\end{table}
+
+Die Tabelle zeigt, dass die tracking-basierte Label-Propagation insbesondere zur
+Erweiterung mehrerer unterrepräsentierter Klassen beiträgt. Für einige Klassen,
+etwa \textit{bucket}, \textit{large trash bin} und \textit{plastic bag}, konnte die
+angestrebte Zielanzahl jedoch nicht vollständig erreicht werden, da nach der
+Track-Filterung nicht genügend geeignete Pseudo-Labels verfügbar waren. Dies
+zeigt, dass die tracking-basierte Auswahl konservativer arbeitet und nicht jede
+automatisch erzeugte Detektion in den Trainingsdatensatz übernimmt.
+
+\subsubsection{Quantitative Modellleistung nach Retraining}
+
+Zur quantitativen Bewertung der tracking-basierten Label-Propagation wurde ein
+weiteres YOLO-Modell trainiert. Der Trainingsdatensatz bestand aus den manuell
+annotierten Trainingsframes sowie den ausgewählten tracking-basierten
+Pseudo-Labels. Die Validierung erfolgte unverändert auf demselben manuell
+annotierten Validierungssplit wie bei den vorherigen Experimenten. Dadurch ist
+ein direkter Vergleich zwischen Baseline-Modell, detection-basiertem Pseudo-Labeling
+und tracking-basierter Label-Propagation möglich.
+
+Das tracking-basierte Modell erreicht eine Precision von 0{,}765, einen Recall von
+0{,}445, einen mAP@50-Wert von 0{,}543 und einen mAP@50--95-Wert von 0{,}327.
+
+\begin{table}[H]
+    \centering
+    \caption{Kennzahlen des Modells mit tracking-basierter Label-Propagation}
+    \label{tab:tracking_metrics}
     \begin{tabular}{lr}
         \hline
-        \textbf{Kennzahl}       & \textbf{Wert} \\
+        \textbf{Metrik} & \textbf{Wert} \\
         \hline
-        Verarbeitete Frames     & 6285          \\
-        Detektionen insgesamt   & 51\,867       \\
-        Eindeutige Objekttracks & 716           \\
+        Precision       & 0{,}765       \\
+        Recall          & 0{,}445       \\
+        mAP@50          & 0{,}543       \\
+        mAP@50--95      & 0{,}327       \\
         \hline
     \end{tabular}
 \end{table}
 
-Insgesamt wurden 6285 Frames verarbeitet und dabei 51\,867 Objektdetektionen erzeugt. Diese wurden durch das Tracking-Verfahren zu 716 eindeutigen Objekttracks zusammengeführt. Die Ergebnisse zeigen, dass das Verfahren auch bei langen UAV-Videosequenzen eine kontinuierliche Zuordnung wiederkehrender Objekte ermöglicht.
+Die Ergebnisse zeigen, dass die tracking-basierte Label-Propagation keine
+Verbesserung gegenüber dem ausschließlich manuell trainierten Baseline-Modell
+erzielt. Gleichzeitig fällt die Precision höher aus als beim detection-basierten
+Pseudo-Labeling. Dies deutet darauf hin, dass die Nutzung von Track-Identitäten
+und zeitlicher Konsistenz zu einer konservativeren Auswahl der Pseudo-Labels
+führt. Die zusätzlichen Labels sind dadurch tendenziell zuverlässiger als bei der
+rein detection-basierten Variante, reichen jedoch nicht aus, um die Leistung des
+Baseline-Modells zu übertreffen.
 
-\subsubsection{Klassenbezogene Tracking-Statistik}
+\subsubsection{Klassenweise Ergebnisse}
 
-Neben den Gesamtkennzahlen liefert der Tracking-Bericht eine klassenbezogene Aufschlüsselung der Detektionen und der erzeugten Objekttracks. Tabelle~\ref{tab:tracking_classstats} fasst diese Werte zusammen.
+Die klassenweise Auswertung zeigt, dass auch das tracking-basierte Modell vor
+allem bei häufigen und visuell klar erkennbaren Klassen gute Ergebnisse erzielt.
+Insbesondere \textit{pool} und \textit{watertank} werden weiterhin vergleichsweise
+zuverlässig erkannt. Schwieriger bleiben dagegen kleinere oder visuell weniger
+eindeutige Klassen wie \textit{bucket}, \textit{tire} und \textit{storm drain}.
 
-\begin{table}[htbp]
+\begin{table}[H]
     \centering
-    \caption{Klassenbezogene Tracking-Statistik der ausgewerteten Videosequenz}
-    \label{tab:tracking_classstats}
-    \begin{tabular}{lrr}
+    \caption{Klassenweise Ergebnisse des Modells mit tracking-basierter Label-Propagation}
+    \label{tab:tracking_classwise_metrics}
+    \begin{tabular}{lrrrr}
         \hline
-        \textbf{Klasse} & \textbf{Detektionen} & \textbf{Tracks} \\
+        \textbf{Klasse}          & \textbf{Precision} & \textbf{Recall} & \textbf{mAP@50} & \textbf{mAP@50--95} \\
         \hline
-        watertank       & 42\,135              & 498             \\
-        pool            & 4\,147               & 47              \\
-        storm drain     & 2\,682               & 68              \\
-        tire            & 1\,284               & 33              \\
-        bucket          & 1\,011               & 75              \\
-        plastic bag     & 608                  & 3               \\
+        \textit{pool}            & 0{,}816            & 0{,}825         & 0{,}861         & 0{,}675             \\
+        \textit{bottle}          & 1{,}000            & 0{,}000         & 0{,}536         & 0{,}141             \\
+        \textit{bucket}          & 0{,}875            & 0{,}262         & 0{,}357         & 0{,}196             \\
+        \textit{tire}            & 0{,}735            & 0{,}469         & 0{,}483         & 0{,}208             \\
+        \textit{watertank}       & 0{,}876            & 0{,}672         & 0{,}703         & 0{,}580             \\
+        \textit{large trash bin} & 0{,}817            & 0{,}429         & 0{,}427         & 0{,}328             \\
+        \textit{plastic bag}     & 0{,}388            & 0{,}500         & 0{,}497         & 0{,}298             \\
+        \textit{storm drain}     & 0{,}616            & 0{,}401         & 0{,}483         & 0{,}192             \\
         \hline
     \end{tabular}
 \end{table}
 
-Die Klassenstatistik zeigt deutliche Unterschiede zwischen den Objektklassen. Die Klasse \textit{watertank} dominiert sowohl hinsichtlich der Anzahl der Detektionen als auch der erzeugten Objekttracks. Seltene Klassen wie \textit{plastic bag} erzeugen dagegen nur wenige stabile Tracks. Dieses Verhalten entspricht der zuvor beobachteten Klassenverteilung des Datensatzes und bestätigt, dass häufig vertretene Klassen robuster verfolgt werden können.
+Die Werte für \textit{bottle}, \textit{plastic bag} und \textit{large trash bin} müssen
+vorsichtig interpretiert werden, da diese Klassen im Validierungssplit nur mit sehr
+wenigen Instanzen vertreten sind. Aussagekräftiger sind die Ergebnisse für stärker
+vertretene Klassen wie \textit{pool}, \textit{watertank}, \textit{tire} und
+\textit{storm drain}. Hier zeigt sich, dass das Modell insbesondere bei kleinen oder
+hintergrundähnlichen Objekten weiterhin einen begrenzten Recall aufweist. Die
+Hauptschwierigkeit besteht somit nicht primär in einer falschen Klassenzuordnung,
+sondern im Übersehen vorhandener Objekte.
 
-\subsubsection{Qualitative Analyse}
+\subsubsection{Fehleranalyse anhand der Konfusionsmatrix}
 
-Abbildung~\ref{fig:tracking_sequence} zeigt zwei aufeinanderfolgende Frames derselben Videosequenz. Trotz der kontinuierlichen Bewegung der Drohne behalten mehrere Objekte ihre Track-ID über beide Frames hinweg bei. Beispielsweise werden die Objekte der Klasse \textit{pool} mit den Track-IDs 14, 18 und 19 sowie die Objekte der Klasse \textit{watertank} mit den IDs 1, 4 und 8 in beiden Frames konsistent erkannt und verfolgt. Die gleichbleibenden Track-IDs zeigen, dass das eingesetzte Tracking-Verfahren die Zuordnung derselben Objekte über aufeinanderfolgende Frames zuverlässig aufrechterhalten kann.
+Zur weiteren Analyse der Fehlerstruktur wurde die Konfusionsmatrix des
+tracking-basierten Modells betrachtet. Sie zeigt, dass auch nach der
+tracking-basierten Filterung weiterhin viele Fehler durch nicht erkannte Objekte
+entstehen. Dies betrifft insbesondere kleinere oder visuell schwer unterscheidbare
+Klassen wie \textit{bucket}, \textit{tire} und \textit{storm drain}. Diese Objekte sind
+in UAV-Aufnahmen häufig klein, kontrastarm oder in komplexe Hintergrundstrukturen
+eingebettet.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.85\textwidth]{figures/tracking/tracking_confusion_matrix.png}
+    \caption{Konfusionsmatrix des Modells mit tracking-basierter Label-Propagation.}
+    \label{fig:tracking_confusion_matrix}
+\end{figure}
+
+Im Vergleich zum detection-basierten Pseudo-Labeling fällt die Precision des
+tracking-basierten Modells höher aus. Dies deutet darauf hin, dass durch die
+Track-Filterung ein Teil unsicherer Fehlvorhersagen reduziert werden konnte.
+Gleichzeitig bleibt der Recall niedriger als beim Baseline-Modell. Die
+Konfusionsmatrix bestätigt damit die bereits aus den Metriken sichtbare
+Tendenz: Tracking führt zu einer konservativeren Pseudo-Label-Auswahl, kann
+aber das grundlegende Problem übersehener kleiner Objekte nicht vollständig
+lösen.
+
+\subsubsection{Qualitative Analyse der Tracking-Ergebnisse}
+
+Neben der quantitativen Modellbewertung wurde die zeitliche Konsistenz der
+Objektverfolgung qualitativ anhand repräsentativer Frame-Sequenzen untersucht.
+Abbildung~\ref{fig:tracking_sequence} zeigt zwei aufeinanderfolgende Frames
+derselben Videosequenz. Trotz der kontinuierlichen Bewegung der Drohne behalten
+mehrere Objekte ihre Track-ID über beide Frames hinweg bei. Beispielsweise werden
+die Objekte der Klasse \textit{pool} mit den Track-IDs 14, 18 und 19 sowie die
+Objekte der Klasse \textit{watertank} mit den IDs 1, 4 und 8 in beiden Frames
+konsistent erkannt und verfolgt. Die gleichbleibenden Track-IDs zeigen, dass das
+eingesetzte Tracking-Verfahren die Zuordnung derselben Objekte über
+aufeinanderfolgende Frames zuverlässig aufrechterhalten kann.
 
 \begin{figure}[H]
     \centering
@@ -430,74 +543,175 @@ Abbildung~\ref{fig:tracking_sequence} zeigt zwei aufeinanderfolgende Frames ders
     \label{fig:tracking_sequence}
 \end{figure}
 
-Darüber hinaus zeigt die Sequenz, dass neue Track-IDs entstehen können, wenn Objekte erstmals in den sichtbaren Bildbereich eintreten oder zuvor aufgrund der Kameraperspektive nicht eindeutig detektiert werden konnten. Im gezeigten Beispiel erscheint zusätzlich ein weiterer \textit{watertank}, der als neuer Track initialisiert wird. Dieses Verhalten entspricht dem erwarteten Arbeitsprinzip moderner Multi-Object-Tracking-Verfahren und stellt keinen Trackingfehler dar.
+Darüber hinaus zeigt die Sequenz, dass neue Track-IDs entstehen können, wenn
+Objekte erstmals in den sichtbaren Bildbereich eintreten oder zuvor aufgrund der
+Kameraperspektive nicht eindeutig detektiert werden konnten. Im gezeigten Beispiel
+erscheint zusätzlich ein weiterer \textit{watertank}, der als neuer Track initialisiert
+wird. Dieses Verhalten entspricht dem erwarteten Arbeitsprinzip moderner
+Multi-Object-Tracking-Verfahren und stellt keinen Trackingfehler dar.
 
-Die Ergebnisse verdeutlichen, dass die Kombination aus Objekterkennung und Tracking insbesondere bei Videodaten einen zusätzlichen Mehrwert gegenüber einer rein framebasierten Betrachtung bietet. Während einzelne Detektionen zwischen benachbarten Frames geringfügig in ihrer Position oder Konfidenz variieren können, ermöglicht die konsistente Zuordnung derselben Track-ID eine stabile zeitliche Verknüpfung wiederkehrender Objekte. Dadurch können automatisch erzeugte Annotationen über mehrere Frames hinweg nachvollzogen und qualitativ überprüft werden.
+Die qualitative Analyse verdeutlicht, dass Tracking insbesondere bei Videodaten
+einen zusätzlichen Mehrwert gegenüber einer rein framebasierten Betrachtung
+bietet. Während einzelne Detektionen zwischen benachbarten Frames geringfügig
+in ihrer Position oder Konfidenz variieren können, ermöglicht die konsistente
+Zuordnung derselben Track-ID eine stabile zeitliche Verknüpfung wiederkehrender
+Objekte. Dadurch können automatisch erzeugte Annotationen über mehrere Frames
+hinweg nachvollzogen und für die Auswahl zusätzlicher Pseudo-Labels genutzt
+werden.
 
-Für die automatische Annotation bedeutet dies, dass Tracking nicht als eigenständiger zusätzlicher Trainingsschritt eingesetzt wird, sondern als unterstützende Komponente zur Analyse der zeitlichen Konsistenz automatisch erzeugter Detektionen dient. Insbesondere bei UAV-Videodaten liefert die kontinuierliche Objektverfolgung zusätzliche Informationen, die mit einer rein framebasierten Auswertung nicht verfügbar wären.
-
-\FloatBarrier
+Zusammenfassend zeigt die tracking-basierte Label-Propagation zwei zentrale
+Effekte. Erstens kann die zeitliche Struktur der UAV-Videos genutzt werden, um
+automatisch erzeugte Labels auf Basis stabiler Objekttracks zu filtern. Zweitens
+führt diese Filterung zu einer höheren Precision als beim rein detection-basierten
+Pseudo-Labeling. Gleichzeitig reicht die erzeugte Datenbasis nicht aus, um das
+manuell trainierte Baseline-Modell zu übertreffen. Die Ergebnisse unterstreichen
+damit, dass Tracking ein sinnvoller Mechanismus zur Qualitätskontrolle
+automatisch erzeugter Labels ist, aber weiterhin durch geeignete Filterstrategien,
+eine ausgewogenere Datenbasis und gegebenenfalls manuelle Stichprobenkontrollen
+ergänzt werden sollte.
 
 \subsection{Vergleich der experimentellen Stufen}
 
-Der direkte Vergleich zwischen Baseline-Modell und Pseudo-Labeling-Stufe zeigt, dass die Erweiterung des Datensatzes durch automatisch erzeugte Labels die Klassenverteilung deutlich verbessert, jedoch nicht zu einer klaren Verbesserung der Detektionsleistung führt. Der mAP@50-Wert bleibt nahezu unverändert. Während das Baseline-Modell einen mAP@50-Wert von 0{,}545 erreicht, liegt die Pseudo-Labeling-Stufe bei 0{,}542. Der globale F1-Wert sinkt von 0{,}53 auf 0{,}49.
-
-\begin{table}[htbp]
-    \centering
-    \caption{Vergleich der bisher ausgewerteten experimentellen Stufen}
-    \label{tab:vergleich_experimentelle_stufen}
-    \begin{tabular}{lrr}
-        \hline
-        \textbf{Metrik}                    & \textbf{Baseline} & \textbf{Pseudo-Labeling} \\
-        \hline
-        mAP@50                             & 0{,}545           & 0{,}542                  \\
-        F1-Wert                            & 0{,}53            & 0{,}49                   \\
-        optimaler Confidence-Schwellenwert & 0{,}462           & 0{,}202                  \\
-        maximale Precision                 & ca. 0{,}85        & 0{,}827                  \\
-        maximaler Recall                   & ca. 0{,}53        & 0{,}487                  \\
-        \hline
-    \end{tabular}
-\end{table}
-
-Da für die tracking-basierte Stufe keine eigenständige quantitative Auswertung auf demselben Validierungssplit vorliegt, fasst Tabelle~\ref{tab:vergleich_alle_stufen} alle drei experimentellen Stufen zusammen. Die Übersicht stellt bewusst nicht ausschließlich auf mAP-Werte ab, sondern unterscheidet zwischen quantitativ und qualitativ ausgewerteten Stufen und benennt die jeweils zentrale Beobachtung.
+Für den finalen Vergleich wurden alle drei Modelle erneut auf demselben manuell
+annotierten Validierungssplit evaluiert. Diese Werte bilden die Grundlage für den
+direkten Modellvergleich und können geringfügig von den während der einzelnen
+Trainingsläufe protokollierten Kennzahlen abweichen. Dadurch wird sichergestellt,
+dass die Unterschiede zwischen den Modellen nicht durch unterschiedliche
+Validierungsdaten, sondern durch die jeweilige Trainingsstrategie entstehen.
 
 \begin{table}[H]
     \centering
-    \caption{Vergleich der experimentellen Stufen}
-    \label{tab:vergleich_alle_stufen}
-    \begin{tabular}{p{3.3cm}p{3.3cm}p{2.1cm}p{3.6cm}}
+    \caption{Finaler Vergleich der experimentellen Stufen auf demselben Validierungssplit}
+    \label{tab:final_model_comparison}
+    \small
+    \begin{tabular}{p{5.4cm}rrrr}
         \hline
-        \textbf{Stufe}                      & \textbf{Datengrundlage}         & \textbf{Bewertung} & \textbf{Zentrale Beobachtung}                                   \\
+        \textbf{Modell}                     & \textbf{Precision} & \textbf{Recall} & \textbf{mAP@50} & \textbf{mAP@50--95} \\
         \hline
-        Baseline-Modell                     & Manuelle Annotationen           & Quantitativ        & Solide Leistung bei häufigen Klassen, begrenzter Recall         \\
-        Pseudo-Labeling                     & Manuelle Labels + Pseudo-Labels & Quantitativ        & Verbesserte Klassenabdeckung, aber zusätzliche Fehlannotationen \\
-        Tracking-basierte Label-Propagation & Detektionen über Videoframes    & Qualitativ         & Stabilisierung wiederkehrender Detektionen über die Zeit        \\
+        Baseline-Modell                     & 0{,}831            & 0{,}485         & 0{,}572         & 0{,}343             \\
+        Detection-basiertes Pseudo-Labeling & 0{,}692            & 0{,}489         & 0{,}564         & 0{,}323             \\
+        Tracking-basierte Label-Propagation & 0{,}765            & 0{,}445         & 0{,}543         & 0{,}327             \\
         \hline
     \end{tabular}
 \end{table}
 
-Diese Ergebnisse zeigen, dass die reine Erhöhung der Label-Anzahl nicht ausreichend ist, um die Modellleistung zuverlässig zu verbessern. Entscheidend ist nicht nur die Menge zusätzlicher Labels, sondern auch deren Qualität. Werden fehlerhafte Pseudo-Labels in den Trainingsprozess übernommen, kann das Modell falsche Zuordnungen verstärken. Dies zeigt sich insbesondere an der Zunahme von False Positives für \textit{watertank} sowie an der schlechteren Leistung für \textit{storm drain}.
+Der direkte Vergleich zeigt, dass das Baseline-Modell die beste Gesamtleistung
+erzielt. Es erreicht sowohl die höchste Precision als auch die höchsten mAP-Werte.
+Das detection-basierte Pseudo-Labeling erzielt zwar einen minimal höheren Recall
+als das Baseline-Modell, verliert jedoch deutlich an Precision. Dies deutet darauf
+hin, dass die zusätzlichen Pseudo-Labels zwar mehr Objekte erfassen, gleichzeitig
+aber auch mehr False Positives erzeugen.
 
-Gleichzeitig liefert die Pseudo-Labeling-Stufe einen wichtigen experimentellen Befund: Automatisch erzeugte Labels können die Abdeckung unterrepräsentierter Klassen verbessern. Für einen produktiven Einsatz ist jedoch eine zusätzliche Qualitätskontrolle erforderlich, beispielsweise durch höhere Confidence-Schwellenwerte, klassenabhängige Filterregeln, manuelle Stichprobenkontrolle oder eine Kombination mit tracking-basierter zeitlicher Konsistenzprüfung.
+Die tracking-basierte Label-Propagation liegt zwischen dem Baseline-Modell und
+dem detection-basierten Pseudo-Labeling. Im Vergleich zur rein detection-basierten
+Variante steigt die Precision von 0{,}692 auf 0{,}765. Dies zeigt, dass die Nutzung
+von Track-Identitäten und zeitlicher Konsistenz zu einer konservativeren und
+zuverlässigeren Auswahl der Pseudo-Labels führt. Gleichzeitig bleibt der Recall
+mit 0{,}445 unter dem Baseline-Modell. Die tracking-basierten Pseudo-Labels
+konnten die Qualität der automatischen Annotation somit verbessern, reichten
+jedoch nicht aus, um die Leistung des manuell trainierten Baseline-Modells zu
+übertreffen.
 
 \subsection{Qualitative Analyse}
 
-Die qualitativen Beispiele aus Abbildung~\ref{fig:baseline_val_batch0} und Abbildung~\ref{fig:pseudo_val_batch0} bestätigen die quantitativen Ergebnisse. In vielen Validierungsbildern erkennt das Modell häufige und visuell klare Klassen wie \textit{watertank} und \textit{pool} zuverlässig. Besonders Pools sind aufgrund ihrer Farbe, Form und räumlichen Abgrenzung vergleichsweise gut unterscheidbar. Auch größere Wassertanks auf Dächern werden in vielen Fällen korrekt lokalisiert.
+Die qualitativen Beispiele aus Abbildung~\ref{fig:baseline_val_batch0},
+Abbildung~\ref{fig:pseudo_val_batch0} und Abbildung~\ref{fig:tracking_sequence}
+bestätigen die quantitativen Ergebnisse. In vielen Validierungsbildern erkennt das
+Modell häufige und visuell klare Klassen wie \textit{watertank} und \textit{pool}
+vergleichsweise zuverlässig. Besonders Pools sind aufgrund ihrer Farbe, Form und
+räumlichen Abgrenzung gut unterscheidbar. Auch größere Wassertanks auf Dächern
+werden in vielen Fällen korrekt lokalisiert.
 
-Gleichzeitig zeigen die Validierungsbeispiele typische Fehlerfälle. Auf dicht bebauten Dachflächen werden kleine helle oder runde Strukturen teilweise fälschlicherweise als \textit{watertank} erkannt. Dies führt zu einer erhöhten Anzahl von False Positives. Zudem werden kleine Objekte wie \textit{plastic bag}, \textit{bottle} oder \textit{large trash bin} nicht stabil erkannt, da sie häufig nur wenige Pixel groß sind und sich visuell kaum vom Hintergrund unterscheiden. Bei \textit{storm drain} treten Verwechslungen mit dunklen rechteckigen Hintergrundstrukturen auf, insbesondere auf Straßen oder an Dachrändern.
+Gleichzeitig zeigen die Validierungsbeispiele typische Fehlerfälle. Auf dicht
+bebauten Dachflächen werden kleine helle oder runde Strukturen teilweise
+fälschlicherweise als \textit{watertank} erkannt. Dies führt zu einer erhöhten Anzahl
+von False Positives. Zudem werden kleine Objekte wie \textit{plastic bag},
+\textit{bottle} oder \textit{large trash bin} nicht stabil erkannt, da sie häufig nur
+wenige Pixel groß sind und sich visuell kaum vom Hintergrund unterscheiden. Bei
+\textit{storm drain} treten Verwechslungen mit dunklen rechteckigen
+Hintergrundstrukturen auf, insbesondere auf Straßen oder an Dachrändern.
 
-Die Pseudo-Label-Beispiele zeigen außerdem, dass automatisch erzeugte Labels häufig mit mittleren Confidence-Werten auftreten. Solche Labels können nützlich sein, wenn sie korrekt sind und zusätzliche Objektvariationen abdecken. Gleichzeitig besteht jedoch das Risiko, dass unsichere Vorhersagen als Trainingsdaten übernommen werden. Dies ist vor allem dann problematisch, wenn ein falsch erkanntes Objekt in mehreren ähnlichen Frames erneut als Pseudo-Label erzeugt wird. In diesem Fall kann sich der Fehler im erweiterten Datensatz wiederholen.
+Die Pseudo-Label-Beispiele zeigen außerdem, dass automatisch erzeugte Labels
+häufig mit mittleren Confidence-Werten auftreten. Solche Labels können nützlich
+sein, wenn sie korrekt sind und zusätzliche Objektvariationen abdecken.
+Gleichzeitig besteht jedoch das Risiko, dass unsichere Vorhersagen als
+Trainingsdaten übernommen werden. Dies ist vor allem dann problematisch, wenn
+ein falsch erkanntes Objekt in mehreren ähnlichen Frames erneut als Pseudo-Label
+erzeugt wird. In diesem Fall kann sich der Fehler im erweiterten Datensatz
+wiederholen.
 
-Die qualitative Analyse macht daher deutlich, dass Pseudo-Labeling allein nicht ausreicht, um eine robuste automatische Annotation sicherzustellen. Besonders bei UAV-Videodaten mit kleinen Objekten, hoher Hintergrundkomplexität und stark unausgewogenen Klassen ist eine zusätzliche Stabilisierung notwendig. Hier bietet die tracking-basierte Label-Propagation einen sinnvollen nächsten Schritt, da sie Einzelvorhersagen über mehrere Frames hinweg prüfen und zeitlich konsistentere Labels erzeugen kann.
+Die tracking-basierte Label-Propagation adressiert dieses Problem teilweise, indem
+Einzelvorhersagen nicht isoliert betrachtet, sondern über mehrere aufeinanderfolgende
+Frames hinweg verfolgt werden. Stabile Objekttracks können als Hinweis auf
+zuverlässigere Pseudo-Labels dienen, während kurzlebige oder inkonsistente
+Detektionen herausgefiltert werden. Die qualitativen Tracking-Beispiele zeigen,
+dass mehrere Objekte trotz Kamerabewegung über benachbarte Frames hinweg
+konsistente Track-IDs behalten. Dadurch wird deutlich, dass die zeitliche Struktur
+der UAV-Videos grundsätzlich zur Stabilisierung automatisch erzeugter Annotationen
+genutzt werden kann.
+
+Gleichzeitig zeigen die quantitativen Ergebnisse, dass diese Stabilisierung allein
+nicht ausreicht, um das Baseline-Modell zu übertreffen. Die qualitative Analyse
+macht daher deutlich, dass Tracking vor allem als Qualitätskontrolle für
+Pseudo-Labels hilfreich ist, aber weiterhin durch geeignete Filterstrategien,
+klassenabhängige Schwellenwerte und gegebenenfalls manuelle Stichprobenkontrollen
+ergänzt werden sollte.
 
 \subsection{Diskussion der Ergebnisse}
 
-Die bisher durchgeführten Experimente zeigen, dass ein YOLO-basiertes Detektionsmodell auch mit sparsam annotierten UAV-Frames relevante Objektklassen lernen kann. Das Baseline-Modell erreicht für häufige Klassen wie \textit{pool} und \textit{watertank} gute Ergebnisse, während seltene Klassen und kleine Objekte deutlich schwieriger zu erkennen sind. Die stark unausgewogene Klassenverteilung stellt dabei eine zentrale Einschränkung dar.
+Die durchgeführten Experimente zeigen, dass ein YOLO-basiertes Detektionsmodell
+auch mit sparsam annotierten UAV-Frames relevante Objektklassen lernen kann.
+Das Baseline-Modell erreicht für häufige und visuell klar erkennbare Klassen wie
+\textit{pool} und \textit{watertank} gute Ergebnisse. Gleichzeitig bleiben seltene,
+kleine oder visuell schwer unterscheidbare Objekte deutlich schwieriger zu erkennen.
+Die stark unausgewogene Klassenverteilung stellt dabei eine zentrale Einschränkung
+dar.
 
-Die automatische Pseudo-Label-Generierung reduziert diese Ungleichverteilung teilweise. Insbesondere die Klassen \textit{pool}, \textit{bucket}, \textit{tire}, \textit{large trash bin} und \textit{plastic bag} erhalten durch den semi-supervisierten Schritt deutlich mehr Trainingsbeispiele. Dennoch führt diese Erweiterung nicht zu einer klaren Verbesserung der Gesamtleistung. Der mAP@50-Wert bleibt nahezu konstant, während der F1-Wert leicht sinkt. Dies zeigt, dass die zusätzlichen Pseudo-Labels zwar die Datenmenge erhöhen, aber zugleich Rauschen in den Trainingsprozess einbringen.
+Die automatische Pseudo-Label-Generierung reduziert diese Ungleichverteilung
+teilweise. Insbesondere die Klassen \textit{pool}, \textit{bucket}, \textit{tire},
+\textit{large trash bin} und \textit{plastic bag} erhalten durch den
+semi-supervisierten Schritt deutlich mehr Trainingsbeispiele. Dennoch führt diese
+Erweiterung nicht zu einer klaren Verbesserung der Gesamtleistung. Im finalen
+Vergleich erreicht das detection-basierte Pseudo-Labeling zwar einen leicht höheren
+Recall als das Baseline-Modell, verliert jedoch deutlich an Precision und liegt auch
+beim mAP@50--95-Wert unter dem Baseline-Modell. Dies zeigt, dass die zusätzlichen
+Pseudo-Labels zwar die Datenmenge erhöhen, aber zugleich Rauschen und
+Fehlannotationen in den Trainingsprozess einbringen können.
 
-Die Ergebnisse verdeutlichen damit eine zentrale Herausforderung semi-supervisierter Annotation: Die Qualität der automatisch erzeugten Labels ist entscheidend. Ein Modell, das auf einem unausgewogenen Datensatz trainiert wurde, kann seine eigenen Fehler in den Pseudo-Labels reproduzieren. Werden diese Labels ohne ausreichende Kontrolle erneut zum Training verwendet, können False Positives und Klassenverwechslungen verstärkt werden. Dies ist besonders bei Klassen problematisch, die visuell ähnlich zum Hintergrund sind oder nur in geringer Anzahl vorkommen.
+Die tracking-basierte Label-Propagation verbessert die Situation gegenüber dem
+rein detection-basierten Pseudo-Labeling teilweise. Durch die Nutzung stabiler
+Objekttracks und zeitlicher Konsistenz werden unsichere Einzelvorhersagen stärker
+gefiltert. Dies spiegelt sich in einer höheren Precision wider. Das tracking-basierte
+Modell erreicht eine Precision von 0{,}765 und liegt damit deutlich über dem
+detection-basierten Pseudo-Labeling mit 0{,}692. Gleichzeitig bleibt es mit einem
+mAP@50-Wert von 0{,}543 und einem mAP@50--95-Wert von 0{,}327 unter dem
+Baseline-Modell.
 
-Aus methodischer Sicht spricht dies für eine stärker kontrollierte Pseudo-Label-Auswahl. Möglich sind höhere oder klassenabhängige Confidence-Schwellenwerte, eine Begrenzung der maximalen Anzahl automatisch erzeugter Labels pro Klasse, eine manuelle Kontrolle besonders unsicherer Pseudo-Labels sowie die Nutzung zeitlicher Konsistenz durch Tracking. Gerade bei Videodaten ist die zeitliche Struktur ein wichtiger Vorteil gegenüber Einzelbildern. Ein Objekt, das über mehrere aufeinanderfolgende Frames stabil erkannt wird, ist mit höherer Wahrscheinlichkeit ein korrektes Label als eine isolierte Einzelvorhersage.
+Ein zentrales Ergebnis dieser Arbeit ist daher, dass die Qualität der automatisch
+erzeugten Labels wichtiger ist als deren reine Anzahl. Eine Erweiterung des
+Trainingsdatensatzes kann nur dann zu einer Verbesserung der Modellleistung
+führen, wenn die zusätzlichen Labels ausreichend zuverlässig sind. Werden
+Fehlvorhersagen des Ausgangsmodells in den erweiterten Trainingsdatensatz
+übernommen, können sich diese Fehler im Training fortsetzen oder sogar verstärken.
+Dies ist besonders bei kleinen Objekten, komplexen Dachstrukturen und visuell
+ähnlichen Hintergrundbereichen problematisch.
 
-Zusammenfassend zeigen die Experimente, dass der vorgeschlagene Ansatz grundsätzlich geeignet ist, den manuellen Annotierungsaufwand zu reduzieren. Das Baseline-Modell liefert eine brauchbare Ausgangsbasis, und die Pseudo-Labeling-Stufe verbessert die Klassenabdeckung deutlich. Gleichzeitig zeigen die Ergebnisse, dass Pseudo-Labels sorgfältig gefiltert und idealerweise durch Tracking stabilisiert werden müssen, um eine tatsächliche Verbesserung der Detektionsleistung zu erreichen.
+Aus methodischer Sicht sprechen die Ergebnisse für eine stärker kontrollierte
+Pseudo-Label-Auswahl. Sinnvoll wären insbesondere klassenabhängige
+Confidence-Schwellenwerte, eine Begrenzung der maximalen Anzahl automatisch
+erzeugter Labels pro Klasse sowie eine manuelle Kontrolle besonders unsicherer
+Pseudo-Labels. Bei Videodaten bietet Tracking zusätzlich einen wichtigen Vorteil,
+da ein Objekt, das über mehrere aufeinanderfolgende Frames stabil erkannt wird,
+mit höherer Wahrscheinlichkeit ein korrektes Label darstellt als eine isolierte
+Einzelvorhersage.
+
+Zusammenfassend zeigen die Experimente, dass der vorgeschlagene Ansatz
+grundsätzlich geeignet ist, den manuellen Annotierungsaufwand zu reduzieren und
+zusätzliche Trainingsdaten aus UAV-Videosequenzen zu erschließen. Das
+Baseline-Modell liefert jedoch weiterhin die beste Gesamtleistung. Detection-basiertes
+Pseudo-Labeling verbessert die Klassenabdeckung, führt aber zu mehr Rauschen.
+Tracking-basierte Label-Propagation erzeugt konservativere und zuverlässigere
+Pseudo-Labels als der rein detection-basierte Ansatz, kann das manuell trainierte
+Baseline-Modell jedoch nicht übertreffen. Damit stellt Tracking einen sinnvollen
+Mechanismus zur Qualitätskontrolle automatisch erzeugter Labels dar, ersetzt aber
+keine sorgfältige Filterung und Validierung der Pseudo-Labels.

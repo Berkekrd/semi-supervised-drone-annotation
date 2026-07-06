@@ -44,23 +44,57 @@ Die Arbeit verfolgt dabei nicht das Ziel, ein vollständig produktionsreifes Det
 Aus der beschriebenen Problemstellung ergeben sich die folgenden Forschungsfragen:
 
 \begin{enumerate}
-    \item Inwieweit kann ein YOLO-basiertes Baseline-Modell auf Grundlage einer begrenzten Menge manuell annotierter UAV-Frames potenzielle Brutstätten erkennen?
+    \item Inwieweit kann ein YOLO-basiertes Baseline-Modell auf Grundlage einer
+          begrenzten Menge manuell annotierter UAV-Frames potenzielle Brutstätten
+          erkennen?
 
-    \item Kann die automatische Pseudo-Label-Generierung den Trainingsdatensatz sinnvoll erweitern und die Klassenabdeckung verbessern?
+    \item Kann die automatische Pseudo-Label-Generierung den Trainingsdatensatz
+          sinnvoll erweitern und die Klassenabdeckung verbessern?
 
-    \item Welche Auswirkungen haben automatisch erzeugte Pseudo-Labels auf die Modellleistung, insbesondere auf Precision, Recall, mAP@50 und mAP@50--95?
+    \item Welche Auswirkungen haben automatisch erzeugte Pseudo-Labels auf die
+          Modellleistung, insbesondere auf Precision, Recall, mAP@50 und mAP@50--95?
 
-    \item Inwieweit kann tracking-basierte Label-Propagation dazu beitragen, automatisch erzeugte Annotationen über mehrere Frames hinweg zeitlich zu stabilisieren?
+    \item Inwieweit kann tracking-basierte Label-Propagation dazu beitragen,
+          automatisch erzeugte Annotationen über mehrere Frames hinweg zeitlich zu
+          stabilisieren und die Qualität der Pseudo-Label-Auswahl im anschließenden
+          Training zu verbessern?
 
-    \item Welche typischen Fehlerquellen treten bei der automatischen Annotation von UAV-Videodaten auf?
+    \item Welche typischen Fehlerquellen treten bei der automatischen Annotation
+          von UAV-Videodaten auf?
 \end{enumerate}
 
-Diese Fragen werden anhand quantitativer Modellmetriken sowie qualitativer Beispiele untersucht. Die quantitative Auswertung umfasst Trainingskurven, Precision-Recall-Kurven, F1-Confidence-Kurven, Konfusionsmatrizen und mAP-Werte. Die qualitative Analyse betrachtet beispielhafte Detektionen, Pseudo-Labels und tracking-basierte Frame-Sequenzen.
+Diese Fragen werden anhand quantitativer Modellmetriken sowie qualitativer
+Beispiele untersucht. Die quantitative Auswertung umfasst Trainingskurven,
+Precision-Recall-Kurven, F1-Confidence-Kurven, Konfusionsmatrizen und
+mAP-Werte. Ergänzend werden die detection-basierte Pseudo-Labeling-Stufe und
+die tracking-basierte Label-Propagation auf demselben manuell annotierten
+Validierungssplit miteinander verglichen. Die qualitative Analyse betrachtet
+beispielhafte Detektionen, Pseudo-Labels und tracking-basierte Frame-Sequenzen.
 
 \subsection{Beitrag der Arbeit}
 
-Der Beitrag dieser Arbeit liegt in der experimentellen Untersuchung eines semi-supervisierten Workflows zur automatischen Annotation von UAV-Videodaten. Im Unterschied zu rein überwachten Ansätzen wird nicht ausschließlich betrachtet, wie gut ein Modell auf einem vollständig manuell annotierten Datensatz trainiert werden kann. Stattdessen wird untersucht, ob ein initial trainiertes Modell genutzt werden kann, um zusätzliche Annotationen automatisch zu erzeugen und damit den manuellen Aufwand zu reduzieren.
+Der Beitrag dieser Arbeit liegt in der experimentellen Untersuchung eines
+semi-supervisierten Workflows zur automatischen Annotation von UAV-Videodaten.
+Im Unterschied zu rein überwachten Ansätzen wird nicht ausschließlich betrachtet,
+wie gut ein Modell auf einem vollständig manuell annotierten Datensatz trainiert
+werden kann. Stattdessen wird untersucht, ob ein initial trainiertes Modell genutzt
+werden kann, um zusätzliche Annotationen automatisch zu erzeugen und damit den
+manuellen Annotierungsaufwand zu reduzieren.
 
-Die Arbeit leistet damit drei zentrale Beiträge. Erstens wird ein Baseline-Modell auf manuell annotierten Frames des MBG-V2-Datensatzes trainiert und anhand standardisierter Objekterkennungsmetriken bewertet. Zweitens wird eine Pseudo-Labeling-Stufe untersucht, in der automatisch erzeugte Labels zur Erweiterung des Trainingsdatensatzes verwendet werden. Drittens wird die zeitliche Struktur der UAV-Videos durch Tracking berücksichtigt, um die Konsistenz automatisch erzeugter Annotationen über mehrere Frames hinweg zu analysieren.
+Die Arbeit leistet damit drei zentrale Beiträge. Erstens wird ein Baseline-Modell
+auf manuell annotierten Frames des MBG-V2-Datensatzes trainiert und anhand
+standardisierter Objekterkennungsmetriken bewertet. Zweitens wird eine
+detection-basierte Pseudo-Labeling-Stufe untersucht, in der automatisch erzeugte
+Labels zur Erweiterung des Trainingsdatensatzes verwendet werden. Drittens wird
+die zeitliche Struktur der UAV-Videos durch ByteTrack genutzt, um
+tracking-basierte Pseudo-Labels zu erzeugen. Diese werden nicht nur qualitativ
+hinsichtlich ihrer zeitlichen Konsistenz betrachtet, sondern auch in einem eigenen
+Retraining-Schritt quantitativ mit dem Baseline-Modell und dem
+detection-basierten Pseudo-Labeling verglichen.
 
-Ein besonderer Fokus liegt dabei auf den praktischen Grenzen des Ansatzes. Die Arbeit zeigt nicht nur erfolgreiche Detektionen, sondern untersucht auch Fehlerfälle wie False Positives, nicht erkannte Objekte, Klassenverwechslungen und instabile Vorhersagen. Dadurch wird sichtbar, unter welchen Bedingungen Pseudo-Labeling und Tracking hilfreich sind und in welchen Fällen zusätzliche Qualitätskontrolle erforderlich bleibt.
+Ein besonderer Fokus liegt dabei auf den praktischen Grenzen des Ansatzes. Die
+Arbeit zeigt nicht nur erfolgreiche Detektionen, sondern untersucht auch
+Fehlerfälle wie False Positives, nicht erkannte Objekte, Klassenverwechslungen
+und instabile Vorhersagen. Dadurch wird sichtbar, unter welchen Bedingungen
+Pseudo-Labeling und Tracking hilfreich sind und in welchen Fällen zusätzliche
+Qualitätskontrolle erforderlich bleibt.

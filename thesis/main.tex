@@ -7,16 +7,12 @@
 \input{settings/page}
 
 \begin{document}
-% =========================
-% Frontmatter (NO page numbers)
-% =========================
+
 \input{frontmatter/titlepage}
 \input{frontmatter/acknowledgements}
 \input{frontmatter/abstract}
 
-% =========================
-% TOC starts with roman i
-% =========================
+
 \clearpage
 \pagenumbering{roman}
 \setcounter{page}{1}
@@ -31,20 +27,6 @@
 \listoftables
 \clearpage
 
-% ===== Acronyms & Glossary =====
-% Deaktiviert: Im Text werden derzeit keine \gls-/\ac-Verweise verwendet und
-% makeglossaries wird nicht ausgeführt, sodass \printglossary nur zwei leere
-% Seiten erzeugte. Bei Bedarf wieder einkommentieren (und makeglossaries in den
-% Build aufnehmen).
-% \pagestyle{plain}
-% \input{frontmatter/acronyms}
-% \input{frontmatter/glossary}
-% \glsaddall
-% \setglossarystyle{list}
-% \printglossary[type=\acronymtype, title=Acronyms]
-% \clearpage
-% \printglossary[title=Glossary]
-% \clearpage
 
 \pagestyle{fancy}
 
@@ -61,18 +43,11 @@
 \input{chapters/04_stand_der_forschung}
 \input{chapters/05_method}
 \input{chapters/06_experiments_und_ergebnise}
-
 \input{chapters/07_fazit_und_ausblick}
-% =========================
-% Literature
-% =========================
+
 \clearpage
 \nocite{*}
-% \printbibliography
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%%%%% Ende des Dokuments %%%
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \newpage
 \input{settings/endofdocument}
 

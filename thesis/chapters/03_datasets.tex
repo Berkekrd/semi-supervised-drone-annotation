@@ -66,20 +66,12 @@ ausgewählten Areale ermöglicht.
 Die MBG-V2-Datenbank enthält Annotationen für mehrere Objektklassen, die als
 potenzielle Brutstätten von \textit{Aedes aegypti} gelten. Die Annotationen liegen
 in Form von Bounding-Box-Markierungen vor und wurden mit dem
-\textit{Computer Vision Annotation Tool} (CVAT) erstellt \cite{cvat2024}.
-Abbildung~\ref{fig:mbgv2_annotations} zeigt exemplarische manuell annotierte
-Drohnenaufnahmen aus dem MBG-V2-Datensatz und verdeutlicht die Herausforderungen
-der Objekterkennung in urbanen Luftaufnahmen, insbesondere aufgrund kleiner
-Objektgrößen, komplexer Hintergründe und variierender Beleuchtungsbedingungen.
-
-% \begin{figure}[H]
-%     \centering
-%     \includegraphics[width=0.95\linewidth]{figures/datasets/mbgv2_annotated_examples.jpeg}
-%     \caption{Beispielhafte annotierte Drohnenaufnahmen aus dem MBG-V2-Datensatz mit
-%     Bounding-Box-Markierungen für potenzielle Brutstätten von
-%     \textit{Aedes aegypti}.}
-%     \label{fig:mbgv2_annotations}
-% \end{figure}
+\textit{Computer Vision Annotation Tool} (CVAT) erstellt \cite{cvat2024}. Die
+annotierten Objekte unterscheiden sich deutlich hinsichtlich Größe, Form, Farbe
+und Hintergrundkontext. Gerade in UAV-Aufnahmen sind viele Zielobjekte nur
+klein sichtbar, teilweise verdeckt oder in komplexe Dach- und Straßenstrukturen
+eingebettet. Dadurch stellt der Datensatz eine anspruchsvolle Grundlage für die
+automatische Objekterkennung und Annotation dar.
 
 Zur Verdeutlichung der visuellen Vielfalt einzelner Objektklassen zeigt
 Abbildung~\ref{fig:mbgv2_class_examples} exemplarische Annotationen für ausgewählte

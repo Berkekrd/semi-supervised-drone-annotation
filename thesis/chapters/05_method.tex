@@ -194,70 +194,62 @@ Baustein des gesamten Ansatzes dar. Es ermöglicht eine stabile Initialisierung 
 Objekterkennungsmodells, reduziert den Bedarf an umfangreichen manuellen
 Annotationen und schafft die Voraussetzung für die nachgelagerten Schritte der
 Objektverfolgung, Pseudo-Label-Generierung und iterativen Modellanpassung.
-
 \subsection{Automatische Annotation durch Pseudo-Labeling}
 
-Im nächsten Schritt des vorgeschlagenen Ansatzes wird das initial mittels Transfer
-Learning trainierte Objekterkennungsmodell eingesetzt, um nicht manuell annotierte
-Zwischenframes automatisch zu analysieren. Die dabei erzeugten Detektionen werden
-als sogenannte Pseudo-Labels interpretiert und bilden die Grundlage für eine
-schrittweise Erweiterung des Trainingsdatensatzes.
+Im nächsten Schritt des vorgeschlagenen Ansatzes wird das initial mittels
+Transfer Learning trainierte Objekterkennungsmodell eingesetzt, um nicht manuell
+annotierte Zwischenframes automatisch zu analysieren. Die dabei erzeugten
+Detektionen werden als sogenannte Pseudo-Labels interpretiert und bilden die
+Grundlage für eine schrittweise Erweiterung des Trainingsdatensatzes.
 
 Ziel des Pseudo-Labeling-Verfahrens ist es, ausgehend von einer begrenzten Anzahl
-manuell annotierter Frames eine deutlich größere Menge an Trainingsdaten zu
-generieren. Auf diese Weise soll die Generalisierungsfähigkeit des Modells verbessert
-werden, ohne den manuellen Annotierungsaufwand proportional zur Datenmenge zu erhöhen.
-Die vom Modell erzeugten Vorhersagen werden jedoch nicht ungefiltert übernommen,
-sondern einer gezielten und explizit definierten Qualitätskontrolle unterzogen.
+manuell annotierter Frames zusätzliche Trainingsdaten zu generieren. Auf diese
+Weise soll untersucht werden, ob nicht manuell annotierte Zwischenframes zur
+Erweiterung der Datenbasis genutzt werden können, ohne den manuellen
+Annotierungsaufwand proportional zur Datenmenge zu erhöhen. Die vom Modell
+erzeugten Vorhersagen werden jedoch nicht ungefiltert übernommen, sondern einer
+gezielten Qualitätskontrolle unterzogen.
 
-Die Auswahl gültiger Pseudo-Labels erfolgt anhand vordefinierter heuristischer
-Kriterien. Ein automatisch erzeugtes Detektionsergebnis $d$ wird nur dann als
-Pseudo-Label in den Trainingsdatensatz übernommen, wenn sowohl die
-Detektionskonfidenz als auch die zeitliche Stabilität der zugehörigen Objektverfolgung
-ausreichend hoch sind. Formal lässt sich die Menge der akzeptierten Pseudo-Labels
-wie folgt definieren:
+In der detection-basierten Pseudo-Labeling-Stufe erfolgt die Auswahl gültiger
+Pseudo-Labels primär anhand der Detektionskonfidenz. Ein automatisch erzeugtes
+Detektionsergebnis \(d\) wird nur dann als Pseudo-Label in den Trainingsdatensatz
+übernommen, wenn seine Konfidenz einen definierten Schwellenwert überschreitet.
+Formal lässt sich die Menge der akzeptierten detection-basierten Pseudo-Labels
+wie folgt beschreiben:
 
-\begin{equation}
-    \mathcal{L}_{\text{pseudo}} =
-    \left\{ d \in \mathcal{D} \;\middle|\;
-    \text{score}(d) > \tau_{\text{conf}}
-    \;\land\;
-    \text{len}(\text{track}(d)) > \tau_{\text{track}}
-    \right\},
-\end{equation}
+\[
+    L_{\text{pseudo}} =
+    \{ d \in D \mid score(d) \geq \tau_{\text{conf}} \}
+\]
 
-wobei $\mathcal{D}$ die Menge aller automatisch erzeugten Detektionen bezeichnet.
-Der Schwellwert $\tau_{\text{conf}}$ definiert die minimale erforderliche
-Detektionskonfidenz, während $\tau_{\text{track}}$ eine Mindestdauer angibt, über
-die ein Objekt konsistent über mehrere aufeinanderfolgende Videoframes hinweg
-verfolgt werden muss.
-
-Ein wesentlicher Vorteil der hier betrachteten Videoaufnahmen liegt in ihrer
-zeitlichen Struktur. Durch den Einsatz eines Objektverfolgungsverfahrens können
-Detektionen desselben Objekts über mehrere Frames hinweg miteinander verknüpft und
-als zusammenhängende Objekttrajektorien interpretiert werden. Diese zeitliche
-Konsistenz dient als zusätzlicher Indikator für die Zuverlässigkeit der
-automatisch erzeugten Annotationen und reduziert die Wahrscheinlichkeit, dass
-kurzlebige oder instabile Fehlklassifikationen in den Trainingsprozess eingehen.
+Dabei bezeichnet \(D\) die Menge aller automatisch erzeugten Detektionen,
+\(score(d)\) die Konfidenz einer einzelnen Detektion und \(\tau_{\text{conf}}\)
+den minimal erforderlichen Konfidenzschwellenwert.
 
 Die auf diese Weise generierten und gefilterten Pseudo-Labels werden anschließend
 mit den ursprünglich manuell annotierten Daten zusammengeführt und bilden einen
 erweiterten Trainingsdatensatz. Dieser Datensatz dient als Grundlage für eine
-erneute Anpassung des Objekterkennungsmodells. Durch eine optionale iterative
-Wiederholung dieses Prozesses kann ein Self-Training-Mechanismus realisiert werden,
-bei dem sich die Modellleistung schrittweise verbessert.
+erneute Anpassung des Objekterkennungsmodells. Dadurch kann untersucht werden,
+ob zusätzliche automatisch erzeugte Labels die Klassenabdeckung verbessern und
+welchen Einfluss sie auf die Detektionsleistung haben.
+
+Die zeitliche Stabilität der Detektionen wird in dieser Stufe noch nicht
+berücksichtigt. Sie wird stattdessen in der anschließend beschriebenen
+tracking-basierten Label-Propagation separat untersucht. Dadurch bleiben
+detection-basiertes Pseudo-Labeling und tracking-basierte Label-Propagation
+methodisch klar voneinander getrennt.
 
 Das Pseudo-Labeling stellt somit einen zentralen Bestandteil des vorgestellten
-semi-supervisierten Ansatzes dar. Gleichzeitig ist die Qualität der erzeugten Labels
-maßgeblich von der Leistungsfähigkeit des initialen Modells sowie von den gewählten
-Schwellwerten und Filterstrategien abhängig. Eine sorgfältige Auswahl dieser
-Parameter ist daher entscheidend für die Stabilität, Reproduzierbarkeit und
+semi-supervisierten Ansatzes dar. Gleichzeitig ist die Qualität der erzeugten
+Labels maßgeblich von der Leistungsfähigkeit des initialen Modells sowie von den
+gewählten Schwellwerten und Filterstrategien abhängig. Eine sorgfältige Auswahl
+dieser Parameter ist daher entscheidend für die Stabilität, Reproduzierbarkeit und
 Zuverlässigkeit des gesamten Annotationsprozesses.
 
 \subsection{Objektverfolgung zur Label-Propagation}
 
 Ein zentraler Bestandteil des vorgeschlagenen semi-supervisierten
-Annotationsansatzes ist der gezielte Einsatz von Objektverfolgung zur aktiven
+Annotationsansatzes ist der gezielte Einsatz von Objektverfolgung zur
 Unterstützung der Label-Propagation. Im Gegensatz zu rein framebasierten
 Verfahren wird die zeitliche Kontinuität von Objekten in Videosequenzen explizit
 ausgenutzt, um automatisch erzeugte Annotationen robuster und konsistenter zu
@@ -268,87 +260,113 @@ Objekterkennungsmodells auf und folgt dem \emph{tracking-by-detection}-Paradigma
 Dabei werden Detektionen des YOLO-Modells frameweise erzeugt und anschließend
 mithilfe eines Multi-Object-Tracking-Verfahrens über aufeinanderfolgende
 Videoframes hinweg miteinander verknüpft. Konkret kommt der in der
-Ultralytics-Implementierung integrierte Tracker \textit{ByteTrack} zum Einsatz,
-der ein Bewegungsmodell auf Basis eines Kalman-Filters mit einer IoU-basierten
-Datenassoziation kombiniert. Eine Besonderheit von ByteTrack besteht darin, dass
-nicht nur Detektionen mit hoher Konfidenz, sondern auch solche mit niedriger
-Konfidenz in die Datenassoziation einbezogen werden. Dadurch können kurzzeitig
-unsicher erkannte Objekte über aufeinanderfolgende Frames hinweg dennoch stabil
-verfolgt werden, was zu robusteren Objekttrajektorien führt.
+Ultralytics-Implementierung integrierte Tracker \textit{ByteTrack} zum Einsatz.
+ByteTrack nutzt die räumliche Nähe und Bewegungsinformation von Detektionen,
+um wiederkehrenden Objekten über mehrere Frames hinweg konsistente Track-IDs
+zuzuordnen. Eine Besonderheit des Verfahrens besteht darin, dass nicht nur
+hochkonfidente Detektionen, sondern auch Detektionen mit niedrigerer Konfidenz
+in die Datenassoziation einbezogen werden können. Dadurch lassen sich Objekte
+auch dann weiterverfolgen, wenn sie kurzzeitig unsicher erkannt werden.
 
-Durch die Objektverfolgung entstehen konsistente Objekttracks, die es erlauben,
-einzelne Detektionen als zusammengehörige Beobachtungen desselben Objekts über
-die Zeit zu interpretieren. Die aus der Objektverfolgung gewonnenen zeitlichen
-Informationen werden gezielt für die Generierung zusätzlicher Pseudo-Labels
-genutzt. Ein Objekttrack, der über eine definierte Mindestanzahl
-aufeinanderfolgender Frames stabil verfolgt werden kann, dient dabei als
-Indikator für die Zuverlässigkeit der zugrunde liegenden Detektionen.
-Kurzlebige, instabile oder inkonsistente Detektionen werden durch diese
-Tracking-basierten Kriterien effektiv aus dem Pseudo-Labeling-Prozess
-ausgeschlossen.
+Durch die Objektverfolgung entstehen Objekttracks, die einzelne Detektionen als
+zusammengehörige Beobachtungen desselben Objekts über die Zeit interpretierbar
+machen. Diese zeitliche Information wird in dieser Arbeit genutzt, um zusätzliche
+tracking-basierte Pseudo-Labels zu erzeugen. Dabei werden nicht alle automatisch
+erzeugten Detektionen übernommen, sondern nur solche, die innerhalb eines
+stabilen Tracks auftreten und definierte Qualitätskriterien erfüllen. Zu diesen
+Kriterien zählen insbesondere eine Mindestlänge des Tracks, eine ausreichende
+mittlere Detektionskonfidenz sowie eine konsistente Klassenzuordnung innerhalb
+des Tracks. Kurzlebige, instabile oder klassenseitig inkonsistente Tracks werden
+aus dem Pseudo-Labeling-Prozess ausgeschlossen.
 
-Darüber hinaus ermöglicht die Objektverfolgung die gezielte Übertragung von
-Annotationen zwischen benachbarten Frames. Klassen- und Positionsinformationen
-von manuell annotierten Objekten können entlang eines konsistenten Objekttracks
-auf nicht annotierte Zwischenframes propagiert werden. Dieser Mechanismus
-entspricht dem Prinzip der sogenannten Label-Propagation und ist insbesondere
-für video-basierte Annotationsszenarien von hoher Relevanz.
+Formal lässt sich die Menge der akzeptierten tracking-basierten Pseudo-Labels
+vereinfacht wie folgt beschreiben:
 
-Durch die aktive Einbindung der Objektverfolgung wird die automatische Annotation
-nicht allein auf Einzelbildvorhersagen gestützt, sondern um zeitliche
-Konsistenzkriterien ergänzt. Dies führt zu einer höheren Qualität der erzeugten
-Pseudo-Labels und bildet eine stabile Grundlage für die nachfolgenden Schritte
-der iterativen Modellanpassung.
+\[
+    L_{\text{track}} =
+    \{ d \in D \mid
+    score(d) \geq \tau_{\text{conf}}
+    \land len(track(d)) \geq \tau_{\text{len}}
+    \land \overline{score}(track(d)) \geq \tau_{\text{avg}}
+    \land cons(track(d)) \geq \tau_{\text{cls}}
+    \}
+\]
 
-Zusammenfassend übernimmt die Objektverfolgung in dem vorgestellten Ansatz eine
-zentrale Rolle bei der Strukturierung, Validierung und zeitlichen Konsistenzprüfung
-automatisch erzeugter Annotationen und stellt damit einen wesentlichen Baustein
-des gesamten semi-supervisierten Lernprozesses dar.
+Dabei bezeichnet \(D\) die Menge aller automatisch erzeugten Detektionen,
+\(score(d)\) die Konfidenz einer einzelnen Detektion, \(len(track(d))\) die Länge
+des zugehörigen Tracks, \(\overline{score}(track(d))\) die mittlere Konfidenz des
+Tracks und \(cons(track(d))\) die Klassenkonsistenz innerhalb des Tracks. Die
+Schwellwerte \(\tau_{\text{conf}}\), \(\tau_{\text{len}}\), \(\tau_{\text{avg}}\) und
+\(\tau_{\text{cls}}\) dienen der Qualitätskontrolle der automatisch erzeugten
+Labels.
 
-Die tracking-basierte Label-Propagation wurde in dieser Arbeit nicht als
-zusätzlicher Retraining-Schritt eingesetzt. Ziel des Trackings war vielmehr die
-Untersuchung, ob automatisch erkannte Objekte über aufeinanderfolgende Frames
-hinweg konsistent verfolgt werden können und somit die zeitliche Konsistenz der
-Annotationen verbessert wird. Die Bewertung erfolgt daher bewusst qualitativ
-anhand repräsentativer Videosequenzen und der erzeugten Tracking-Ergebnisse.
+Die auf diese Weise erzeugten tracking-basierten Pseudo-Labels werden anschließend
+nicht nur qualitativ betrachtet, sondern auch als zusätzliche Trainingsdaten
+verwendet. Dazu werden die ausgewählten Pseudo-Labels mit den manuell
+annotierten Trainingsdaten kombiniert und ein weiteres YOLO-Modell
+feinjustiert. Die Validierung erfolgt weiterhin ausschließlich auf dem manuell
+annotierten Validierungssplit. Dadurch kann der Einfluss der tracking-basierten
+Label-Propagation quantitativ mit dem Baseline-Modell und der rein
+detection-basierten Pseudo-Labeling-Stufe verglichen werden.
+
+Durch die aktive Einbindung der Objektverfolgung wird die automatische
+Annotation somit nicht allein auf Einzelbildvorhersagen gestützt, sondern um
+zeitliche Konsistenzkriterien ergänzt. Tracking übernimmt dabei eine doppelte
+Rolle: Einerseits dient es der qualitativen Analyse, ob Detektionen über mehrere
+Frames hinweg stabil verfolgt werden können. Andererseits bildet es eine
+Filterstrategie für die Auswahl zuverlässigerer Pseudo-Labels, die anschließend in
+einem eigenen Retraining-Schritt quantitativ evaluiert werden.
+
+Zusammenfassend stellt die Objektverfolgung in dem vorgestellten Ansatz einen
+wesentlichen Baustein zur Strukturierung, Validierung und zeitlichen
+Konsistenzprüfung automatisch erzeugter Annotationen dar. Sie ermöglicht eine
+gezieltere Auswahl von Pseudo-Labels auf Basis stabiler Objekttracks und schafft
+damit die Grundlage für die quantitative Untersuchung tracking-basierter
+Label-Propagation.
 
 
 \subsection{Iterativer Self-Training-Ansatz}
 
-Aufbauend auf den vorhergehenden Schritten wird in dieser Arbeit ein iterativer
-Self-Training-Ansatz eingesetzt, um die Leistungsfähigkeit des
-Objekterkennungsmodells schrittweise zu verbessern. Ziel dieses Vorgehens ist es,
-die Menge qualitativ hochwertiger Trainingsdaten sukzessive zu erweitern, ohne
-den manuellen Annotierungsaufwand signifikant zu erhöhen.
+Aufbauend auf den vorhergehenden Schritten wird in dieser Arbeit ein
+Self-Training-Ansatz betrachtet, bei dem ein initial trainiertes Modell zur
+Erzeugung zusätzlicher Trainingsdaten eingesetzt wird. Ziel dieses Vorgehens ist
+es, den vorhandenen manuell annotierten Datensatz kontrolliert zu erweitern und
+den Einfluss automatisch erzeugter Labels auf die Modellleistung experimentell zu
+untersuchen. Eine Verbesserung der Detektionsleistung ist dabei nicht automatisch
+gegeben, sondern hängt wesentlich von der Qualität der erzeugten Pseudo-Labels
+ab.
 
-Ausgangspunkt jeder Iteration ist ein mit manuellen Annotationen und zuvor
-generierten Pseudo-Labels trainiertes Modell. Dieses Modell wird anschließend
-erneut auf bislang unannotierte oder nur teilweise annotierte Videoframes
-angewendet. Die dabei erzeugten Detektionen werden wie in den vorhergehenden
-Abschnitten beschrieben durch Objektverfolgung und heuristische Filtermechanismen
-validiert und anschließend als neue Pseudo-Labels in den Trainingsdatensatz
-aufgenommen.
+Ausgangspunkt des Ansatzes ist ein Modell, das zunächst ausschließlich mit
+manuellen Annotationen trainiert wurde. Dieses Baseline-Modell wird anschließend
+auf bislang unannotierte oder nur teilweise annotierte Videoframes angewendet.
+Die dabei erzeugten Detektionen können nach definierten Kriterien gefiltert und
+als Pseudo-Labels in einen erweiterten Trainingsdatensatz übernommen werden.
 
-Durch die wiederholte Anwendung dieses Prozesses entsteht ein schrittweiser
-Lernzyklus, bei dem das Modell mit jeder Iteration von einer wachsenden und
-strukturell konsistenteren Datenbasis profitiert. Insbesondere Objekte, die in
-früheren Iterationen nur unsicher oder unvollständig erkannt wurden, können durch
-die zunehmende Datenmenge und die verbesserte Modellanpassung zuverlässiger
-detektiert werden.
+In der detection-basierten Pseudo-Labeling-Stufe erfolgt diese Auswahl primär
+anhand der Detektionskonfidenz. In der tracking-basierten Label-Propagation
+werden die Detektionen zusätzlich über mehrere aufeinanderfolgende Frames hinweg
+verknüpft und anhand zeitlicher Konsistenzkriterien bewertet. Dadurch können
+kurzlebige oder instabile Einzelvorhersagen teilweise herausgefiltert werden.
 
-Ein wesentlicher Vorteil des iterativen Self-Trainings liegt in der kontrollierten
-Erweiterung des Trainingsdatensatzes. Da nur solche Pseudo-Labels übernommen
-werden, die definierte Qualitätskriterien erfüllen, wird die Akkumulation von
-Fehlannotationen über mehrere Iterationen hinweg begrenzt. Gleichzeitig erlaubt
-der modulare Aufbau des Ansatzes eine flexible Anpassung der Iterationsanzahl sowie
-der verwendeten Filterparameter an die jeweiligen experimentellen Anforderungen.
+Durch die erneute Modellanpassung auf einem erweiterten Datensatz entsteht ein
+Self-Training-Prozess, mit dem untersucht werden kann, ob zusätzliche automatisch
+erzeugte Labels die Klassenabdeckung verbessern und zu einer höheren
+Detektionsleistung beitragen. Gleichzeitig besteht das Risiko, dass fehlerhafte
+Pseudo-Labels in den Trainingsprozess übernommen werden und dadurch
+Fehlvorhersagen des Ausgangsmodells verstärkt werden.
 
-Der iterative Self-Training-Ansatz bildet den abschließenden Schritt der
-vorgestellten Methodik und verbindet Transfer Learning, Pseudo-Labeling und
-Objektverfolgung zu einem geschlossenen Lernprozess. Auf diese Weise kann ein
-leistungsfähiges Objekterkennungsmodell für video-basierte Luftaufnahmen trainiert
-werden, obwohl nur eine begrenzte Menge manuell annotierter Daten zur Verfügung
-steht.
+Ein wesentlicher Vorteil des Ansatzes liegt daher nicht in einer garantierten
+Leistungssteigerung, sondern in der systematischen und kontrollierten Erweiterung
+der Trainingsdaten. Durch die getrennte Betrachtung von manuellem Training,
+detection-basiertem Pseudo-Labeling und tracking-basierter Label-Propagation
+kann analysiert werden, unter welchen Bedingungen automatisch erzeugte Labels
+hilfreich sind und wann zusätzliche Qualitätskontrolle erforderlich bleibt.
+
+Der Self-Training-Ansatz verbindet damit Transfer Learning, Pseudo-Labeling und
+Objektverfolgung zu einem modularen Workflow für die semi-supervisierte
+Annotation von UAV-Videodaten. In dieser Arbeit wird dieser Workflow anhand
+mehrerer experimenteller Stufen evaluiert, um sowohl das Potenzial als auch die
+praktischen Grenzen automatisch erzeugter Annotationen sichtbar zu machen.
 
 \subsection{Trainingsstrategie und Hyperparameterauswahl}
 
@@ -475,55 +493,87 @@ Self-Training-Prozess.
     \end{tabular}
 \end{table}
 
-
 \subsection{Evaluationsprotokoll}
 
 Zur objektiven Bewertung des vorgeschlagenen semi-supervisierten Ansatzes wird ein
 klar definiertes Evaluationsprotokoll verwendet. Ziel der Evaluation ist es, sowohl
 die Detektionsleistung des Objekterkennungsmodells als auch den Einfluss der
-iterativen Erweiterung des Trainingsdatensatzes durch Pseudo-Labels und
-Objektverfolgung systematisch zu analysieren. Die Evaluation orientiert sich an den
-standardisierten Auswertungsverfahren des YOLO-Frameworks und stellt die
-Reproduzierbarkeit der Ergebnisse sicher \cite{ultralytics2024}.
+automatischen Erweiterung des Trainingsdatensatzes durch detection-basierte und
+tracking-basierte Pseudo-Labels systematisch zu analysieren. Die Evaluation
+orientiert sich an den standardisierten Auswertungsverfahren des YOLO-Frameworks
+und stellt die Reproduzierbarkeit der Ergebnisse sicher \cite{ultralytics2024}.
 
+Ein zentraler Grundsatz der Evaluation besteht darin, dass alle trainierten Modelle
+auf demselben manuell annotierten Validierungssplit bewertet werden. Dadurch
+wird sichergestellt, dass Unterschiede zwischen Baseline-Modell, detection-basiertem
+Pseudo-Labeling und tracking-basierter Label-Propagation nicht durch veränderte
+Validierungsdaten, sondern durch die jeweilige Trainingsstrategie entstehen.
 
 \subsubsection{Evaluationsmetriken}
 
 Die Leistungsbewertung erfolgt mithilfe etablierter Metriken aus dem Bereich der
 Objekterkennung. Dazu zählen insbesondere Precision, Recall und der daraus
-abgeleitete F1-Score, welche eine differenzierte Betrachtung zwischen korrekt
-erkannten Objekten, Fehlalarmen und übersehenen Instanzen ermöglichen.
+abgeleitete F1-Score. Diese Metriken ermöglichen eine differenzierte Betrachtung
+zwischen korrekt erkannten Objekten, Fehlalarmen und übersehenen Instanzen.
 
-Als zentrale Gesamtmetrik wird die mean Average Precision (mAP) verwendet. Diese
-bewertet die Detektionsleistung über verschiedene Konfidenzschwellen hinweg und
-stellt den Standardvergleichswert für YOLO-basierte Modelle dar. Die verwendeten
-Metriken entsprechen den automatisch erzeugten Evaluationsausgaben des YOLOv8-
-Frameworks \cite{ultralytics2024}.
+Als zentrale Gesamtmetrik wird die mean Average Precision (mAP) verwendet.
+In dieser Arbeit werden insbesondere mAP@50 sowie mAP@50--95 betrachtet.
+mAP@50 bewertet eine Detektion bereits bei einer Mindestüberlappung von
+IoU $\geq 0{,}5$ als korrekt und gibt damit einen gut interpretierbaren Überblick
+über die Detektionsleistung. mAP@50--95 berücksichtigt dagegen mehrere
+strengere IoU-Schwellenwerte und bewertet dadurch zusätzlich die Qualität der
+räumlichen Lokalisierung. Die verwendeten Metriken entsprechen den automatisch
+erzeugten Evaluationsausgaben des YOLOv8-Frameworks \cite{ultralytics2024}.
+
+Neben den globalen Kennzahlen werden auch klassenweise Ergebnisse analysiert.
+Dies ist besonders wichtig, da der verwendete Datensatz eine stark unausgewogene
+Klassenverteilung aufweist. Häufige Klassen wie \textit{watertank} können dadurch
+stabiler bewertet werden als seltene Klassen wie \textit{bottle}, \textit{plastic bag}
+oder \textit{large trash bin}.
 
 \subsubsection{Frame-basierte und Track-basierte Evaluation}
 
 Da es sich bei den betrachteten Daten um Videosequenzen handelt, erfolgt die
-Evaluation auf zwei Ebenen. Auf Frame-Ebene werden einzelne Videoframes unabhängig
-voneinander ausgewertet, wobei jede Detektion als eigenständige Vorhersage behandelt
-wird.
+Evaluation auf zwei Ebenen. Auf Frame-Ebene werden einzelne Videoframes
+unabhängig voneinander ausgewertet, wobei jede Detektion als eigenständige
+Vorhersage behandelt wird. Diese Ebene bildet die Grundlage für die quantitative
+Modellbewertung anhand von Precision, Recall, mAP@50 und mAP@50--95.
 
-Ergänzend dazu wird eine Track-basierte Betrachtung durchgeführt, bei der die durch
-Objektverfolgung erzeugten Objekttrajektorien berücksichtigt werden. Diese Analyse
-dient der qualitativen Bewertung der zeitlichen Konsistenz der Detektionen und
-ermöglicht eine Einschätzung, inwiefern Tracking-basierte Label-Propagation zur
-Stabilisierung der Vorhersagen beiträgt. Eine explizite statistische Testung auf
-Track-Ebene wird dabei nicht durchgeführt.
+Ergänzend dazu wird eine Track-basierte Betrachtung durchgeführt, bei der die
+durch Objektverfolgung erzeugten Objekttrajektorien berücksichtigt werden. Diese
+Analyse dient dazu, die zeitliche Konsistenz automatisch erzeugter Detektionen zu
+bewerten und zu prüfen, ob wiederkehrende Objekte über mehrere Frames hinweg
+stabil verfolgt werden können. Dabei werden insbesondere die Anzahl der erzeugten
+Tracks, die Länge stabiler Tracks, die mittlere Konfidenz sowie die Konsistenz der
+Klassenzuordnung innerhalb eines Tracks betrachtet.
+
+Die Track-basierte Analyse wird in dieser Arbeit nicht als eigenständige
+Multi-Object-Tracking-Benchmark-Auswertung mit MOTA, IDF1 oder HOTA
+verstanden. Der Fokus liegt vielmehr auf der Frage, ob Track-Informationen zur
+Auswahl zuverlässigerer Pseudo-Labels genutzt werden können. Der quantitative
+Nachweis des Nutzens der tracking-basierten Label-Propagation erfolgt daher über
+einen erneuten Trainingslauf mit den ausgewählten tracking-basierten Pseudo-Labels
+und dessen anschließende Validierung auf demselben manuellen Validierungssplit.
 
 \begin{table}[H]
     \centering
     \caption{Vergleich von Frame- und Track-basierter Evaluation}
     \label{tab:frame_track_eval}
-    \begin{tabular}{lll}
+    \begin{tabular}{p{3.0cm}p{3.5cm}p{6.8cm}}
         \hline
-        \textbf{Evaluationsebene} & \textbf{Art der Auswertung} & \textbf{Zielgröße}                   \\
+        \textbf{Evaluationsebene} & \textbf{Art der Auswertung} & \textbf{Zielgröße}                                                            \\
         \hline
-        Frame-Ebene               & Quantitativ                 & Precision, Recall, mAP@50            \\
-        Track-Ebene               & Qualitativ                  & Zeitliche Konsistenz der Detektionen \\
+        Frame-Ebene               &
+        Quantitativ               &
+        Precision, Recall, F1-Score, mAP@50 und mAP@50--95 auf dem manuellen Validierungssplit                                                  \\
+        \hline
+        Track-Ebene               &
+        Deskriptiv und qualitativ &
+        Anzahl der Tracks, Track-Länge, mittlere Konfidenz, Klassenkonsistenz und zeitliche Stabilität                                          \\
+        \hline
+        Retraining-Ebene          &
+        Quantitativ               &
+        Vergleich der Modellleistung nach Training mit manuellen Labels, detection-basierten Pseudo-Labels und tracking-basierten Pseudo-Labels \\
         \hline
     \end{tabular}
 \end{table}
@@ -531,34 +581,54 @@ Track-Ebene wird dabei nicht durchgeführt.
 \subsubsection{Vergleich über Iterationen hinweg}
 
 Ein zentraler Bestandteil der Evaluation ist der Vergleich der Modellleistung über
-mehrere Iterationen des Self-Training-Prozesses hinweg. Die Ergebnisse des initialen
-Modells, das ausschließlich auf manuell annotierten Frames trainiert wurde, werden
-den Resultaten der nachfolgenden Iterationen mit erweiterten Trainingsdatensätzen
+mehrere experimentelle Stufen hinweg. Die Ergebnisse des initialen Modells, das
+ausschließlich auf manuell annotierten Frames trainiert wurde, werden den
+Resultaten der nachfolgenden Modelle mit erweiterten Trainingsdatensätzen
 gegenübergestellt.
 
-Dieser Vergleich ermöglicht eine quantitative Analyse des Beitrags der automatisch
-generierten Pseudo-Labels zur Leistungssteigerung des Modells sowie die Identifikation
-möglicher Sättigungseffekte oder Leistungsstagnationen. Die Auswertung erfolgt anhand
-der validierungsbasierten mAP-Werte sowie der zugehörigen Precision- und Recall-Kurven,
-die während des Trainings automatisch protokolliert werden.
+Dabei werden drei Stufen unterschieden. In der ersten Stufe wird das
+Baseline-Modell ausschließlich mit manuellen Annotationen trainiert. In der zweiten
+Stufe werden zusätzlich detection-basierte Pseudo-Labels verwendet, die aus den
+Vorhersagen des Baseline-Modells auf nicht manuell annotierten Frames entstehen.
+In der dritten Stufe werden tracking-basierte Pseudo-Labels genutzt, bei denen die
+automatisch erzeugten Detektionen zusätzlich anhand zeitlicher Konsistenzkriterien
+gefiltert werden.
+
+Dieser Vergleich ermöglicht eine quantitative Analyse des Beitrags automatisch
+generierter Labels zur Modellleistung. Gleichzeitig können mögliche negative
+Effekte sichtbar gemacht werden, etwa wenn zusätzliche Pseudo-Labels zwar die
+Datenmenge erhöhen, aber durch Rauschen oder Fehlannotationen die Precision
+oder die mAP-Werte verschlechtern. Die Auswertung erfolgt anhand der
+validierungsbasierten Kennzahlen Precision, Recall, mAP@50 und mAP@50--95
+sowie anhand der automatisch erzeugten Precision-Recall-Kurven,
+F1-Confidence-Kurven und Konfusionsmatrizen.
 
 \begin{table}[H]
     \centering
-    \caption{Iterationen des Self-Training-Prozesses und ihr erwarteter Beitrag}
+    \caption{Experimentelle Stufen des semi-supervisierten Ansatzes}
     \label{tab:iteration_comparison}
-    \begin{tabular}{p{2.2cm}p{4.6cm}p{6.2cm}}
+    \begin{tabular}{p{2.6cm}p{4.7cm}p{6.0cm}}
         \hline
-        \textbf{Iteration} & \textbf{Trainingsdaten}           & \textbf{Erwarteter Beitrag}           \\
+        \textbf{Stufe}                                       & \textbf{Trainingsdaten} & \textbf{Evaluationsziel}                       \\
         \hline
-        Iteration 0        & Manuelle Annotationen             & Referenzleistung des Baseline-Modells \\
-        Iteration 1        & + Pseudo-Labels                   & Erweiterte Klassenabdeckung           \\
-        Iteration 2        & + Tracking-basierte Pseudo-Labels & Zeitliche Stabilisierung der Labels   \\
+        Baseline                                             &
+        Manuell annotierte Frames                            &
+        Referenzleistung des Modells ohne automatisch erzeugte Labels                                                                   \\
+        \hline
+        Detection-basiertes Pseudo-Labeling                  &
+        Manuelle Labels und detection-basierte Pseudo-Labels &
+        Untersuchung, ob zusätzliche automatisch erzeugte Labels die Klassenabdeckung und Modellleistung verbessern                     \\
+        \hline
+        Tracking-basierte Label-Propagation                  &
+        Manuelle Labels und tracking-basierte Pseudo-Labels  &
+        Untersuchung, ob zeitliche Konsistenz und Track-Identitäten zu zuverlässigeren Pseudo-Labels und besserer Modellleistung führen \\
         \hline
     \end{tabular}
 \end{table}
 
 Zur visuellen Analyse der Modellleistung werden zusätzlich automatisch generierte
-Evaluationsgrafiken des YOLO-Frameworks herangezogen, darunter Precision-Recall-
-Kurven, Konfusionsmatrizen sowie Konfidenz-basierte Leistungsdarstellungen. Die
-Visualisierung erfolgt mithilfe der Bibliotheken \textit{matplotlib} und
-\textit{seaborn} \cite{hunter2007,waskom2021}.
+Evaluationsgrafiken des YOLO-Frameworks herangezogen. Dazu gehören
+Precision-Recall-Kurven, F1-Confidence-Kurven, absolute und normalisierte
+Konfusionsmatrizen sowie qualitative Validierungsbeispiele mit Ground-Truth-Labels
+und Modellvorhersagen. Die Visualisierung erfolgt mithilfe der Bibliotheken
+\textit{matplotlib} und \textit{seaborn} \cite{hunter2007,waskom2021}.
