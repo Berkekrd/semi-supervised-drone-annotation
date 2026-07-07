@@ -1,14 +1,11 @@
 % =========================================================
 % Anhang (article-kompatibel)
 % =========================================================
-% Hinweis: Die gewünschte Struktur verwendet \chapter. Da diese
-% Arbeit die article-Klasse nutzt, sind die Kapitel als \section
-% (durch \appendix als A, B, C ... nummeriert) und die inneren
-% Abschnitte als \subsection umgesetzt.
-%
-% Werte stammen, soweit vorhanden, aus der tatsächlichen Konfiguration
-% des Projekts (args.yaml, Pipeline-Skripte, Tracking-Reports).
-% Wo konkrete Werte fehlen, sind Platzhalter wie [ANZAHL] eingetragen.
+% Hinweis: Falls noch nicht im Vorspann vorhanden:
+% \usepackage{float}
+% \usepackage{booktabs}
+% \usepackage{graphicx}
+% \usepackage{url} oder \usepackage{hyperref}
 
 \clearpage
 \appendix
@@ -21,223 +18,340 @@
 % Unterabschnitte des Anhangs wieder im Inhaltsverzeichnis anzeigen
 \addtocontents{toc}{\protect\setcounter{tocdepth}{2}}
 
-% Platzhalter-Box für noch nicht vorhandene Abbildungen (kompiliert ohne Bilddatei)
-\newcommand{\anhangplaceholder}[1]{%
-    \fbox{\parbox[c][5cm][c]{0.9\textwidth}{%
-        \centering\itshape Platzhalter für Abbildung --- Pfad einfügen: \texttt{#1}}}}
-
+% Einheitlicher Platzhalter für Werte, die nachgetragen werden
+\newcommand{\nachzutragen}{\textit{nachzutragen}}
 
 % =========================================================
 \section{Zusätzliche Materialien zum Datensatzkapitel}
 \label{app:datensatz}
 
 Dieser Anhang enthält ergänzende Informationen zum verwendeten Datensatz.
-Die hier zusammengestellten Details vertiefen das Datensatzkapitel
-(Abschnitt~\ref{sec:datasets}) des Haupttextes, ohne dieses mit umfangreichen
-Tabellen und Einzelwerten zu überladen. Sie dienen der Nachvollziehbarkeit und
-Reproduzierbarkeit der durchgeführten Experimente.
+Die hier zusammengestellten Details ergänzen das Datensatzkapitel des Haupttextes
+und dienen der Nachvollziehbarkeit der durchgeführten Experimente. Im Haupttext
+wurden die zentralen Eigenschaften des MBG-V2-Datensatzes beschrieben; im
+Folgenden werden zusätzliche Angaben zur verwendeten Datenbasis, zur Aufteilung
+und zur Verteilung der Annotationen zusammengefasst.
 
-\subsection{Übersicht der verwendeten Videodaten}
+\subsection{Übersicht der verwendeten Datenbasis}
 
-Die folgende Tabelle gibt einen Überblick über die im Rahmen dieser Arbeit
-verwendeten Videosequenzen sowie über den Umfang der daraus extrahierten,
-manuell annotierten und automatisch erzeugten Daten. Etwa jeder 30.~Frame eines
-Videos wurde manuell annotiert; die übrigen Frames wurden zunächst nicht
-annotiert.
+Die Experimente dieser Arbeit basieren auf der Mosquito Breeding Grounds V2
+(MBG-V2) Database. Der Datensatz umfasst UAV-Videodaten aus 13 urbanen
+Regionen in Rio de Janeiro. Aufgrund der ursprünglichen Struktur des Datensatzes
+liegen die Daten als Videosequenzen mit track-basierten Annotationen vor. Für
+die in dieser Arbeit durchgeführten Experimente wurden diese Annotationen in
+framebasierte YOLO-Labels überführt.
 
-\begin{table}[htbp]
+\begin{table}[H]
     \centering
-    \caption{Übersicht der verwendeten Videodaten sowie der zugehörigen
-    manuellen und automatisch erzeugten Annotationen.}
-    \label{tab:anhang_videouebersicht}
-    \resizebox{\textwidth}{!}{%
-    \begin{tabular}{lccccl}
+    \caption{Übersicht der verwendeten Datenbasis.}
+    \label{tab:anhang_datenbasis}
+    \begin{tabular}{lll}
         \toprule
-        \textbf{Video} & \textbf{Extrahierte Frames} &
-        \textbf{Manuell annot. Frames} & \textbf{Manuelle Annotationen} &
-        \textbf{Pseudo-Labels} & \textbf{Bemerkung} \\
+        \textbf{Eigenschaft}  & \textbf{Wert}       & \textbf{Bemerkung}                \\
         \midrule
-        video01\_regionA & [ANZAHL] & [ANZAHL] & [ANZAHL] & [ANZAHL] & [BEMERKUNG] \\
-        video02\_regionA & [ANZAHL] & [ANZAHL] & [ANZAHL] & [ANZAHL] & [BEMERKUNG] \\
-        video03\_regionB & [ANZAHL] & [ANZAHL] & [ANZAHL] & [ANZAHL] & [BEMERKUNG] \\
-        video04\_regionB & 6285     & [ANZAHL] & [ANZAHL] & [ANZAHL] & Tracking-Beispiel \\
-        \multicolumn{6}{c}{\dots} \\
-        \midrule
-        \textbf{Gesamt (26 Videos)} & [ANZAHL] & [ANZAHL] & [ANZAHL] & [ANZAHL] & \\
+        Datensatz             & MBG-V2              & Mosquito Breeding Grounds V2      \\
+        Regionen              & 13                  & urbane Regionen in Rio de Janeiro \\
+        Videosequenzen        & 26                  & zwei Videos pro Region            \\
+        Flughöhe              & ca. 40 m            & laut Datensatzbeschreibung        \\
+        Objektklassen         & 12                  & potenzielle Brutstätten           \\
+        Ursprüngliches Format & CVAT XML            & track-basierte Annotationen       \\
+        Zielformat            & YOLO                & framebasierte Bounding Boxes      \\
+        Manuelle Annotation   & ca. jedes 30. Frame & gemäß Datensatzstruktur           \\
         \bottomrule
-    \end{tabular}%
-    }
+    \end{tabular}
+\end{table}
+
+Für die tracking-basierte Label-Propagation wurde das Baseline-Modell auf
+ausgewählte UAV-Videosequenzen angewendet. Insgesamt wurden dabei
+10\,746 Kandidatenframes mit tracking-basierten Pseudo-Labels erzeugt. Nach der
+Filterung und klassenbasierten Auswahl wurden 1\,192 Frames mit
+tracking-basierten Pseudo-Labels in den Trainingsdatensatz übernommen.
+
+\begin{table}[H]
+    \centering
+    \caption{Zusammenfassung der automatisch erzeugten tracking-basierten
+        Pseudo-Labels.}
+    \label{tab:anhang_tracking_summary}
+    \begin{tabular}{ll}
+        \toprule
+        \textbf{Größe}                                        & \textbf{Wert}                               \\
+        \midrule
+        Kandidatenframes mit tracking-basierten Pseudo-Labels & 10\,746                                     \\
+        Nach Filterung ausgewählte Frames                     & 1\,192                                      \\
+        Verwendetes Tracking-Verfahren                        & ByteTrack                                   \\
+        Grundlage der Detektionen                             & Baseline-YOLOv8-Modell                      \\
+        Auswahlstrategie                                      & Track-Filterung und klassenbasierte Auswahl \\
+        \bottomrule
+    \end{tabular}
 \end{table}
 
 \subsection{Aufteilung des Datensatzes}
 
-Der Datensatz wurde in einen Trainings- und einen Validierungsteil aufgeteilt.
-Die Aufteilung erfolgte reproduzierbar mit festem Zufallsseed im Verhältnis von
-80~\% zu 20~\%. Der Trainingsteil dient der Modellanpassung, der
-Validierungsteil der Überwachung des Trainingsverlaufs und der abschließenden,
-ausschließlich auf manuellen Annotationen basierenden Bewertung. Ein separater
-Testteil wurde in dieser Arbeit nicht gebildet.
+Der Datensatz wurde für die Experimente in einen Trainings- und einen
+Validierungsteil aufgeteilt. Die Aufteilung erfolgte im Verhältnis von 80~\% zu
+20~\%. Der Trainingsteil wurde zur Modellanpassung verwendet, während der
+Validierungsteil für die Bewertung der Modellleistung genutzt wurde. Ein separater
+Testsplit wurde in dieser Arbeit nicht gebildet. Die finale Bewertung der
+experimentellen Stufen erfolgte auf demselben manuell annotierten
+Validierungssplit, um die Vergleichbarkeit zwischen Baseline-Modell,
+detection-basiertem Pseudo-Labeling und tracking-basierter Label-Propagation
+sicherzustellen.
 
-\begin{table}[htbp]
+\begin{table}[H]
     \centering
-    \caption{Aufteilung des Datensatzes in Trainings- und Validierungsdaten
-    (Verhältnis 80/20).}
+    \caption{Aufteilung des Datensatzes in Trainings- und Validierungsdaten.}
     \label{tab:anhang_split}
     \begin{tabular}{lccc}
         \toprule
-        \textbf{Split} & \textbf{Frames} & \textbf{Annotationen} & \textbf{Anteil} \\
+        \textbf{Split}  & \textbf{Frames} & \textbf{Annotationen} & \textbf{Anteil} \\
         \midrule
-        Training     & [ANZAHL] & [ANZAHL] & 80\,\% \\
-        Validierung  & [ANZAHL] & [ANZAHL] & 20\,\% \\
-        Test         & --       & --       & nicht verwendet \\
+        Training        & \nachzutragen   & \nachzutragen         & 80\,\%          \\
+        Validierung     & \nachzutragen   & \nachzutragen         & 20\,\%          \\
+        Test            & --              & --                    & nicht verwendet \\
         \midrule
-        \textbf{Gesamt} & [ANZAHL] & [ANZAHL] & 100\,\% \\
+        \textbf{Gesamt} & \nachzutragen   & \nachzutragen         & 100\,\%         \\
         \bottomrule
     \end{tabular}
 \end{table}
 
-\subsection{Verteilung der Annotationen}
+\subsection{Verteilung der manuellen Annotationen}
 
-Manuelle Annotationen und automatisch erzeugte Pseudo-Labels werden getrennt
-betrachtet, um den Beitrag der halbüberwachten Annotation transparent zu machen.
-Die Pseudo-Labels werden sowohl vor als auch nach der Filterung ausgewiesen. Für
-die Filterung wurde eine minimale Detektionskonfidenz von 0{,}60 verwendet; die
-klassenbalancierte Auswahl strebte etwa 800~Instanzen je Klasse an
-(maximal 1000~Pseudo-Boxen je Klasse).
+Die folgende Tabelle zeigt die Klassenverteilung des Baseline-Datensatzes. Die
+Verteilung verdeutlicht die starke Dominanz der Klasse \textit{watertank}. Mehrere
+andere Klassen sind dagegen nur mit wenigen Instanzen vertreten. Diese
+Klassenungleichverteilung stellt eine zentrale Herausforderung für das Training und
+die Evaluation der Modelle dar.
 
-\begin{table}[htbp]
+\begin{table}[H]
     \centering
-    \caption{Verteilung der manuellen Annotationen und der automatisch erzeugten
-    Pseudo-Labels vor und nach der Filterung.}
-    \label{tab:anhang_annotationsverteilung}
-    \begin{tabular}{lccl}
+    \caption{Label-Verteilung im Baseline-Datensatz.}
+    \label{tab:anhang_baseline_distribution}
+    \begin{tabular}{lr}
         \toprule
-        \textbf{Datentyp} & \textbf{Anzahl Frames} &
-        \textbf{Anzahl Annotationen} & \textbf{Verwendung} \\
+        \textbf{Klasse} & \textbf{Anzahl der Instanzen} \\
         \midrule
-        Manuelle Annotationen              & [ANZAHL] & [ANZAHL] & Training + Validierung \\
-        Pseudo-Labels vor Filterung        & [ANZAHL] & [ANZAHL] & Zwischenstand, nicht direkt genutzt \\
-        Pseudo-Labels nach Filterung       & [ANZAHL] & [ANZAHL] & Kandidaten für das Training \\
-        Für das Training verwendete Labels & [ANZAHL] & [ANZAHL] & manuell + gefilterte Pseudo-Labels \\
+        pool            & 253                           \\
+        bottle          & 14                            \\
+        bucket          & 162                           \\
+        puddle          & 0                             \\
+        tire            & 309                           \\
+        watertank       & 4432                          \\
+        dumpster        & 4                             \\
+        large trash bin & 43                            \\
+        plastic bag     & 24                            \\
+        small trash bin & 14                            \\
+        storm drain     & 554                           \\
+        \midrule
+        \textbf{Gesamt} & \textbf{5809}                 \\
         \bottomrule
     \end{tabular}
 \end{table}
+
+\subsection{Verteilung nach detection-basiertem Pseudo-Labeling}
+
+Durch die automatische Pseudo-Label-Generierung wurde die Datenbasis erweitert.
+Insbesondere mehrere zuvor unterrepräsentierte Klassen erhielten zusätzliche
+Trainingsinstanzen. Die folgende Tabelle fasst die Label-Verteilung vor und nach
+der detection-basierten Pseudo-Labeling-Stufe zusammen.
+
+\begin{table}[H]
+    \centering
+    \caption{Vergleich der Label-Verteilung zwischen Baseline-Datensatz und
+        detection-basiertem Pseudo-Labeling.}
+    \label{tab:anhang_pseudo_distribution}
+    \begin{tabular}{lrrr}
+        \toprule
+        \textbf{Klasse} & \textbf{Baseline} & \textbf{Nach Pseudo-Labeling} &
+        \textbf{Zusätzliche Instanzen}                                                      \\
+        \midrule
+        pool            & 253               & 743                           & 490           \\
+        bottle          & 14                & 14                            & 0             \\
+        bucket          & 162               & 758                           & 596           \\
+        puddle          & 0                 & 0                             & 0             \\
+        tire            & 309               & 719                           & 410           \\
+        watertank       & 4432              & 4432                          & 0             \\
+        dumpster        & 4                 & 4                             & 0             \\
+        large trash bin & 43                & 460                           & 417           \\
+        plastic bag     & 24                & 534                           & 510           \\
+        small trash bin & 14                & 14                            & 0             \\
+        storm drain     & 554               & 677                           & 123           \\
+        \midrule
+        \textbf{Gesamt} & \textbf{5809}     & \textbf{8355}                 & \textbf{2546} \\
+        \bottomrule
+    \end{tabular}
+\end{table}
+
+\subsection{Ausgewählte tracking-basierte Pseudo-Labels}
+
+Für die tracking-basierte Label-Propagation wurden automatisch erzeugte
+Detektionen zusätzlich anhand ihrer zeitlichen Konsistenz bewertet. Dabei wurden
+nur solche Pseudo-Labels übernommen, die innerhalb stabiler Tracks auftraten und
+die definierten Qualitätskriterien erfüllten. Die folgende Tabelle zeigt die für das
+Retraining ausgewählten tracking-basierten Pseudo-Labels nach Klassen.
+
+\begin{table}[H]
+    \centering
+    \caption{Ausgewählte tracking-basierte Pseudo-Labels nach Klassen.}
+    \label{tab:anhang_tracking_distribution}
+    \begin{tabular}{lrrr}
+        \toprule
+        \textbf{Klasse}                 & \textbf{Manuelle Instanzen} &
+        \textbf{Tracking-Pseudo-Labels} & \textbf{Gesamt}                                             \\
+        \midrule
+        pool                            & 310                         & 490           & 800           \\
+        bucket                          & 204                         & 482           & 686           \\
+        tire                            & 390                         & 410           & 800           \\
+        large trash bin                 & 50                          & 339           & 389           \\
+        plastic bag                     & 26                          & 510           & 536           \\
+        storm drain                     & 677                         & 123           & 800           \\
+        \midrule
+        \textbf{Gesamt}                 & \textbf{1657}               & \textbf{2354} & \textbf{4011} \\
+        \bottomrule
+    \end{tabular}
+\end{table}
+
+Die Tabelle zeigt, dass die tracking-basierte Label-Propagation insbesondere zur
+Erweiterung mehrerer unterrepräsentierter Klassen beiträgt. Gleichzeitig wird
+deutlich, dass die Track-Filterung konservativer arbeitet als das rein
+detection-basierte Pseudo-Labeling. Nicht jede automatisch erzeugte Detektion
+wird übernommen, sondern nur solche, die den Kriterien für zeitliche Stabilität und
+Konsistenz genügen.
 
 \subsection{Beispielhafte Annotationen}
 
-Zur qualitativen Veranschaulichung zeigt die folgende Abbildung beispielhafte
-Frames mit den zugehörigen Annotationen. Dargestellt werden manuelle
-Annotationen, automatisch erzeugte Pseudo-Labels sowie durch Objektverfolgung
-unterstützte Label-Propagation.
+Die qualitativen Beispiele im Haupttext zeigen manuelle Annotationen,
+detection-basierte Pseudo-Labels und tracking-basierte Label-Propagation. Falls
+zusätzliche Beispielabbildungen ergänzt werden, können diese an dieser Stelle
+eingefügt werden.
 
-\begin{figure}[htbp]
-    \centering
-    \anhangplaceholder{figures/appendix\_dataset\_examples.png}
-    \caption{Beispielhafte Frames zur qualitativen Veranschaulichung der
-    Annotationen. Gezeigt werden manuelle Annotationen, automatisch erzeugte
-    Pseudo-Labels und durch Tracking unterstützte Label-Propagation.}
-    \label{fig:anhang_dataset_examples}
-\end{figure}
+% Optional, falls eine zusätzliche Abbildung vorhanden ist:
+%
+% \begin{figure}[H]
+%     \centering
+%     \includegraphics[width=0.95\textwidth]{figures/appendix_dataset_examples.png}
+%     \caption{Beispielhafte Frames zur qualitativen Veranschaulichung der
+%     Annotationen. Gezeigt werden manuelle Annotationen, automatisch erzeugte
+%     Pseudo-Labels und durch Tracking unterstützte Label-Propagation.}
+%     \label{fig:anhang_dataset_examples}
+% \end{figure}
 
 
 % =========================================================
 \section{Zusätzliche Materialien zur Methodik}
 \label{app:methodik}
 
-Dieser Anhang dokumentiert die konkreten Konfigurationen und Parameter der
-verwendeten Methoden (vgl.\ Abschnitt~\ref{sec:method}). Ziel ist es, die
-einzelnen Verarbeitungsschritte reproduzierbar zu machen, ohne den methodischen
-Haupttext mit Detailwerten zu überladen.
+Dieser Anhang dokumentiert ergänzende Konfigurationen und Parameter der
+verwendeten Methoden. Ziel ist es, die einzelnen Verarbeitungsschritte
+reproduzierbar zu machen, ohne den methodischen Haupttext mit Detailwerten zu
+überladen.
 
 \subsection{Konfiguration des YOLOv8-Trainings}
 
 Die folgende Tabelle fasst die wichtigsten Parameter der Trainingskonfiguration
-des Objekterkennungsmodells zusammen.
+des Baseline-Modells zusammen.
 
-\begin{table}[htbp]
+\begin{table}[H]
     \centering
-    \caption{Konfiguration des YOLOv8-Trainings (Baseline).}
+    \caption{Konfiguration des YOLOv8-Trainings des Baseline-Modells.}
     \label{tab:anhang_yolo_config}
     \begin{tabular}{ll}
         \toprule
-        \textbf{Parameter} & \textbf{Wert} \\
+        \textbf{Parameter}   & \textbf{Wert}                 \\
         \midrule
-        Modellvariante        & YOLOv8n (\texttt{yolov8n.pt}) \\
-        Bildgröße             & $1024 \times 1024$ \\
-        Epochen               & 150 \\
-        Batch Size            & 16 \\
-        Optimizer             & AdamW \\
-        Learning Rate (lr0)   & 0{,}001 \\
-        Confidence Threshold  & 0{,}25 (Inferenz) \\
-        IoU Threshold (NMS)   & 0{,}7 \\
+        Modellvariante       & YOLOv8n (\texttt{yolov8n.pt}) \\
+        Bildgröße            & $1024 \times 1024$            \\
+        Epochen              & 150                           \\
+        Batch Size           & 16                            \\
+        Optimizer            & AdamW                         \\
+        Learning Rate (lr0)  & 0{,}001                       \\
+        Confidence Threshold & 0{,}25 (Inferenz)             \\
+        IoU Threshold (NMS)  & 0{,}7                         \\
         \bottomrule
     \end{tabular}
 \end{table}
 
-\subsection{Parameter der Pseudo-Label-Generierung}
+\subsection{Parameter der detection-basierten Pseudo-Label-Generierung}
 
-Bei der automatischen Erzeugung der Pseudo-Labels wurden ausschließlich
-Detektionen übernommen, die definierte Schwellenwerte hinsichtlich Konfidenz und
-Bounding-Box-Eigenschaften erfüllten. Detektionen unterhalb dieser Schwellen
-wurden verworfen, um die Qualität der erzeugten Labels sicherzustellen.
+Bei der automatischen Erzeugung der detection-basierten Pseudo-Labels wurden
+zunächst Detektionen durch das Baseline-Modell erzeugt. Anschließend wurden
+diese anhand definierter Schwellwerte gefiltert. Ziel dieser Filterung war es,
+unsichere Vorhersagen nicht ungeprüft in den erweiterten Trainingsdatensatz zu
+übernehmen.
 
-\begin{table}[htbp]
+\begin{table}[H]
     \centering
-    \caption{Parameter der Pseudo-Label-Generierung.}
+    \caption{Parameter der detection-basierten Pseudo-Label-Generierung.}
     \label{tab:anhang_pseudo_params}
     \begin{tabular}{ll}
         \toprule
-        \textbf{Parameter} & \textbf{Wert} \\
+        \textbf{Parameter}                   & \textbf{Wert}                            \\
         \midrule
-        Confidence Threshold  & 0{,}25 (Generierung), $\geq$ 0{,}60 (nach Filterung) \\
-        IoU Threshold (NMS)   & 0{,}7 \\
-        Minimale Boxgröße     & normierte Fläche $\geq 1\cdot10^{-6}$ \\
-        Maximale Boxgröße     & keine explizite Obergrenze \\
-        Verwendetes Modell    & Baseline-YOLOv8n (\texttt{best.pt}) \\
-        Bemerkung             & nur Zielklassen; klassenbalancierte Auswahl (Quota) \\
+        Verwendetes Modell                   & Baseline-YOLOv8n (\texttt{best.pt})      \\
+        Confidence Threshold bei Generierung & 0{,}25                                   \\
+        Confidence Threshold nach Filterung  & $\geq$ 0{,}60                            \\
+        IoU Threshold (NMS)                  & 0{,}7                                    \\
+        Minimale Boxgröße                    & normierte Fläche $\geq 1\cdot10^{-6}$    \\
+        Maximale Boxgröße                    & keine explizite Obergrenze               \\
+        Auswahlstrategie                     & klassenbalancierte Auswahl               \\
+        Zielgröße                            & ca. 800 Instanzen je ausgewählter Klasse \\
+        Maximale Anzahl                      & bis zu 1000 Pseudo-Boxen je Klasse       \\
         \bottomrule
     \end{tabular}
 \end{table}
 
-\subsection{Parameter des Trackings}
+\subsection{Parameter der tracking-basierten Label-Propagation}
 
 Zur zeitlichen Zuordnung von Detektionen in aufeinanderfolgenden Frames wurde
-das Tracking-Verfahren ByteTrack eingesetzt. Dadurch können Objekte über mehrere
-Frames hinweg konsistent verfolgt und die resultierenden Trajektorien für die
-Label-Propagation genutzt werden.
+ByteTrack eingesetzt. Dadurch konnten Objekte über mehrere Frames hinweg
+konsistent verfolgt und die resultierenden Objekttracks für die Auswahl
+zuverlässigerer Pseudo-Labels genutzt werden.
 
-\begin{table}[htbp]
+\begin{table}[H]
     \centering
-    \caption{Parameter des verwendeten Tracking-Verfahrens (ByteTrack).}
+    \caption{Parameter des verwendeten Tracking-Verfahrens.}
     \label{tab:anhang_tracking_params}
     \begin{tabular}{ll}
         \toprule
-        \textbf{Parameter} & \textbf{Wert} \\
+        \textbf{Parameter}    & \textbf{Wert}                                     \\
         \midrule
-        Tracker          & ByteTrack (\texttt{bytetrack.yaml}) \\
-        Track Threshold  & 0{,}25 (Eingangs-Detektionsschwelle) \\
-        Match Threshold  & [WERT] (Standardwert \texttt{bytetrack.yaml}) \\
-        Track Buffer     & [WERT] (Standardwert \texttt{bytetrack.yaml}) \\
-        Frame Rate       & 29{,}97 FPS (Beispielvideo \texttt{video04\_regionB}) \\
-        Bemerkung        & Standardkonfiguration; \texttt{persist=True} \\
+        Tracker               & ByteTrack (\texttt{bytetrack.yaml})               \\
+        Tracking-Paradigma    & Tracking-by-Detection                             \\
+        Eingangsmodell        & Baseline-YOLOv8n                                  \\
+        Track Threshold       & 0{,}25                                            \\
+        Match Threshold       & 0{,}8                                             \\
+        Track Buffer          & 30                                                \\
+        Frame Rate            & ca. 30 FPS                                        \\
+        Persistente Track-IDs & \texttt{persist=True}                             \\
+        Qualitätskriterien    & Tracklänge, mittlere Konfidenz, Klassenkonsistenz \\
         \bottomrule
     \end{tabular}
 \end{table}
 
 \subsection{Verzeichnisstruktur}
 
-Die folgende, beispielhafte Verzeichnisstruktur veranschaulicht die Organisation
-der Daten und Zwischenergebnisse innerhalb des Projekts.
+Die folgende beispielhafte Verzeichnisstruktur veranschaulicht die Organisation
+der Daten, Skripte und Zwischenergebnisse innerhalb des Projekts.
 
 \begin{verbatim}
-data/
-    frames/
-    labels/
-    pseudo_labels/
-    tracking/
-runs/
-scripts/
-README.md
+semi-supervised-drone-annotation/
+    data/
+        frames/
+        labels/
+        pseudo_labels/
+        tracking/
+    scripts/
+        main1.py
+        ...
+        main18.py
+    notebooks/
+        pipeline.ipynb
+    results/
+        tracking_reports/
+        evaluation_outputs/
+    thesis/
+        figures/
+        main.tex
+    README.md
 \end{verbatim}
 
 
@@ -245,70 +359,81 @@ README.md
 \section{Zusätzliche Ergebnisse}
 \label{app:ergebnisse}
 
-Dieser Anhang enthält ergänzende Ergebnisdarstellungen, die die im
-Ergebniskapitel (Abschnitt~\ref{sec:experiments}) getroffenen Aussagen visuell
-untermauern. Die Abbildungen dienen der vertiefenden Betrachtung und ergänzen
-die im Haupttext gezeigten Auswertungen.
+Dieser Anhang enthält ergänzende Hinweise zu Ergebnisdateien und zusätzlichen
+Visualisierungen. Die zentralen Trainingskurven, Precision-Recall-Kurven,
+F1-Confidence-Kurven, Konfusionsmatrizen und qualitativen Beispiele sind bereits
+im Haupttext dargestellt. Weitere automatisch erzeugte Ausgaben des YOLOv8-
+Frameworks sowie zusätzliche Tracking-Zwischenergebnisse wurden zusammen mit
+der digitalen Abgabe bereitgestellt.
 
 \subsection{Ergänzende Trainingskurven}
 
-Die folgende Abbildung zeigt ergänzende Verläufe der Trainings- und
-Validierungsmetriken über die Epochen. Sie veranschaulicht das
-Konvergenzverhalten des Modells während des Trainings.
+Die wichtigsten Trainings- und Validierungskurven des Baseline-Modells, der
+detection-basierten Pseudo-Labeling-Stufe und der tracking-basierten
+Label-Propagation sind im Ergebniskapitel dargestellt. Zusätzliche automatisch
+erzeugte Kurven, beispielsweise einzelne Loss-Komponenten oder weitere
+Validierungsausgaben, befinden sich in den jeweiligen Trainingsordnern der
+digitalen Abgabe.
 
-% Alternativ vorhanden: figures/baseline/BoxP_curve.png, figures/baseline/BoxR_curve.png
-\begin{figure}[htbp]
-    \centering
-    \anhangplaceholder{figures/appendix\_training\_curves.png}
-    \caption{Ergänzende Trainings- und Validierungskurven über den
-    Trainingsverlauf.}
-    \label{fig:anhang_training_curves}
-\end{figure}
+% Optional, falls später eine zusätzliche Abbildung eingefügt werden soll:
+%
+% \begin{figure}[H]
+%     \centering
+%     \includegraphics[width=0.95\textwidth]{figures/appendix_training_curves.png}
+%     \caption{Ergänzende Trainings- und Validierungskurven über den
+%     Trainingsverlauf.}
+%     \label{fig:anhang_training_curves}
+% \end{figure}
 
 \subsection{Ergänzende Konfusionsmatrizen}
 
-Die folgende Abbildung zeigt ergänzende Konfusionsmatrizen, die das
-Klassifikationsverhalten des Modells über die betrachteten Klassen hinweg
-darstellen und typische Verwechslungen zwischen Klassen sichtbar machen.
+Die im Haupttext dargestellten Konfusionsmatrizen zeigen die zentralen
+Fehlerstrukturen der untersuchten Modelle. Ergänzende Konfusionsmatrizen und
+Validierungsausgaben liegen zusätzlich in den Ergebnisordnern der jeweiligen
+Trainingsläufe vor.
 
-\begin{figure}[htbp]
-    \centering
-    \anhangplaceholder{figures/appendix\_confusion\_matrix.png}
-    \caption{Ergänzende Konfusionsmatrix zur Analyse des
-    Klassifikationsverhaltens des Modells.}
-    \label{fig:anhang_confusion_matrix}
-\end{figure}
+% Optional:
+%
+% \begin{figure}[H]
+%     \centering
+%     \includegraphics[width=0.95\textwidth]{figures/appendix_confusion_matrix.png}
+%     \caption{Ergänzende Konfusionsmatrix zur Analyse des
+%     Klassifikationsverhaltens des Modells.}
+%     \label{fig:anhang_confusion_matrix}
+% \end{figure}
 
 \subsection{Beispiele erfolgreicher und fehlerhafter Detektionen}
 
-Die folgende Abbildung zeigt beispielhafte Detektionsergebnisse auf
-Validierungsdaten. Neben korrekt erkannten Objekten werden auch typische
-Fehlerfälle sichtbar, wodurch Stärken und Grenzen des Modells qualitativ
-veranschaulicht werden.
+Zur qualitativen Analyse wurden im Haupttext Validierungsbeispiele mit
+Ground-Truth-Labels und Modellvorhersagen gegenübergestellt. Weitere Beispiele
+können ergänzend in der digitalen Abgabe nachvollzogen werden.
 
-\begin{figure}[htbp]
-    \centering
-    \includegraphics[width=\textwidth]{figures/baseline/val_batch1_pred.jpg}
-    \caption{Beispiele erfolgreicher und fehlerhafter Detektionen des
-    Baseline-Modells auf einem Validierungsstapel.}
-    \label{fig:anhang_detection_examples}
-\end{figure}
+% Optional, falls diese Abbildung zusätzlich im Anhang gezeigt werden soll:
+%
+% \begin{figure}[H]
+%     \centering
+%     \includegraphics[width=\textwidth]{figures/baseline/val_batch1_pred.jpg}
+%     \caption{Beispiele erfolgreicher und fehlerhafter Detektionen des
+%     Baseline-Modells auf einem Validierungsstapel.}
+%     \label{fig:anhang_detection_examples}
+% \end{figure}
 
-\subsection{Beispiele der Tracking-basierten Label-Propagation}
+\subsection{Beispiele der tracking-basierten Label-Propagation}
 
-Die folgende Abbildung veranschaulicht die tracking-basierte Label-Propagation
-über aufeinanderfolgende Frames. Dargestellt wird, wie Detektionen mithilfe der
-Objektverfolgung zeitlich verknüpft und als Grundlage für die Erzeugung
-zusätzlicher Labels genutzt werden.
+Die tracking-basierte Label-Propagation wurde im Haupttext anhand
+aufeinanderfolgender Frames qualitativ veranschaulicht. Zusätzliche
+Tracking-Ergebnisse, darunter Objekt-IDs, Track-Zuordnungen und exportierte
+Zwischenergebnisse, sind Bestandteil der digitalen Abgabe.
 
-% Alternativ vorhanden: figures/tracking/tracking_frame1.jpeg, figures/tracking/tracking_frame2.jpeg
-\begin{figure}[htbp]
-    \centering
-    \anhangplaceholder{figures/appendix\_tracking\_propagation.png}
-    \caption{Beispiele der tracking-basierten Label-Propagation über
-    aufeinanderfolgende Frames.}
-    \label{fig:anhang_tracking_propagation}
-\end{figure}
+% Optional:
+%
+% \begin{figure}[H]
+%     \centering
+%     \includegraphics[width=0.95\textwidth]{figures/appendix_tracking_propagation.png}
+%     \caption{Beispiele der tracking-basierten Label-Propagation über
+%     aufeinanderfolgende Frames.}
+%     \label{fig:anhang_tracking_propagation}
+% \end{figure}
 
 
 % =========================================================
@@ -318,26 +443,26 @@ zusätzlicher Labels genutzt werden.
 Der im Rahmen dieser Arbeit entwickelte Quellcode wurde zusammen mit der
 digitalen Abgabe bereitgestellt und ist zusätzlich öffentlich unter
 \url{https://github.com/Berkekrd/semi-supervised-drone-annotation} verfügbar.
-Er umfasst Skripte zur Datenvorverarbeitung, zur Generierung der Pseudo-Labels,
-zum Objekttracking, zum Training des Modells sowie zur Evaluation der Ergebnisse.
+Er umfasst Skripte zur Datenvorverarbeitung, zur Generierung von Pseudo-Labels,
+zum Objekttracking, zum Training der Modelle sowie zur Evaluation der Ergebnisse.
 
 Die wichtigsten Ausführungsschritte sowie die benötigten Abhängigkeiten sind in
 der beiliegenden README-Datei dokumentiert. Die abgegebene Version des
 Quellcodes entspricht dem Stand, der für die in dieser Arbeit beschriebenen
 Experimente verwendet wurde. Auf die vollständige Wiedergabe des Quellcodes
 innerhalb der Arbeit wird bewusst verzichtet; stattdessen wird auf die digitale
-Abgabe verwiesen.
+Abgabe und das zugehörige Repository verwiesen.
 
-Die folgende, beispielhafte Verzeichnisstruktur gibt einen Überblick über die
-Organisation des bereitgestellten Quellcodes.
+Die folgende Verzeichnisstruktur gibt einen Überblick über die Organisation des
+bereitgestellten Quellcodes.
 
 \begin{verbatim}
 semi-supervised-drone-annotation/
     scripts/            # Pipeline als Skripte (main1.py ... main18.py)
-    notebooks/          # pipeline.ipynb (gesamte Pipeline)
-    results/            # Tracking-Ergebnisse (CSV, Reports)
-    thesis/             # LaTeX-Quellen der Arbeit
-    Readme.md
+    notebooks/          # pipeline.ipynb
+    results/            # Tracking-Ergebnisse, Reports und Auswertungen
+    thesis/             # LaTeX-Quellen und Abbildungen der Arbeit
+    README.md
 \end{verbatim}
 
 
@@ -349,15 +474,17 @@ Hiermit erkläre ich, dass ich die vorliegende Arbeit selbstständig und ohne
 unzulässige fremde Hilfe verfasst habe. Es wurden keine anderen als die
 angegebenen Quellen und Hilfsmittel benutzt. Alle Stellen der Arbeit, die
 wörtlich oder sinngemäß aus anderen Quellen übernommen wurden, sind als solche
-kenntlich gemacht. Die Arbeit wurde in gleicher oder ähnlicher Form noch keiner
-anderen Prüfungsbehörde vorgelegt und auch nicht veröffentlicht.
+kenntlich gemacht.
+
+Die Arbeit wurde in gleicher oder ähnlicher Form noch keiner anderen
+Prüfungsbehörde vorgelegt und auch nicht veröffentlicht.
 
 \vspace{2cm}
 
 \noindent
 \begin{tabular}{@{}p{6cm}@{\hspace{2cm}}p{6cm}@{}}
-    \hrulefill & \hrulefill \\
-    {[ORT], [DATUM]} & {[VORNAME NACHNAME]} \\
+    \hrulefill             & \hrulefill      \\
+    Bremen, den 06.07.2026 & Berke Karaduman \\
 \end{tabular}
 
 \newpage
