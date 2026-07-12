@@ -329,16 +329,14 @@ zuverlässigerer Pseudo-Labels genutzt werden.
 
 \subsection{Verzeichnisstruktur}
 
-Die folgende beispielhafte Verzeichnisstruktur veranschaulicht die Organisation
-der Daten, Skripte und Zwischenergebnisse innerhalb des Projekts.
+Die folgende Verzeichnisstruktur veranschaulicht die Organisation von
+Quellcode, Notebooks, Ergebnissen und Arbeitsunterlagen innerhalb des
+Projekts. Die verwendeten Rohdaten (Frames, manuelle Annotationen) sind
+aufgrund ihrer Größe nicht Bestandteil des Repositorys und werden extern
+bereitgestellt (vgl.\ Abschnitt~\ref{app:quellcode}).
 
 \begin{verbatim}
 semi-supervised-drone-annotation/
-    data/
-        frames/
-        labels/
-        pseudo_labels/
-        tracking/
     scripts/
         main1.py
         ...
@@ -346,12 +344,20 @@ semi-supervised-drone-annotation/
     notebooks/
         pipeline.ipynb
     results/
-        tracking_reports/
-        evaluation_outputs/
+        tracking/
+            video04_regionB_01/
+                tracking_report_with_gps.csv
+                tracking_summary.txt
+                README.md
     thesis/
+        chapters/
         figures/
+        frontmatter/
+        literatur/
+        settings/
         main.tex
-    README.md
+        appendix.tex
+    Readme.md
 \end{verbatim}
 
 
