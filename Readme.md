@@ -1,21 +1,23 @@
 # Masterarbeit – Semi-Supervised Annotation von Drohnenvideos
 
-Dieses Repository enthält den aktuellen Entwicklungsstand meiner Masterarbeit im Bereich Computer Vision.
+Dieses Repository enthält den finalen Quellcode und die ergänzenden Materialien der Masterarbeit im Bereich Computer Vision.
 
 Ziel der Arbeit ist es, den manuellen Annotierungsaufwand bei Drohnenvideos zu reduzieren. Dafür werden nur spärlich manuell annotierte Frames als Ausgangspunkt verwendet. Die nicht annotierten Zwischenframes werden anschließend automatisch mithilfe von Object Detection, Pseudo-Labeling, heuristischer Filterung und Tracking-basierter Konsistenzprüfung annotiert.
-
-> **Hinweis:** Dieses Repository stellt noch nicht die finale Abgabeversion dar. Es handelt sich um den Entwicklungsstand etwa einen Monat vor der geplanten Fertigstellung. Der Python-Code der Pipeline (Training, Pseudo-Labeling, Tracking, Evaluation) wird bis zur Abgabe ergänzt.
 
 ## Repository-Struktur
 
 ```text
 repo/
+├── scripts/      # Pipeline als 18 nummerierte Skripte (main1.py ... main18.py)
+├── notebooks/    # pipeline.ipynb – dieselbe Pipeline mit deutschen Erläuterungen
 ├── thesis/       # LaTeX-Quellen der Masterarbeit (Kapitel, Abbildungen, Literatur)
 ├── results/      # Ergebnisse der Pipeline, v. a. qualitative Tracking-Ergebnisse
 ├── Readme.md     # Zentrale Projektbeschreibung
 └── .gitignore    # Ausschluss großer oder temporärer Dateien (z. B. Videos, Modellgewichte)
 ```
 
+- **[`scripts/`](scripts/README.md)** – vollständige Verarbeitungspipeline (Datenaufbereitung, Baseline-Training, Detection-Pseudo-Labeling, Tracking-basierte Label-Propagation, Evaluation).
+- **[`notebooks/`](notebooks/pipeline.ipynb)** – dieselbe Pipeline als Notebook mit deutschen Erläuterungen.
 - **[`thesis/`](thesis/)** – vollständige LaTeX-Struktur der Arbeit inkl. aller Kapitel und der Abbildungen der Experimente (Baseline- und Pseudo-Labeling-Ergebnisse unter `thesis/figures/`).
 - **[`results/`](results/README.md)** – Tracking-Ergebnisse (YOLO + ByteTrack + GPS) pro Video mit Report, Zusammenfassung und Link zum extern gehosteten Video.
 
