@@ -63,3 +63,26 @@ Iteratives Retraining / Self-Training
         ↓
 Evaluation und Vergleich der Ergebnisse
 ```
+
+## Voraussetzungen
+
+- Python 3.10 oder höher
+- PyTorch
+- Ultralytics YOLOv8
+- OpenCV
+- NumPy
+- Pandas
+- PyYAML
+
+## Ausführung
+
+Die einzelnen Verarbeitungsschritte befinden sich im Ordner `scripts/`
+und sind entsprechend der Ausführungsreihenfolge als `main1.py` bis
+`main18.py` nummeriert. Weitere Hinweise befinden sich unter
+[`scripts/README.md`](scripts/README.md).
+
+## Hinweis zu großen Dateien
+
+Videos, Datensätze und Modellgewichte sind aufgrund ihrer Dateigröße
+nicht direkt im Repository enthalten. Links zu den extern bereitgestellten
+Tracking-Videos befinden sich im Ordner [`results/`](results/README.md).
