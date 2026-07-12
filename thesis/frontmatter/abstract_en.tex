@@ -1,0 +1,22 @@
+\clearpage
+\thispagestyle{empty}
+
+\begin{center}
+    {\Large \textbf{Abstract}}
+\end{center}
+
+\vspace{0.8cm}
+
+\noindent The automatic detection of potential \textit{Aedes aegypti} breeding sites in urban areas is an important component of data-driven approaches supporting vector control. UAV-based image and video data enable the efficient coverage of large urban areas, but their automatic analysis is challenging, since relevant objects are often small, partially occluded, and embedded in complex background structures. In addition, training capable object detection models requires large amounts of high-quality annotations, which are very time-consuming to create manually for video data.
+
+This thesis investigates a semi-supervised approach for the automatic annotation of UAV video data using transfer learning, pseudo-labeling, and tracking-based label propagation. The MBG-V2 dataset, which contains drone footage of urban areas along with annotations of potential breeding sites, serves as the data basis. First, a YOLOv8-based baseline model is trained on manually annotated frames. Additional pseudo-labels are then generated for frames without manual annotations. ByteTrack is further employed to temporally link detections across consecutive frames and generate tracking-based pseudo-labels.
+
+The experimental results show that the baseline model trained exclusively on manual annotations achieves the best overall performance. On the shared validation split, it attains a precision of 0.831, a recall of 0.485, an mAP@50 of 0.572, and an mAP@50--95 of 0.343. Detection-based pseudo-labeling expands the data basis and improves coverage of several underrepresented classes, but with a precision of 0.692, a recall of 0.489, an mAP@50 of 0.564, and an mAP@50--95 of 0.323, it does not achieve a clear performance gain. The slightly higher recall comes at the cost of a substantial loss in precision.
+
+Tracking-based label propagation produces more conservative pseudo-labels, achieving a precision of 0.765, a recall of 0.445, an mAP@50 of 0.543, and an mAP@50--95 of 0.327. Tracking thus improves the reliability of pseudo-label selection compared to the purely detection-based approach, but does not surpass the manually trained baseline model. Overall, the results show that semi-supervised methods can reduce manual annotation effort, but their effectiveness depends strongly on the quality of the generated pseudo-labels. Small object sizes, complex backgrounds, class imbalance, and unstable detections remain central challenges.
+
+\vfill
+
+\noindent\textbf{Keywords:} object detection, UAV video data, drone footage, \textit{Aedes aegypti}, mosquito breeding sites, YOLOv8, transfer learning, semi-supervised learning, pseudo-labeling, label propagation, multi-object tracking, ByteTrack
+
+\newpage
