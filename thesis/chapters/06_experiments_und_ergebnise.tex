@@ -201,7 +201,7 @@ Diese Beobachtung ist für die nachfolgende Pseudo-Label-Generierung entscheiden
 
 Zur qualitativen Kontrolle wurden zusätzlich Validierungsbeispiele betrachtet. Abbildung~\ref{fig:baseline_val_batch0} zeigt Ground-Truth-Labels und Modellvorhersagen des Baseline-Modells untereinander. Dabei wird sichtbar, dass häufige und visuell klare Klassen wie \textit{watertank} und \textit{pool} in vielen Fällen korrekt erkannt werden. Gleichzeitig treten Fehler bei kleinen Objekten und komplexen Dachstrukturen auf. Einige Objekte werden nicht erkannt, während andere Hintergrundbereiche fälschlicherweise als Objekt vorhergesagt werden.
 
-\begin{figure}[H]
+\begin{figure}[htbp]
     \centering
     \includegraphics[width=\textwidth]{figures/baseline/val_batch0_labels.jpg}
 
@@ -344,7 +344,7 @@ Die absolute und normalisierte Konfusionsmatrix der Pseudo-Labeling-Stufe sind i
 
 Zur qualitativen Bewertung werden in Abbildung~\ref{fig:pseudo_val_batch0} Ground-Truth-Labels und Vorhersagen des Pseudo-Labeling-Modells gegenübergestellt. Die Beispiele zeigen, dass die Pseudo-Labeling-Stufe zusätzliche Objektinstanzen erkennt, jedoch auch mehr unsichere und fehlerhafte Vorhersagen erzeugt. Besonders bei \textit{watertank} treten viele Vorhersagen mit mittleren Confidence-Werten auf. Einige davon entsprechen tatsächlichen Objekten, andere liegen jedoch auf Hintergrundstrukturen wie Dächern, hellen Flächen oder runden technischen Strukturen.
 
-\begin{figure}[H]
+\begin{figure}[htbp]
     \centering
     \includegraphics[width=\textwidth]{figures/pseudo/val_batch0_labels.jpg}
 
