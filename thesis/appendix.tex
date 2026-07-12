@@ -18,9 +18,6 @@
 % Unterabschnitte des Anhangs wieder im Inhaltsverzeichnis anzeigen
 \addtocontents{toc}{\protect\setcounter{tocdepth}{2}}
 
-% Einheitlicher Platzhalter für Werte, die nachgetragen werden
-\newcommand{\nachzutragen}{\textit{nachzutragen}}
-
 % =========================================================
 \section{Zusätzliche Materialien zum Datensatzkapitel}
 \label{app:datensatz}
@@ -72,7 +69,7 @@ tracking-basierten Pseudo-Labels in den Trainingsdatensatz übernommen.
     \caption{Zusammenfassung der automatisch erzeugten tracking-basierten
         Pseudo-Labels.}
     \label{tab:anhang_tracking_summary}
-    \begin{tabular}{ll}
+    \begin{tabular}{p{7.5cm}p{5.5cm}}
         \toprule
         \textbf{Größe}                                        & \textbf{Wert}                               \\
         \midrule
@@ -95,21 +92,23 @@ Testsplit wurde in dieser Arbeit nicht gebildet. Die finale Bewertung der
 experimentellen Stufen erfolgte auf demselben manuell annotierten
 Validierungssplit, um die Vergleichbarkeit zwischen Baseline-Modell,
 detection-basiertem Pseudo-Labeling und tracking-basierter Label-Propagation
-sicherzustellen.
+sicherzustellen. Die Aufteilung erfolgte auf Frame-Ebene; die folgende Tabelle
+gibt die daraus resultierende Annotationsanzahl je Split anteilig zur
+Gesamtzahl der manuellen Annotationen (vgl.\ Tabelle~\ref{tab:anhang_baseline_distribution}) an.
 
 \begin{table}[H]
     \centering
     \caption{Aufteilung des Datensatzes in Trainings- und Validierungsdaten.}
     \label{tab:anhang_split}
-    \begin{tabular}{lccc}
+    \begin{tabular}{lcc}
         \toprule
-        \textbf{Split}  & \textbf{Frames} & \textbf{Annotationen} & \textbf{Anteil} \\
+        \textbf{Split}  & \textbf{Annotationen} & \textbf{Anteil} \\
         \midrule
-        Training        & \nachzutragen   & \nachzutragen         & 80\,\%          \\
-        Validierung     & \nachzutragen   & \nachzutragen         & 20\,\%          \\
-        Test            & --              & --                    & nicht verwendet \\
+        Training        & ca.\ 4\,647           & 80\,\%          \\
+        Validierung     & ca.\ 1\,162           & 20\,\%          \\
+        Test            & --                    & nicht verwendet \\
         \midrule
-        \textbf{Gesamt} & \nachzutragen   & \nachzutragen         & 100\,\%         \\
+        \textbf{Gesamt} & \textbf{5\,809}        & 100\,\%         \\
         \bottomrule
     \end{tabular}
 \end{table}
