@@ -40,6 +40,14 @@
 
 
 \makeatletter
+% Verhindert, dass Seiten, die nur aus Gleitobjekten (Abbildungen/Tabellen)
+% bestehen, vertikal zentriert werden (Standard-LaTeX-Verhalten durch
+% dehnbaren Leerraum \@fptop). Stattdessen werden solche Seiten oben
+% ausgerichtet.
+\setlength{\@fptop}{0pt}
+\makeatother
+
+\makeatletter
 \newcommand{\MSonehalfspacing}{%
   \setstretch{1.44}%  default
   \ifcase \@ptsize \relax % 10pt
