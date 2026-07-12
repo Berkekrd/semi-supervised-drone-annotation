@@ -84,34 +84,17 @@ tracking-basierten Pseudo-Labels in den Trainingsdatensatz übernommen.
 
 \subsection{Aufteilung des Datensatzes}
 
-Der Datensatz wurde für die Experimente in einen Trainings- und einen
-Validierungsteil aufgeteilt. Die Aufteilung erfolgte im Verhältnis von 80~\% zu
-20~\%. Der Trainingsteil wurde zur Modellanpassung verwendet, während der
-Validierungsteil für die Bewertung der Modellleistung genutzt wurde. Ein separater
-Testsplit wurde in dieser Arbeit nicht gebildet. Die finale Bewertung der
-experimentellen Stufen erfolgte auf demselben manuell annotierten
-Validierungssplit, um die Vergleichbarkeit zwischen Baseline-Modell,
-detection-basiertem Pseudo-Labeling und tracking-basierter Label-Propagation
-sicherzustellen. Die Aufteilung erfolgte auf Frame-Ebene; die folgende Tabelle
-gibt die daraus resultierende Annotationsanzahl je Split anteilig zur
-Gesamtzahl der manuellen Annotationen (vgl.\ Tabelle~\ref{tab:anhang_baseline_distribution}) an.
+Der manuell annotierte Datensatz wurde für die Experimente im Verhältnis
+von 80\,\% zu 20\,\% in Trainings- und Validierungsdaten aufgeteilt.
+Der Trainingsteil wurde zur Modellanpassung verwendet, während der
+Validierungsteil ausschließlich zur Bewertung der Modellleistung diente.
 
-\begin{table}[H]
-    \centering
-    \caption{Aufteilung des Datensatzes in Trainings- und Validierungsdaten.}
-    \label{tab:anhang_split}
-    \begin{tabular}{lcc}
-        \toprule
-        \textbf{Split}  & \textbf{Annotationen} & \textbf{Anteil} \\
-        \midrule
-        Training        & ca.\ 4\,647           & 80\,\%          \\
-        Validierung     & ca.\ 1\,162           & 20\,\%          \\
-        Test            & --                    & nicht verwendet \\
-        \midrule
-        \textbf{Gesamt} & \textbf{5\,809}        & 100\,\%         \\
-        \bottomrule
-    \end{tabular}
-\end{table}
+Ein separater Testsplit wurde in dieser Arbeit nicht gebildet. Die finale
+Bewertung des Baseline-Modells, des detection-basierten
+Pseudo-Labeling-Modells und des Modells mit tracking-basierter
+Label-Propagation erfolgte auf demselben manuell annotierten
+Validierungssplit, um einen direkten Vergleich der experimentellen
+Stufen zu ermöglichen.
 
 \subsection{Verteilung der manuellen Annotationen}
 
