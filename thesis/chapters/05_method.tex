@@ -285,12 +285,14 @@ vereinfacht wie folgt beschreiben:
 
 \[
     L_{\text{track}} =
-    \{ d \in D \mid
-    score(d) \geq \tau_{\text{conf}}
-    \land len(track(d)) \geq \tau_{\text{len}}
-    \land \overline{score}(track(d)) \geq \tau_{\text{avg}}
-    \land cons(track(d)) \geq \tau_{\text{cls}}
-    \}
+    \left\{\, d \in D \;\middle|\;
+    \begin{aligned}[t]
+        &score(d) \geq \tau_{\text{conf}}
+        \;\land\; len(track(d)) \geq \tau_{\text{len}} \;\land{} \\
+        &\overline{score}(track(d)) \geq \tau_{\text{avg}}
+        \;\land\; cons(track(d)) \geq \tau_{\text{cls}}
+    \end{aligned}
+    \,\right\}
 \]
 
 Dabei bezeichnet \(D\) die Menge aller automatisch erzeugten Detektionen,
