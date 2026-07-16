@@ -613,6 +613,57 @@ konnten die Qualität der automatischen Annotation somit verbessern, reichten
 jedoch nicht aus, um die Leistung des manuell trainierten Baseline-Modells zu
 übertreffen.
 
+Neben dem aggregierten Vergleich in Tabelle~\ref{tab:final_model_comparison}
+lässt sich die Entwicklung der Detektionsleistung auch klassenweise
+nachvollziehen. Tabelle~\ref{tab:ap_vergleich_alle_stufen} stellt dazu die
+AP@50-Werte des Baseline-Modells, der Pseudo-Labeling-Stufe und der
+tracking-basierten Label-Propagation für jede Klasse gegenüber und erweitert
+damit den bereits in Tabelle~\ref{tab:ap_vergleich_baseline_pseudo}
+begonnenen Vergleich um die tracking-basierte Stufe.
+
+\begin{table}[H]
+    \centering
+    \caption{Klassenweiser Vergleich der AP@50-Werte aller experimentellen Stufen}
+    \label{tab:ap_vergleich_alle_stufen}
+    \begin{tabular}{lrrr}
+        \hline
+        \textbf{Klasse} & \textbf{Baseline} & \textbf{Pseudo-Labeling} & \textbf{Tracking-basiert} \\
+        \hline
+        pool            & 0{,}866           & 0{,}847                  & 0{,}861                   \\
+        bottle          & 0{,}461           & 0{,}572                  & 0{,}536                   \\
+        bucket          & 0{,}360           & 0{,}372                  & 0{,}357                   \\
+        tire            & 0{,}450           & 0{,}459                  & 0{,}483                   \\
+        watertank       & 0{,}737           & 0{,}707                  & 0{,}703                   \\
+        large trash bin & 0{,}427           & 0{,}426                  & 0{,}427                   \\
+        plastic bag     & 0{,}497           & 0{,}496                  & 0{,}497                   \\
+        storm drain     & 0{,}565           & 0{,}457                  & 0{,}483                   \\
+        \hline
+        alle Klassen    & 0{,}545           & 0{,}542                  & 0{,}543                   \\
+        \hline
+    \end{tabular}
+\end{table}
+
+Der klassenweise Vergleich bestätigt das bereits auf Gesamtdatenebene
+beobachtete Muster: Für stark vertretene und visuell klar abgrenzbare
+Klassen wie \textit{watertank}, \textit{storm drain} und \textit{pool}
+erzielt das Baseline-Modell durchgehend die höchsten AP@50-Werte, während
+sowohl die Pseudo-Labeling-Stufe als auch die tracking-basierte
+Label-Propagation niedrigere Werte aufweisen. Für die im Trainingsdatensatz
+nur schwach vertretene Klasse \textit{bottle} sowie für \textit{tire} führen
+dagegen beide Erweiterungsstufen zu höheren AP@50-Werten als beim
+Baseline-Modell. Bei \textit{large trash bin} und \textit{plastic bag}
+bleiben die Werte trotz der zusätzlichen Trainingsinstanzen aus
+Tabelle~\ref{tab:labelverteilung_baseline_pseudo} und
+Tabelle~\ref{tab:tracking_pseudo_distribution} nahezu unverändert. Auffällig
+ist außerdem, dass die tracking-basierte Label-Propagation bei mehreren
+Klassen, etwa \textit{pool}, \textit{tire} und \textit{storm drain}, näher
+am Baseline-Wert liegt oder diesen sogar übertrifft, während das rein
+detection-basierte Pseudo-Labeling stärker abfällt. Dies deckt sich mit der
+bereits diskutierten höheren Precision des tracking-basierten Modells und
+unterstreicht, dass die tracking-basierte Filterung tendenziell
+zuverlässigere Labels erzeugt als die ungefilterte, rein detection-basierte
+Variante.
+
 \subsection{Qualitative Analyse}
 
 Die qualitativen Beispiele aus Abbildung~\ref{fig:baseline_val_batch0},
